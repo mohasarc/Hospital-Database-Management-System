@@ -93,6 +93,16 @@ app.post("/signup", async (req, res) => {
 	});
 });
 
+app.post("/login", async (req, res) => {
+	const { e_mail, password } = req.body;
+	let sql = `SELECT * FROM person WHERE e_mail='${e_mail}' AND password='${password}'`;
+	await connection.query(sql, (err, result, fields) => {
+		if (err) throw err;
+		if (result.length == 0) res.status(404).send("User does not exist");
+		res.status(200).send(result[0])
+	});
+});
+
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
 });

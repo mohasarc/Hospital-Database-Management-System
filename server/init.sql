@@ -18,7 +18,7 @@ CREATE TABLE person(
     country_code  VARCHAR(5), 
     number VARCHAR(20), 
     gender VARCHAR(10), 
-    e_mail VARCHAR(50) NOT NULL, 
+    e_mail VARCHAR(50) NOT NULL UNIQUE, 
     password VARCHAR(100) NOT NULL,
     PRIMARY KEY (person_id)
 );
