@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "root",
+	password: "",
 	database: "hospitaldb",
 });
 
@@ -188,7 +188,7 @@ app.post("/login", async (req, res) => {
 app.get("/test/:pid", (req, res, _) => {
 	const pid = req.params.pid;
 
-	const sql = `SELECT test.t_id, test.name, dv.date, dv.status
+	const sql = `SELECT test.t_id, test.name, dv.date, test.status
 				FROM test, doc_visit AS dv
 				WHERE test.appt_id = dv.appt_id AND dv.p_id = ${pid}
 				ORDER BY dv.date DESC`;
