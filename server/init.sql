@@ -73,3 +73,33 @@ CREATE TABLE IF NOT EXISTS components(
     PRIMARY KEY (t_id, c_name),
     FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
+CREATE TABLE doc_visit(
+	d_id VARCHAR(50),
+    p_id VARCHAR(50),
+	appt_id VARCHAR(50),
+	date DATE,
+	status VARCHAR(20),
+    PRIMARY KEY (appt_id),
+    FOREIGN KEY (d_id) REFERENCES doctor(d_id),
+    FOREIGN KEY (p_id) REFERENCES patient(pid)
+);
+
+CREATE TABLE symptoms(
+    name VARCHAR(100),
+    PRIMARY KEY(name)
+);
+
+CREATE TABLE diseases(
+    name VARCHAR(100),
+    PRIMARY KEY(name)
+);
+
+CREATE TABLE appointment(
+	appt_id VARCHAR(50),
+    symptom VARCHAR(100),
+    disease VARCHAR(100),
+    description VARCHAR(200),
+    PRIMARY KEY (appt_id, symptom, disease),
+    FOREIGN KEY (symptom) REFERENCES symptoms(name),
+    FOREIGN KEY (disease) REFERENCES diseases(name)
+);

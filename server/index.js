@@ -212,6 +212,36 @@ app.get("/test/comps/:tid", (req, res, _) => {
 	});
 });
 
+// Get all Appointments for a patient
+app.get("/appointments/:pid", (req, res) => {
+	const p_id = req.params.p_id;
+	const sql = `SELECT * FROM doc_visit NATURAL JOIN appointment WHERE p_id=${p_id}`;
+	connection.query(sql, (err, results) => {
+		if (err) throw err;
+		res.status(200).send(results);
+	})
+});	
+
+// Get symptoms shared for a particular appointment
+app.get("/appointments/symptoms/:appt_id", (req, res) => {
+	const appt_id = req.params.appt_id;
+	const sql = `SELECT symptoms FROM appointment WHERE appt_id=${appt_id}`;
+	connection.query(sql, (err, results) => {
+		if (err) throw err;
+		res.status(200).send(results);
+	})
+})
+
+// Get diseases diagnosed for a particular appointment
+app.get("/appointments/diseases/:appt_id", (req, res) => {
+	const appt_id = req.params.appt_id;
+	const sql = `SELECT diseases FROM appointment WHERE appt_id=${appt_id}`;
+	connection.query(sql, (err, results) => {
+		if (err) throw err;
+		res.status(200).send(results);
+	})
+})
+
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
 });

@@ -22,3 +22,5 @@
 /fe/npm-debug.log*
 /fe/yarn-debug.log*
 /fe/yarn-error.log*
+
+.vscode
