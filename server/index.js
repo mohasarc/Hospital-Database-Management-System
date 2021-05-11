@@ -94,12 +94,34 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-	const { e_mail, password } = req.body;
+	const { e_mail, password, type } = req.body;
 	let sql = `SELECT * FROM person WHERE e_mail='${e_mail}' AND password='${password}'`;
 	await connection.query(sql, (err, result, fields) => {
 		if (err) throw err;
+		let idFieldName = "";
+		switch (type.toUpperCase()) {
+			case USER_TYPES.Doctor:
+				idFieldName = "d_id";
+				break;
+			case USER_TYPES.Pharmacist: 
+				idFieldName = "ph_id";
+				break;
+			case USER_TYPES.Lab_Technician: 
+				idFieldName = "lt_id";
+				break;
+			case USER_TYPES.Patient: 
+				idFieldName = "pid";
+				break;
+			default:
+				console.log("Unimplemented type");
+		}
+		sql = `SELECT * FROM ${type} WHERE ${idFieldName}='${result[0].person_id}'`;
 		if (result.length == 0) res.status(404).send("User does not exist");
-		res.status(200).send(result[0])
+		connection.query(sql, (err, in_result, fields) => {
+			if (err) throw err;
+			if (in_result.length == 0) res.status(404).send("User does not exist"); 
+			res.status(200).send({ ...in_result[0], ...result[0] });
+		})
 	});
 });
 
