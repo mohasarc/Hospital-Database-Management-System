@@ -56,23 +56,6 @@ CREATE TABLE lab_technician(
     FOREIGN KEY (lt_id) REFERENCES person(person_id)
 );
 
-CREATE TABLE IF NOT EXISTS test(
-	t_id VARCHAR(50) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-	appt_id VARCHAR(50) NOT NULL,  
-    expertise_required VARCHAR(20),      
-    status VARCHAR(20),      
-    PRIMARY KEY (t_id),
-    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)            
-);
-
-CREATE TABLE IF NOT EXISTS components(
-    c_name VARCHAR(100) NOT NULL,    
-    t_id VARCHAR(50) NOT NULL,
-	score integer NOT NULL,
-    PRIMARY KEY (t_id, c_name),
-    FOREIGN KEY (t_id) REFERENCES test(t_id)
-);
 CREATE TABLE doc_visit(
 	d_id VARCHAR(50),
     p_id VARCHAR(50),
@@ -102,4 +85,22 @@ CREATE TABLE appointment(
     PRIMARY KEY (appt_id, symptom, disease),
     FOREIGN KEY (symptom) REFERENCES symptoms(name),
     FOREIGN KEY (disease) REFERENCES diseases(name)
+);
+
+CREATE TABLE IF NOT EXISTS test(
+	t_id VARCHAR(50) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+	appt_id VARCHAR(50) NOT NULL,  
+    expertise_required VARCHAR(20),      
+    status VARCHAR(20),      
+    PRIMARY KEY (t_id),
+    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)            
+);
+
+CREATE TABLE IF NOT EXISTS components(
+    c_name VARCHAR(100) NOT NULL,    
+    t_id VARCHAR(50) NOT NULL,
+	score integer NOT NULL,
+    PRIMARY KEY (t_id, c_name),
+    FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
