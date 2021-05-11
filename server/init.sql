@@ -67,10 +67,22 @@ CREATE TABLE doc_visit(
     FOREIGN KEY (p_id) REFERENCES patient(pid)
 );
 
+CREATE TABLE symptoms(
+    name VARCHAR(100),
+    PRIMARY KEY(name)
+);
+
+CREATE TABLE diseases(
+    name VARCHAR(100),
+    PRIMARY KEY(name)
+);
+
 CREATE TABLE appointment(
 	appt_id VARCHAR(50),
-    symptoms MEDIUMTEXT,
-    diseases MEDIUMTEXT,
+    symptom VARCHAR(100),
+    disease VARCHAR(100),
     description VARCHAR(200),
-    PRIMARY KEY (appt_id)
+    PRIMARY KEY (appt_id, symptom, disease),
+    FOREIGN KEY (symptom) REFERENCES symptoms(name),
+    FOREIGN KEY (disease) REFERENCES diseases(name)
 );
