@@ -55,3 +55,22 @@ CREATE TABLE lab_technician(
     PRIMARY KEY(lt_id),
     FOREIGN KEY (lt_id) REFERENCES person(person_id)
 );
+
+CREATE TABLE doc_visit(
+	d_id VARCHAR(50),
+    p_id VARCHAR(50),
+	appt_id VARCHAR(50),
+	date DATE,
+	status VARCHAR(20),
+    PRIMARY KEY (appt_id),
+    FOREIGN KEY (d_id) REFERENCES doctor(d_id),
+    FOREIGN KEY (p_id) REFERENCES patient(pid)
+);
+
+CREATE TABLE appointment(
+	appt_id VARCHAR(50),
+    symptoms MEDIUMTEXT,
+    diseases MEDIUMTEXT,
+    description VARCHAR(200),
+    PRIMARY KEY (appt_id)
+);
