@@ -1,6 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require("uuid");
 const mysql = require("mysql");
+const moment = require("moment");
+
+const USER_TYPES = require("./constants");
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,10 +18,79 @@ const connection = mysql.createConnection({
 
 const PORT = 8000;
 
-connection.connect();
+connection.connect((err) => {
+	if (err) throw err;
+	connection.query("USE hospitaldb;", (err, result) => {
+		if (err) throw err;
+	});
+});
 
-app.post("/", (req, res) => {
-	res.send("Hello World")
+app.post("/signup", async (req, res) => {
+	const { first_name, middle_name, last_name, dob, apt_num, street_name, street_num, city, state, zip, country, country_code, number, gender, e_mail, password, type, } = req.body;
+	let sql = "INSERT INTO person (person_id, first_name, middle_name, last_name, dob, apt_num, street_name, street_num, city, state, zip, country, country_code, number, gender, e_mail, password) VALUES (?)";
+	const person_id = uuidv4();
+	let tuple = [ person_id, first_name, middle_name, last_name, dob, apt_num, street_name, street_num, city, state, zip, country, country_code, number, gender, e_mail, password, ];
+	await connection.query(sql, [tuple], async (err, result) => {
+		if (err) {
+			console.log("error");
+		}
+		switch (type.toUpperCase()) {
+			case USER_TYPES.Doctor: {
+				sql = "INSERT INTO doctor (d_id, dept_name, specialization, qualification) VALUES (?)";
+				const { dept_name, specialization, qualification } = req.body;
+				tuple = [ person_id, dept_name, specialization, qualification ];
+				await connection.query(sql, [tuple], (error, result) => {
+					if (error) {
+						sql = `DELETE FROM person WHERE person_id='${person_id}'`;
+						console.log(error);
+					}
+				});
+			}
+				break;
+			case USER_TYPES.Pharmacist: {
+				sql = "INSERT INTO pharmacist (ph_id, qualifications) VALUES (?)";
+				const { qualifications } = req.body;
+				tuple = [person_id, qualifications];
+				await connection.query(sql, [tuple], (error, result) => {
+					if (error) {
+						sql = `DELETE FROM person WHERE person_id='${person_id}'`;
+						console.log(error);
+					}
+				});
+			}
+				break;
+			case USER_TYPES.Lab_Technician: {
+				const { expertise } = req.body;
+				sql = "INSERT INTO lab_technician (lt_id, expertise) VALUES (?);";
+				tuple = [person_id, expertise];
+				await connection.query(sql, [tuple], (error, result) => {
+					if (error) {
+						sql = `DELETE FROM person WHERE person_id='${person_id}'`;
+						console.log(error);
+					}
+				});
+			}
+				break;
+			case USER_TYPES.Patient: {
+				sql = "INSERT INTO patient (pid, height, weight, blood_group, registration_date) VALUES (?)";
+				const { height, weight, blood_group } = req.body;
+				const height_int = parseFloat(height);
+				const weight_int = parseFloat(weight);
+				let registration_date = moment(new Date()).format("YYYY-MM-DD");
+				tuple = [ person_id, height_int, weight_int, blood_group, registration_date];
+				await connection.query(sql, [tuple], (error, result) => {
+					if (error) {
+						sql = `DELETE FROM person WHERE person_id='${person_id}'`;
+						console.log(error);
+					}
+				});
+			}
+				break;
+			default:
+				console.log("Unimplemented type");
+		}
+		res.status(200).send("Successfully Inserted");
+	});
 });
 
 app.listen(PORT, () => {
