@@ -350,7 +350,7 @@ app.post("/test", async (req, res) => {
 	const tuple = [t_id, name, expertise_required];
 
 	// Prepare sql
-	const sql = `INSERT INTO test(t_id, name, expertise_required)`;
+	const sql = `INSERT INTO test(t_id, name, expertise_required) VALUES (?)`;
 
 	// Perform sql
 	connection.query(sql, [tuple], async (err, result) => {
@@ -401,7 +401,7 @@ app.post("/disease", async (req, res) => {
 	const tuple = [name];
 
 	// Prepare sql
-	const sql = `INSERT INTO disease(name)`;
+	const sql = `INSERT INTO disease(name) VALUES (?)`;
 
 	// Perform sql
 	connection.query(sql, [tuple], async (err, result) => {
@@ -433,7 +433,7 @@ app.delete("/disease/:name", async (req, res) => {
 });
 
 // Assign test to technician
-app.get("/tests/lt/assign", (req, res) => {
+app.post("/tests/lt/assign", (req, res) => {
 	const { t_id, appt_id } = req.body;
 
 	// get all technicians with the same qualification
@@ -442,7 +442,9 @@ app.get("/tests/lt/assign", (req, res) => {
 								 WHERE expertise = ( SELECT expertise_required
 													 FROM tests
 													 WHERE t_id = ${t_id})`;
-													 // get a random technician
+	const componentNamesSql = `select c_name 
+							   FROM components
+							   WHERE t_id = ${t_id}`;
 
 	connection.query(selectTechnicialSql, (err, results) => {
 		if (err) {
@@ -450,20 +452,48 @@ app.get("/tests/lt/assign", (req, res) => {
 		} else {
 			// Get a random one 
 			const lt_id = results[(Math.random() * results.length) % results.length].lt_id;
-			// res.status(200).send(results);
+			const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id) VALUES (?)`;
+			const assignTestTuple = [lt_id, appt_id, t_id];
+			const initCompResultsSql = `INSERT INTO component_result(c_name, t_id, appt_id, score) VALUES (?)`;
+			
+			connection.query(componentNamesSql, (err, results) => { //? I HATE CALLBACKS :'(
+				if (err) {
+					res.status(500).send(err);
+				} else {
+					connection.beginTransaction((err) => {
+						if (err) {
+							res.status(500).send(err);
+						}
+						
+						// Assign lab technician
+						connection.query(assignTestSql, assignTestTuple, (err, results) => {
+							if (err) {
+								connection.rollback();
+								res.status(500).send(err);
+							} else {
+								// Initialize all components
+								results.map((component, i) => {
+									let initCompResultsTuple = [component.c_name, t_id, appt_id, null];
+									connection.query(initCompResultsSql, initCompResultsTuple, (err, results) => {
+										if (err) {
+											connection.rollback();
+											res.status(500).send(err);
+										} else {
+											if (i == results.length - 1)
+												res.status(200).send({ results }); //! This probably won't always work correctly :D
+										}
+									});
+								});
+							}
+						});
+						
+					});
+				}
+			});
+
 		}
 	});
-
-	// assign the test to them
-
-	const sql = `SELECT test.t_id, test.name, assigned_test.status
-				FROM assigned_test NATURAL JOIN test
-				where lt_id=${lt_id}`;
 });
-
-// Add technician with speciality
-// remove technician with speciality
-
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);

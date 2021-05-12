@@ -126,8 +126,8 @@ CREATE TABLE IF NOT EXISTS component_result(
 	appt_id integer NOT NULL,
 	score integer,
     PRIMARY KEY (t_id, c_name, appt_id),
-    FOREIGN KEY (t_id) REFERENCES test(t_id)
-    FOREIGN KEY (c_name) REFERENCES components(c_name)
+    FOREIGN KEY (t_id) REFERENCES test(t_id),
+    FOREIGN KEY (c_name) REFERENCES components(c_name),
     FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)
 );
 
