@@ -454,7 +454,7 @@ app.post("/tests/lt/assign", (req, res) => {
 			const lt_id = results[(Math.random() * results.length) % results.length].lt_id;
 			const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id) VALUES (?)`;
 			const assignTestTuple = [lt_id, appt_id, t_id];
-			const initCompResultsSql = `INSERT INTO component_result(c_name, t_id, appt_id, score) VALUES (?)`;
+			const initCompResultsSql = `INSERT INTO component_result(c_id, c_name, t_id, appt_id, score) VALUES (?)`;
 			
 			connection.query(componentNamesSql, (err, results) => { //? I HATE CALLBACKS :'(
 				if (err) {
@@ -473,7 +473,7 @@ app.post("/tests/lt/assign", (req, res) => {
 							} else {
 								// Initialize all components
 								results.map((component, i) => {
-									let initCompResultsTuple = [component.c_name, t_id, appt_id, null];
+									let initCompResultsTuple = [uuidv4(), component.c_name, t_id, appt_id, null];
 									connection.query(initCompResultsSql, initCompResultsTuple, (err, results) => {
 										if (err) {
 											connection.rollback();
