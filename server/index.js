@@ -224,17 +224,21 @@ app.get("/tests/comps/:t_id", (req, res, _) => {
 // Get all tests performed by the lab technician with given id
 app.get("/tests/lt/:lt_id", (req, res) => {
 	const lt_id = req.params.lt_id;
-	const sql = `SELECT test.t_id, test.name, test.status
+	const sql = `SELECT test.t_id, test.name, assigned_test.status
 				FROM assigned_test NATURAL JOIN test
 				where lt_id=${lt_id}`;
+
 	connection.query(sql, (err, results) => {
-		if (err) throw err;
-		res.status(200).send(results);
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
 	});
 });
 
 // Update the score of a test component
-app.post("/tests/comps", (req, res) => {
+app.post("/tests/comps", (req, res) => {   //! NEEDS TO BE UPDATED ( I, mohammed, couldn't understand it ) @Elham
 	const { t_id, c_name, score } = req.body;
 
 	const sql1 = `UPDATE components
@@ -271,21 +275,10 @@ app.get("/appointments/:pid", (req, res) => {
 	});
 });
 
-
 // Get diseases diagnosed for a particular appointment
 app.get("/appointments/diseases/:appt_id", (req, res) => {
 	const appt_id = req.params.appt_id;
-	const sql = `SELECT diseases FROM appointment WHERE appt_id=${appt_id}`;
-	connection.query(sql, (err, results) => {
-		if (err) res.status(200).send(err);
-		res.status(200).send(results);
-	});
-});
-
-// Get symptoms shared for a particular appointment
-app.get("/appointments/symptoms/:appt_id", (req, res) => {
-	const appt_id = req.params.appt_id;
-	const sql     = `SELECT name, description FROM symptoms WHERE appt_id=${appt_id}`;
+	const sql 	  = `SELECT name FROM diagnosis WHERE appt_id=${appt_id}`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -293,20 +286,184 @@ app.get("/appointments/symptoms/:appt_id", (req, res) => {
 		} else {
 			res.status(200).send(results);
 		}
-	})
-})
+	});
+});
+
+// Get symptoms shared for a particular appointment
+app.get("/appointments/symptoms/:appt_id", (req, res) => {
+	const appt_id = req.params.appt_id;
+	const sql     = `SELECT name, description FROM has_symptoms WHERE appt_id=${appt_id}`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// Read all possible diseases
+app.get("/diseases", (req, res) => {
+	const sql     = `SELECT name FROM diseases`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// Read all possible symbtons
+app.get("/symptoms", (req, res) => {
+	const sql     = `SELECT * FROM symptoms`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
 
 // Read the available tests
+app.get("/tests", (req, res) => {
+	const sql     = `SELECT * FROM tests`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // add test
+app.post("/test", async (req, res) => {
+	// Prepare values
+	const {name, expertise_required} = req.body;
+	const t_id = uuidv4();
+	const tuple = [t_id, name, expertise_required];
+
+	// Prepare sql
+	const sql = `INSERT INTO test(t_id, name, expertise_required)`;
+
+	// Perform sql
+	connection.query(sql, [tuple], async (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(result);
+		}
+	});
+});
+
 // remove test
+app.delete("/test/:t_id", async (req, res) => {
+	// Prepare values
+	const t_id = req.params.t_id;
+
+	// Prepare sql
+	const sql = `DELETE FROM test
+				 WHERE t_id = ${t_id}`;
+
+	// Perform sql
+	connection.query(sql, async (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(result);
+		}
+	});
+});
+
+// Read the set of all diseases
+app.get("/diseases", (req, res) => {
+	const sql     = `SELECT * FROM diseases`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// Add disease
+app.post("/disease", async (req, res) => {
+	// Prepare values
+	const { name } = req.body;
+	const tuple = [name];
+
+	// Prepare sql
+	const sql = `INSERT INTO disease(name)`;
+
+	// Perform sql
+	connection.query(sql, [tuple], async (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(result);
+		}
+	});
+});
+
+// Remove disease
+app.delete("/disease/:name", async (req, res) => {
+	// Prepare values
+	const name = req.params.name;
+
+	// Prepare sql
+	const sql = `DELETE FROM disease
+				 WHERE name = ${name}`;
+
+	// Perform sql
+	connection.query(sql, async (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(result);
+		}
+	});
+});
 
 // Assign test to technician
+app.get("/tests/lt/assign", (req, res) => {
+	const { t_id, appt_id } = req.body;
+
+	// get all technicians with the same qualification
+	const selectTechnicialSql = `SELECT lt_id
+								 FROM lab_technician
+								 WHERE expertise = ( SELECT expertise_required
+													 FROM tests
+													 WHERE t_id = ${t_id})`;
+													 // get a random technician
+
+	connection.query(selectTechnicialSql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			// Get a random one 
+			const lt_id = results[(Math.random() * results.length) % results.length].lt_id;
+			// res.status(200).send(results);
+		}
+	});
+
+	// assign the test to them
+
+	const sql = `SELECT test.t_id, test.name, assigned_test.status
+				FROM assigned_test NATURAL JOIN test
+				where lt_id=${lt_id}`;
+});
+
 // Add technician with speciality
 // remove technician with speciality
 
-// Read the set of all diseases
-// Add disease
-// Remove disease
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);

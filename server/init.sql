@@ -68,16 +68,32 @@ CREATE TABLE doc_visit(
 );
 
 CREATE TABLE symptoms(
-    appt_id VARCHAR(20),
     name VARCHAR(100),
-    description VARCHAR(250),
-    PRIMARY KEY (name, appt_id),
-    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)
+    PRIMARY KEY(name)
 );
 
 CREATE TABLE diseases(
     name VARCHAR(100),
     PRIMARY KEY(name)
+);
+
+CREATE TABLE has_symptoms(
+    appt_id VARCHAR(20),
+    name VARCHAR(100),
+    description VARCHAR(250),
+    PRIMARY KEY (name, appt_id),
+    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
+    FOREIGN KEY (name) REFERENCES symptoms(name)
+
+);
+
+CREATE TABLE diagnosis(
+    appt_id VARCHAR(20),
+    name VARCHAR(100),
+    description VARCHAR(250),
+    PRIMARY KEY (name, appt_id),
+    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
+    FOREIGN KEY (name) REFERENCES disease(name)
 );
 
 CREATE TABLE appointment(
@@ -91,25 +107,35 @@ CREATE TABLE appointment(
 CREATE TABLE IF NOT EXISTS test(
 	t_id VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
-	appt_id VARCHAR(50) NOT NULL,  
     expertise_required VARCHAR(20),      
-    status VARCHAR(20),      
-    PRIMARY KEY (t_id),
-    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)            
+    PRIMARY KEY (t_id),    
 );
 
 CREATE TABLE IF NOT EXISTS components(
     c_name VARCHAR(100) NOT NULL,    
     t_id VARCHAR(50) NOT NULL,
-	score integer NOT NULL,
+	min_interval integer NOT NULL,
+	max_interval integer NOT NULL,
     PRIMARY KEY (t_id, c_name),
     FOREIGN KEY (t_id) REFERENCES test(t_id)
+);
+
+CREATE TABLE IF NOT EXISTS component_result(
+    c_name VARCHAR(100) NOT NULL,    
+    t_id VARCHAR(50) NOT NULL,
+	appt_id integer NOT NULL,
+	score integer,
+    PRIMARY KEY (t_id, c_name, appt_id),
+    FOREIGN KEY (t_id) REFERENCES test(t_id)
+    FOREIGN KEY (c_name) REFERENCES components(c_name)
+    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)
 );
 
 CREATE TABLE IF NOT EXISTS assigned_test(
 	lt_id VARCHAR(50),
 	appt_id VARCHAR(50),
 	t_id VARCHAR(100),
+    status VARCHAR(20),
 	PRIMARY KEY (lt_id, appt_id, t_id),
 	FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
 	FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id),
