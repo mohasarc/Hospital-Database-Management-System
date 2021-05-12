@@ -67,6 +67,12 @@ CREATE TABLE doc_visit(
     FOREIGN KEY (p_id) REFERENCES patient(pid)
 );
 
+CREATE TABLE appointment(
+	appt_id VARCHAR(50),
+    description VARCHAR(200),
+    PRIMARY KEY (appt_id)
+);
+
 CREATE TABLE symptoms(
     name VARCHAR(100),
     PRIMARY KEY(name)
@@ -93,45 +99,38 @@ CREATE TABLE diagnosis(
     description VARCHAR(250),
     PRIMARY KEY (name, appt_id),
     FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
-    FOREIGN KEY (name) REFERENCES disease(name)
+    FOREIGN KEY (name) REFERENCES diseases(name)
 );
 
-CREATE TABLE appointment(
-	appt_id VARCHAR(50),
-    disease VARCHAR(100),
-    description VARCHAR(200),
-    PRIMARY KEY (appt_id, disease),
-    FOREIGN KEY (disease) REFERENCES diseases(name)
-);
-
-CREATE TABLE IF NOT EXISTS test(
+CREATE TABLE test(
 	t_id VARCHAR(50) NOT NULL,
     name VARCHAR(100) NOT NULL,
     expertise_required VARCHAR(20),      
-    PRIMARY KEY (t_id),    
+    PRIMARY KEY (t_id)
 );
 
-CREATE TABLE IF NOT EXISTS components(
-    c_name VARCHAR(100) NOT NULL,    
+CREATE TABLE components(
+    c_id VARCHAR(50) NOT NULL,
+    c_name VARCHAR(50) NOT NULL,    
     t_id VARCHAR(50) NOT NULL,
 	min_interval integer NOT NULL,
 	max_interval integer NOT NULL,
-    PRIMARY KEY (t_id, c_name),
+    PRIMARY KEY (c_id),
     FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
 
-CREATE TABLE IF NOT EXISTS component_result(
-    c_name VARCHAR(100) NOT NULL,    
+CREATE TABLE component_result(
+    c_id VARCHAR(50) NOT NULL,  
     t_id VARCHAR(50) NOT NULL,
-	appt_id integer NOT NULL,
+	appt_id VARCHAR(20),
 	score integer,
-    PRIMARY KEY (t_id, c_name, appt_id),
+    PRIMARY KEY (c_id, t_id, appt_id),
+    FOREIGN KEY (c_id) REFERENCES components(c_id),
     FOREIGN KEY (t_id) REFERENCES test(t_id),
-    FOREIGN KEY (c_name) REFERENCES components(c_name),
     FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)
 );
 
-CREATE TABLE IF NOT EXISTS assigned_test(
+CREATE TABLE assigned_test(
 	lt_id VARCHAR(50),
 	appt_id VARCHAR(50),
 	t_id VARCHAR(100),
