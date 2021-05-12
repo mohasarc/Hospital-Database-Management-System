@@ -32,7 +32,7 @@ class Login extends PureComponent {
                         <Radio label="Pharmacist" value="pharmacist" />
                     </RadioGroup>
                     <ButtonContainer>
-                        <Button text="Login" disabled={!email || !password || !userType} />
+                        <Button text="Login" disabled={!email || !password || !userType}  rightIcon="log-in" intent="success" />
                     </ButtonContainer>
                 </Card>
 			</Container>
