@@ -104,3 +104,13 @@ CREATE TABLE IF NOT EXISTS components(
     PRIMARY KEY (t_id, c_name),
     FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
+
+CREATE TABLE IF NOT EXISTS assigned_test(
+	lt_id VARCHAR(50),
+	appt_id VARCHAR(50),
+	t_id VARCHAR(100),
+	PRIMARY KEY (lt_id, appt_id, t_id),
+	FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
+	FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id),
+	FOREIGN KEY (t_id) REFERENCES test(t_id)
+);
