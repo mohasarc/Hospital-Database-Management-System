@@ -9,8 +9,6 @@ dotenv.config();
 const app = express();
 app.use(bodyParser.json());
 
-console.log("user: ", process.env.DB_USERNAME, "pass: ", process.env.DB_PASSWORD);
-
 const connection = mysql.createConnection({
 	host: "localhost",
 	user: process.env.DB_USERNAME,
