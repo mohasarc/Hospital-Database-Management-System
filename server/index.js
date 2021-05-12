@@ -3,16 +3,18 @@ const bodyParser = require("body-parser");
 const { v4: uuidv4 } = require("uuid");
 const mysql = require("mysql");
 const moment = require("moment");
-
+const dotenv = require("dotenv")
 const { USER_TYPES, COMP_SCORE, TEST_STATUS } = require("./constants");
-
+dotenv.config();
 const app = express();
 app.use(bodyParser.json());
 
+console.log("user: ", process.env.DB_USERNAME, "pass: ", process.env.DB_PASSWORD);
+
 const connection = mysql.createConnection({
 	host: "localhost",
-	user: "root",
-	password: "root",
+	user: process.env.DB_USERNAME,
+	password: process.env.DB_PASSWORD,
 	database: "hospitaldb",
 });
 

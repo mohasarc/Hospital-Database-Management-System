@@ -24,3 +24,4 @@
 /fe/yarn-error.log*
 
 .vscode
+.env
