@@ -231,15 +231,6 @@ app.get("/appointments/:pid", (req, res) => {
 	})
 });	
 
-// Get symptoms shared for a particular appointment
-app.get("/appointments/symptoms/:appt_id", (req, res) => {
-	const appt_id = req.params.appt_id;
-	const sql = `SELECT symptoms FROM appointment WHERE appt_id=${appt_id}`;
-	connection.query(sql, (err, results) => {
-		if (err) res.status(200).send(err);
-		res.status(200).send(results);
-	})
-})
 
 // Get diseases diagnosed for a particular appointment
 app.get("/appointments/diseases/:appt_id", (req, res) => {
@@ -250,6 +241,32 @@ app.get("/appointments/diseases/:appt_id", (req, res) => {
 		res.status(200).send(results);
 	})
 })
+
+// Get symptoms shared for a particular appointment
+app.get("/appointments/symptoms/:appt_id", (req, res) => {
+	const appt_id = req.params.appt_id;
+	const sql     = `SELECT name, description FROM symptoms WHERE appt_id=${appt_id}`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	})
+})
+
+// Read the available tests
+// add test
+// remove test
+
+// Assign test to technician
+// Add technician with speciality
+// remove technician with speciality
+
+// Read the set of all diseases
+// Add disease
+// Remove disease
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
