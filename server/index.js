@@ -69,7 +69,8 @@ app.post("/signup", async (req, res) => {
 	];
 	await connection.query(sql, [tuple], async (err, result) => {
 		if (err) {
-			console.log("error");
+			console.log(err);
+			res.status(500).send();
 		}
 		switch (type.toUpperCase()) {
 			case USER_TYPES.Doctor:
@@ -88,6 +89,8 @@ app.post("/signup", async (req, res) => {
 						if (error) {
 							sql = `DELETE FROM person WHERE person_id='${person_id}'`;
 							console.log(error);
+							connection.query(sql, (error, result) => {});
+							res.status(500).send();
 						}
 					});
 				}
@@ -102,6 +105,8 @@ app.post("/signup", async (req, res) => {
 						if (error) {
 							sql = `DELETE FROM person WHERE person_id='${person_id}'`;
 							console.log(error);
+							connection.query(sql, (error, result) => {});
+							res.status(500).send();
 						}
 					});
 				}
@@ -116,6 +121,8 @@ app.post("/signup", async (req, res) => {
 						if (error) {
 							sql = `DELETE FROM person WHERE person_id='${person_id}'`;
 							console.log(error);
+							connection.query(sql, (error, result) => {});
+							res.status(500).send();
 						}
 					});
 				}
@@ -127,9 +134,7 @@ app.post("/signup", async (req, res) => {
 					const { height, weight, blood_group } = req.body;
 					const height_int = parseFloat(height);
 					const weight_int = parseFloat(weight);
-					let registration_date = moment(new Date()).format(
-						"YYYY-MM-DD"
-					);
+					let registration_date = moment(new Date()).format("YYYY-MM-DD");
 					tuple = [
 						person_id,
 						height_int,
@@ -140,15 +145,19 @@ app.post("/signup", async (req, res) => {
 					await connection.query(sql, [tuple], (error, result) => {
 						if (error) {
 							sql = `DELETE FROM person WHERE person_id='${person_id}'`;
+							connection.query(sql, (error, result) => {});
 							console.log(error);
+							res.status(500).send();
 						}
 					});
 				}
 				break;
 			default:
-				console.log("Unimplemented type");
+				throw new Error("Unimplemented type");
+				res.status(500).send();
 		}
 		res.status(200).send("Successfully Inserted");
+		return;
 	});
 });
 
