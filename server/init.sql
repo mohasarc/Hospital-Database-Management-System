@@ -68,8 +68,11 @@ CREATE TABLE doc_visit(
 );
 
 CREATE TABLE symptoms(
+    appt_id VARCHAR(20),
     name VARCHAR(100),
-    PRIMARY KEY(name)
+    description VARCHAR(250),
+    PRIMARY KEY (name, appt_id),
+    FOREIGN KEY (appt_id) REFERENCES appointment(appt_id)
 );
 
 CREATE TABLE diseases(
@@ -79,11 +82,9 @@ CREATE TABLE diseases(
 
 CREATE TABLE appointment(
 	appt_id VARCHAR(50),
-    symptom VARCHAR(100),
     disease VARCHAR(100),
     description VARCHAR(200),
-    PRIMARY KEY (appt_id, symptom, disease),
-    FOREIGN KEY (symptom) REFERENCES symptoms(name),
+    PRIMARY KEY (appt_id, disease),
     FOREIGN KEY (disease) REFERENCES diseases(name)
 );
 
