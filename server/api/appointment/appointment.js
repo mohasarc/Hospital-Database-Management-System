@@ -1,22 +1,46 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const moment = require("moment");
 const { v4: uuidv4 } = require("uuid");
 const { connection } = require('../../index');
-const { USER_TYPES } = require("../../constants");
+const { APPT_STATUS } = require("../../constants");
 
 /****************************************************/
 /*                    Appointment                   */
 /****************************************************/
-// Create an appointment // TODO
+// Create an appointment
+router.post("/", (req, res) => {
+    // Collect tuple data
+	const { p_id, d_id, description } = req.body;
+    const appt_id    = uuidv4();
+    const date       = moment(new Date()).format( "YYYY-MM-DD" );
+    const status     = APPT_STATUS.ONGOING;
+    const appt_tuple = [appt_id, d_id, p_id, date, status, description];
+    
+    // Prepare SQL
+	const appt_sql = `INSERT INTO appointment(appt_id, d_id, p_id, date, status, description) VALUES(?)`;
+
+    // Perform SQL
+	connection.query(appt_sql, appt_tuple, (err, results) => {
+		if (err) {
+            res.status(200).send(err);
+        } else {
+            res.status(200).send(results);
+        }
+	});
+});
 
 // Get all Appointments for a patient
 router.get("/", (req, res) => {
 	const { p_id } = req.body;
-	const sql = `SELECT * FROM doc_visit NATURAL JOIN appointment WHERE p_id='${p_id}'`;
+	const sql = `SELECT * FROM appointment WHERE p_id='${p_id}'`;
 
 	connection.query(sql, (err, results) => {
-		if (err) res.status(200).send(err);
-		res.status(200).send(results);
+		if (err) {
+            res.status(200).send(err);
+        } else {
+            res.status(200).send(results);
+        }
 	});
 });
 
