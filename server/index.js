@@ -473,14 +473,49 @@ app.post("/tests/lt/assign", (req, res) => {
 								});
 							}
 						});
-						
 					});
 				}
 			});
-
 		}
 	});
 });
+
+// Diagnose the patient
+app.post("/disease", async (req, res) => {
+	// Prepare values
+	const { appt_id, name, description } = req.body;
+	const tuple = [appt_id, name, description];
+
+	// Prepare sql
+	const testFinalizedSql = `SELECT status
+							  FROM assigned_test
+							  WHERE appt_id = '${appt_id}'`;
+	const sql = `INSERT INTO diagnosis(appt_id, name, description) VALUES (?)`;
+
+	// Retrieve all tests' results for this appointment
+	connection.query(testFinalizedSql, async (err, result) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			// Check if all tests were finalized
+			result.map( (test) => {
+				if (test.status != TEST_STATUS.finalized) {
+					res.status(500).send("There are some tests that are not yet finalized!");
+				} else {
+					// finalize diagnozing disease
+					connection.query(sql, [tuple], async (err, result) => {
+						if (err) {
+							res.status(500).send(err);
+						} else {
+							res.status(200).send(result);
+						}
+					});
+				}
+			});
+		}
+	});
+});
+
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
