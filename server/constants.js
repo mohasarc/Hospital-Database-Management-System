@@ -16,8 +16,14 @@ const COMP_SCORE = {
 	finalized: 1,
 };
 
+const APPT_STATUS = {
+	ONGOING: 'ONGOING',
+	COMPLETE: 'COMPLETE',
+}
+
 module.exports = {
-	...USER_TYPES,
+	USER_TYPES,
 	TEST_STATUS,
 	COMP_SCORE,
+	APPT_STATUS,
 };
