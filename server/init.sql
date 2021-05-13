@@ -135,3 +135,22 @@ CREATE TABLE assigned_test(
 	FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id),
 	FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
+
+-- --------------------- TRIGGERS ------------------------
+DROP TRIGGER IF EXISTS test_status_update;
+
+DELIMITER $$
+CREATE trigger test_status_update 
+AFTER INSERT 
+ON component_result FOR EACH ROW
+BEGIN
+	UPDATE assigned_test
+    SET status = 
+        CASE		
+            WHEN (SELECT count(*) FROM component_result WHERE appt_id=new.appt_id AND t_id=new.t_id) = (SELECT count(*) FROM components WHERE t_id=new.t_id) THEN 'FINALIZED'
+            WHEN (SELECT count(*) FROM component_result WHERE appt_id=new.appt_id AND t_id=new.t_id) <> 0 THEN 'PREPARING'                        
+            else 'ASSIGNED'
+        END
+WHERE appt_id=new.appt_id AND t_id=new.t_id;
+END$$
+DELIMITER ;
