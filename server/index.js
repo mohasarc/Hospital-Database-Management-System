@@ -113,6 +113,20 @@ app.get("/symptoms", (req, res) => {
 	});
 });
 
+app.post("/symptoms", (req, res) => {
+	const { name } = req.body;
+	const tuple = [name];
+	const sql     = `INSERT INTO symptoms(name) VALUES(?)`;
+
+	connection.query(sql, [tuple], (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Read the available tests
 app.get("/tests", (req, res) => {
 	const sql     = `SELECT * FROM tests`;

@@ -9,7 +9,7 @@ const { APPT_STATUS } = require("../../constants");
 /*                    Appointment                   */
 /****************************************************/
 // Create an appointment
-router.post("/", (req, res) => {
+router.post("/", (req, res) => { //! Probably we need to limit the number of appointments the patient can have to 1 per day?
     // Collect tuple data
 	const { p_id, d_id, description } = req.body;
     const appt_id    = uuidv4();
@@ -21,7 +21,7 @@ router.post("/", (req, res) => {
 	const appt_sql = `INSERT INTO appointment(appt_id, d_id, p_id, date, status, description) VALUES(?)`;
 
     // Perform SQL
-	connection.query(appt_sql, appt_tuple, (err, results) => {
+	connection.query(appt_sql, [appt_tuple], (err, results) => {
 		if (err) {
             res.status(200).send(err);
         } else {
@@ -48,7 +48,7 @@ router.get("/", (req, res) => {
 /*                    Diagnosis                     */
 /****************************************************/
 // Diagnose the patient
-router.post("/disease", async (req, res) => {
+router.post("/diagnosis", async (req, res) => {
 	// Prepare values
 	const { appt_id, name, description } = req.body;
 	const tuple = [appt_id, name, description];
@@ -61,30 +61,36 @@ router.post("/disease", async (req, res) => {
 
 	// Retrieve all tests' results for this appointment
 	connection.query(testFinalizedSql, async (err, result) => {
+        var canDiagnose = true;
+
 		if (err) {
 			res.status(500).send(err);
 		} else {
 			// Check if all tests were finalized
-			result.map( (test) => {
-				if (test.status != TEST_STATUS.finalized) {
+            for (let i = 0; i < result.length; i++) {
+				if (result[i].status != TEST_STATUS.finalized) {
 					res.status(500).send("There are some tests that are not yet finalized!");
-				} else {
-					// finalize diagnozing disease
-					connection.query(sql, [tuple], async (err, result) => {
-						if (err) {
-							res.status(500).send(err);
-						} else {
-							res.status(200).send(result);
-						}
-					});
+                    canDiagnose = false;
+                    break;
 				}
-			});
+            }
+
+            // finalize diagnozing disease
+            if (canDiagnose) {
+                connection.query(sql, [tuple], async (err, result) => {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        res.status(200).send(result);
+                    }
+                });
+            }
 		}
 	});
 });
 
 // Get the diseases diagnosed for a particular appointment
-router.get("/disease", (req, res) => {
+router.get("/diagnosis", (req, res) => {
 	const { appt_id } = req.body;
 	const sql 	  = `SELECT name FROM diagnosis WHERE appt_id='${appt_id}'`;
 
@@ -100,6 +106,21 @@ router.get("/disease", (req, res) => {
 /****************************************************/
 /*                     Symptoms                     */
 /****************************************************/
+// Add a symbtom
+router.post("/symptom", (req, res) => {
+	const { appt_id, name, description } = req.body;
+    const patient_symptoms_tuple = [appt_id, name, description];
+	const patient_symptoms_sql     = `INSERT INTO has_symptoms(appt_id, name, description) VALUES(?)`;
+
+	connection.query(patient_symptoms_sql, [patient_symptoms_tuple], (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Get symptoms shared for a particular appointment
 router.get("/symptom", (req, res) => {
 	const { appt_id } = req.body;
@@ -118,7 +139,7 @@ router.get("/symptom", (req, res) => {
 /*                       Tests                      */
 /****************************************************/
 // Assign test to technician
-router.post("/test", (req, res) => {
+router.post("/test", (req, res) => { //! TO BE TESTED !!!!
 	const { t_id, appt_id } = req.body;
 
 	// get all technicians with the same qualification

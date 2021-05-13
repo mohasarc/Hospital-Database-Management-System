@@ -79,7 +79,7 @@ CREATE TABLE diseases(
 );
 
 CREATE TABLE has_symptoms(
-    appt_id VARCHAR(20),
+    appt_id VARCHAR(50),
     name VARCHAR(100),
     description VARCHAR(250),
     PRIMARY KEY (name, appt_id),
@@ -89,7 +89,7 @@ CREATE TABLE has_symptoms(
 );
 
 CREATE TABLE diagnosis(
-    appt_id VARCHAR(20),
+    appt_id VARCHAR(50),
     name VARCHAR(100),
     description VARCHAR(250),
     PRIMARY KEY (name, appt_id),
@@ -117,7 +117,7 @@ CREATE TABLE components(
 CREATE TABLE component_result(
     c_id VARCHAR(50) NOT NULL,  
     t_id VARCHAR(50) NOT NULL,
-	appt_id VARCHAR(20),
+	appt_id VARCHAR(50),
 	score integer,
     PRIMARY KEY (c_id, t_id, appt_id),
     FOREIGN KEY (c_id) REFERENCES components(c_id),
