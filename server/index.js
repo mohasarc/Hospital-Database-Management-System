@@ -303,19 +303,6 @@ app.get("/appointments/symptoms/:appt_id", (req, res) => {
 	});
 });
 
-// Read all possible diseases
-app.get("/diseases", (req, res) => {
-	const sql     = `SELECT name FROM diseases`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
 // Read all possible symbtons
 app.get("/symptoms", (req, res) => {
 	const sql     = `SELECT * FROM symptoms`;
@@ -363,13 +350,13 @@ app.post("/test", async (req, res) => {
 });
 
 // remove test
-app.delete("/test/:t_id", async (req, res) => {
+app.delete("/test", async (req, res) => {
 	// Prepare values
-	const t_id = req.params.t_id;
+	const {t_id} = req.body;
 
 	// Prepare sql
 	const sql = `DELETE FROM test
-				 WHERE t_id = ${t_id}`;
+				 WHERE t_id = "${t_id}"`;
 
 	// Perform sql
 	connection.query(sql, async (err, result) => {
