@@ -201,7 +201,7 @@ app.get("/tests/:pid", (req, res, _) => {
 	const pid = req.params.pid;
 	const sql = `SELECT test.t_id, test.name, dv.date, test.status
 				FROM test, doc_visit AS dv
-				WHERE test.appt_id = dv.appt_id AND dv.p_id=${pid}
+				WHERE test.appt_id = dv.appt_id AND dv.p_id='${pid}'
 				ORDER BY dv.date DESC`;
 	connection.query(sql, (err, results) => {
 		if (err) throw err;
@@ -214,7 +214,7 @@ app.get("/tests/comps/:t_id", (req, res, _) => {
 	const testID = req.params.t_id;
 	const sql = `SELECT T.name, C.c_name, C.score
 				FROM test AS T, components AS C
-				WHERE T.t_id = C.t_id AND T.t_id=${testID}`;
+				WHERE T.t_id = C.t_id AND T.t_id='${testID}'`;
 	connection.query(sql, (err, results) => {
 		if (err) throw err;
 		res.status(200).send(results);
@@ -226,7 +226,7 @@ app.get("/tests/lt/:lt_id", (req, res) => {
 	const lt_id = req.params.lt_id;
 	const sql = `SELECT test.t_id, test.name, assigned_test.status
 				FROM assigned_test NATURAL JOIN test
-				where lt_id=${lt_id}`;
+				where lt_id='${lt_id}'`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -242,13 +242,13 @@ app.post("/tests/comps", (req, res) => {   //! NEEDS TO BE UPDATED ( I, mohammed
 	const { t_id, c_name, score } = req.body;
 
 	const sql1 = `UPDATE components
-				SET score=${score}
-				WHERE c_name='${c_name}' and t_id=${t_id}`;
+				SET score='${score}'
+				WHERE c_name='${c_name}' and t_id='${t_id}'`;
 
 	const sql2 = `UPDATE test
 				SET status='${TEST_STATUS.finalized}'
-				WHERE t_id=${t_id} and NOT EXISTS (
-					SELECT * FROM components WHERE t_id=${t_id} and score=${COMP_SCORE.preparing})`;
+				WHERE t_id='${t_id}' and NOT EXISTS (
+					SELECT * FROM components WHERE t_id='${t_id}' and score='${COMP_SCORE.preparing}')`;
 
 	connection.beginTransaction((err) => {
 		if (err) {
@@ -268,7 +268,7 @@ app.post("/tests/comps", (req, res) => {   //! NEEDS TO BE UPDATED ( I, mohammed
 // Get all Appointments for a patient
 app.get("/appointments/:pid", (req, res) => {
 	const p_id = req.params.p_id;
-	const sql = `SELECT * FROM doc_visit NATURAL JOIN appointment WHERE p_id=${p_id}`;
+	const sql = `SELECT * FROM doc_visit NATURAL JOIN appointment WHERE p_id='${p_id}'`;
 	connection.query(sql, (err, results) => {
 		if (err) res.status(200).send(err);
 		res.status(200).send(results);
@@ -278,7 +278,7 @@ app.get("/appointments/:pid", (req, res) => {
 // Get diseases diagnosed for a particular appointment
 app.get("/appointments/diseases/:appt_id", (req, res) => {
 	const appt_id = req.params.appt_id;
-	const sql 	  = `SELECT name FROM diagnosis WHERE appt_id=${appt_id}`;
+	const sql 	  = `SELECT name FROM diagnosis WHERE appt_id='${appt_id}'`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -292,7 +292,7 @@ app.get("/appointments/diseases/:appt_id", (req, res) => {
 // Get symptoms shared for a particular appointment
 app.get("/appointments/symptoms/:appt_id", (req, res) => {
 	const appt_id = req.params.appt_id;
-	const sql     = `SELECT name, description FROM has_symptoms WHERE appt_id=${appt_id}`;
+	const sql     = `SELECT name, description FROM has_symptoms WHERE appt_id='${appt_id}'`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -356,7 +356,7 @@ app.delete("/test", async (req, res) => {
 
 	// Prepare sql
 	const sql = `DELETE FROM test
-				 WHERE t_id = "${t_id}"`;
+				 WHERE t_id = '${t_id}'`;
 
 	// Perform sql
 	connection.query(sql, async (err, result) => {
@@ -388,7 +388,7 @@ app.post("/disease", async (req, res) => {
 	const tuple = [name];
 
 	// Prepare sql
-	const sql = `INSERT INTO disease(name) VALUES (?)`;
+	const sql = `INSERT INTO diseases(name) VALUES (?)`;
 
 	// Perform sql
 	connection.query(sql, [tuple], async (err, result) => {
@@ -401,13 +401,13 @@ app.post("/disease", async (req, res) => {
 });
 
 // Remove disease
-app.delete("/disease/:name", async (req, res) => {
+app.delete("/disease", async (req, res) => {
 	// Prepare values
-	const name = req.params.name;
+	const { name } = req.body;
 
 	// Prepare sql
-	const sql = `DELETE FROM disease
-				 WHERE name = ${name}`;
+	const sql = `DELETE FROM diseases
+				 WHERE name = '${name}'`;
 
 	// Perform sql
 	connection.query(sql, async (err, result) => {
@@ -428,10 +428,10 @@ app.post("/tests/lt/assign", (req, res) => {
 								 FROM lab_technician
 								 WHERE expertise = ( SELECT expertise_required
 													 FROM tests
-													 WHERE t_id = ${t_id})`;
+													 WHERE t_id = '${t_id}')`;
 	const componentNamesSql = `select c_name 
 							   FROM components
-							   WHERE t_id = ${t_id}`;
+							   WHERE t_id = '${t_id}'`;
 
 	connection.query(selectTechnicialSql, (err, results) => {
 		if (err) {
