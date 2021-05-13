@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv")
-const { v4: uuidv4 } = require("uuid");
 const { COMP_SCORE, TEST_STATUS } = require("./constants");
 const app = express();
 const PORT = 8000;
@@ -27,9 +26,13 @@ connection.connect((err) => {
 
 // Redirect requests
 const authentication = require('./api/authentication/authentication');
-const appointment = require('./api/appointment/appointment');
+const appointment 	 = require('./api/appointment/appointment');
+const symptom 		 = require('./api/management/symptom');
+const disease 		 = require('./api/management/disease');
+const test			 = require('./api/management/test');
 app.use('/auth', authentication);
 app.use('/appointment', appointment);
+app.use('/management', symptom, disease, test);
 
 // Get all tests of the given patiant id
 app.get("/tests/:pid", (req, res, _) => {
@@ -97,136 +100,6 @@ app.post("/tests/comps", (req, res) => {   //! NEEDS TO BE UPDATED ( I, mohammed
 			if (err) connection.rollback();
 			res.status(200).send({ results });
 		});
-	});
-});
-
-// Read all possible symbtons
-app.get("/symptoms", (req, res) => {
-	const sql     = `SELECT * FROM symptoms`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
-app.post("/symptoms", (req, res) => {
-	const { name } = req.body;
-	const tuple = [name];
-	const sql     = `INSERT INTO symptoms(name) VALUES(?)`;
-
-	connection.query(sql, [tuple], (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
-// Read the available tests
-app.get("/tests", (req, res) => {
-	const sql     = `SELECT * FROM tests`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
-// add test
-app.post("/test", async (req, res) => {
-	// Prepare values
-	const {name, expertise_required} = req.body;
-	const t_id = uuidv4();
-	const tuple = [t_id, name, expertise_required];
-
-	// Prepare sql
-	const sql = `INSERT INTO test(t_id, name, expertise_required) VALUES (?)`;
-
-	// Perform sql
-	connection.query(sql, [tuple], async (err, result) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(result);
-		}
-	});
-});
-
-// remove test
-app.delete("/test", async (req, res) => {
-	// Prepare values
-	const {t_id} = req.body;
-
-	// Prepare sql
-	const sql = `DELETE FROM test
-				 WHERE t_id = '${t_id}'`;
-
-	// Perform sql
-	connection.query(sql, async (err, result) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(result);
-		}
-	});
-});
-
-// Read the set of all diseases
-app.get("/diseases", (req, res) => {
-	const sql     = `SELECT * FROM diseases`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
-// Add disease
-app.post("/disease", async (req, res) => {
-	// Prepare values
-	const { name } = req.body;
-	const tuple = [name];
-
-	// Prepare sql
-	const sql = `INSERT INTO diseases(name) VALUES (?)`;
-
-	// Perform sql
-	connection.query(sql, [tuple], async (err, result) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(result);
-		}
-	});
-});
-
-// Remove disease
-app.delete("/disease", async (req, res) => {
-	// Prepare values
-	const { name } = req.body;
-
-	// Prepare sql
-	const sql = `DELETE FROM diseases
-				 WHERE name = '${name}'`;
-
-	// Perform sql
-	connection.query(sql, async (err, result) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(result);
-		}
 	});
 });
 
