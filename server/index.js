@@ -1,22 +1,22 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { v4: uuidv4 } = require("uuid");
 const mysql = require("mysql");
-const moment = require("moment");
 const dotenv = require("dotenv")
-const { USER_TYPES, COMP_SCORE, TEST_STATUS } = require("./constants");
-dotenv.config();
+const { v4: uuidv4 } = require("uuid");
+const { COMP_SCORE, TEST_STATUS } = require("./constants");
 const app = express();
-app.use(bodyParser.json());
-
 const PORT = 8000;
+app.use(bodyParser.json());
+dotenv.config();
 
+// Connect to the DB
 const connection = mysql.createConnection({
 	host: "localhost",
 	user: process.env.DB_USERNAME,
 	password: process.env.DB_PASSWORD,
 	database: "hospitaldb",
 });
+// Export DB connection
 module.exports.connection = connection;
 connection.connect((err) => {
 	if (err) throw err;
@@ -25,6 +25,8 @@ connection.connect((err) => {
 	});
 });
 
+
+// Redirect requests
 const authentication = require('./api/authentication/authentication');
 app.use('/auth', authentication);
 

@@ -1,11 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const mysql = require("mysql");
 const { v4: uuidv4 } = require("uuid");
 const { connection } = require('../../index');
 const { USER_TYPES } = require("../../constants");
-
-console.log('CONSTS: ', USER_TYPES);
 
 router.post("/signup", async (req, res) => {
 	const { first_name, middle_name, last_name, dob, apt_num, street_name, street_num, city,
@@ -109,33 +106,49 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
 	const { e_mail, password, type } = req.body;
 	let sql = `SELECT * FROM person WHERE e_mail='${e_mail}' AND password='${password}'`;
-	await connection.query(sql, (err, result, fields) => {
-		if (err) throw err;
-		let idFieldName = "";
-		switch (type.toUpperCase()) {
-			case USER_TYPES.Doctor:
-				idFieldName = "d_id";
-				break;
-			case USER_TYPES.Pharmacist:
-				idFieldName = "ph_id";
-				break;
-			case USER_TYPES.Lab_Technician:
-				idFieldName = "lt_id";
-				break;
-			case USER_TYPES.Patient:
-				idFieldName = "pid";
-				break;
-			default:
-				console.log("Unimplemented type");
-		}
-		sql = `SELECT * FROM ${type} WHERE ${idFieldName}='${result[0].person_id}'`;
-		if (result.length == 0) res.status(404).send("User does not exist");
-		connection.query(sql, (err, in_result, fields) => {
-			if (err) throw err;
-			if (in_result.length == 0)
-				res.status(404).send("User does not exist");
-			res.status(200).send({ ...in_result[0], ...result[0] });
-		});
+
+	connection.query(sql, (err, result, fields) => {
+        if (err) {
+            res.status(500).send(err);
+        } else if (result.length < 1){
+            res.status(500).send("Wrong credentials!");
+        } else {
+            let idFieldName = "";
+            switch (type.toUpperCase()) {
+                case USER_TYPES.Doctor:
+                    idFieldName = "d_id";
+                    break;
+                case USER_TYPES.Pharmacist:
+                    idFieldName = "ph_id";
+                    break;
+                case USER_TYPES.Lab_Technician:
+                    idFieldName = "lt_id";
+                    break;
+                case USER_TYPES.Patient:
+                    idFieldName = "pid";
+                    break;
+                default:
+                    res.status(500).send("Unimplemented type");
+                    return;
+            }
+
+            sql = `SELECT * FROM ${type.toLowerCase()} WHERE ${idFieldName}='${result[0].person_id}'`;
+            if (result.length == 0) {
+                res.status(404).send("User does not exist");
+            } else {
+                connection.query(sql, (err, in_result, fields) => {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        if (in_result.length == 0) {
+                            res.status(404).send(`${type.toLowerCase()} does not exist`);
+                        } else {
+                            res.status(200).send({ ...in_result[0], ...result[0] });
+                        }
+                    }
+                });
+            }
+        }
 	});
 });
 
