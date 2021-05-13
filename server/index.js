@@ -25,10 +25,11 @@ connection.connect((err) => {
 	});
 });
 
-
 // Redirect requests
 const authentication = require('./api/authentication/authentication');
+const appointment = require('./api/appointment/appointment');
 app.use('/auth', authentication);
+app.use('/appointment', appointment);
 
 // Get all tests of the given patiant id
 app.get("/tests/:pid", (req, res, _) => {
@@ -96,44 +97,6 @@ app.post("/tests/comps", (req, res) => {   //! NEEDS TO BE UPDATED ( I, mohammed
 			if (err) connection.rollback();
 			res.status(200).send({ results });
 		});
-	});
-});
-
-// Get all Appointments for a patient
-app.get("/appointments/:pid", (req, res) => {
-	const p_id = req.params.p_id;
-	const sql = `SELECT * FROM doc_visit NATURAL JOIN appointment WHERE p_id='${p_id}'`;
-	connection.query(sql, (err, results) => {
-		if (err) res.status(200).send(err);
-		res.status(200).send(results);
-	});
-});
-
-// Get diseases diagnosed for a particular appointment
-app.get("/appointments/diseases/:appt_id", (req, res) => {
-	const appt_id = req.params.appt_id;
-	const sql 	  = `SELECT name FROM diagnosis WHERE appt_id='${appt_id}'`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
-// Get symptoms shared for a particular appointment
-app.get("/appointments/symptoms/:appt_id", (req, res) => {
-	const appt_id = req.params.appt_id;
-	const sql     = `SELECT name, description FROM has_symptoms WHERE appt_id='${appt_id}'`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(200).send(err);
-		} else {
-			res.status(200).send(results);
-		}
 	});
 });
 
@@ -252,104 +215,6 @@ app.delete("/disease", async (req, res) => {
 		}
 	});
 });
-
-// Assign test to technician
-app.post("/tests/lt/assign", (req, res) => {
-	const { t_id, appt_id } = req.body;
-
-	// get all technicians with the same qualification
-	const selectTechnicialSql = `SELECT lt_id
-								 FROM lab_technician
-								 WHERE expertise = ( SELECT expertise_required
-													 FROM tests
-													 WHERE t_id = '${t_id}')`;
-	const componentNamesSql = `select c_name 
-							   FROM components
-							   WHERE t_id = '${t_id}'`;
-
-	connection.query(selectTechnicialSql, (err, results) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			// Get a random one 
-			const lt_id = results[(Math.random() * results.length) % results.length].lt_id;
-			const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id) VALUES (?)`;
-			const assignTestTuple = [lt_id, appt_id, t_id];
-			const initCompResultsSql = `INSERT INTO component_result(c_id, c_name, t_id, appt_id, score) VALUES (?)`;
-			
-			connection.query(componentNamesSql, (err, results) => { //? I HATE CALLBACKS :'(
-				if (err) {
-					res.status(500).send(err);
-				} else {
-					connection.beginTransaction((err) => {
-						if (err) {
-							res.status(500).send(err);
-						}
-						
-						// Assign lab technician
-						connection.query(assignTestSql, assignTestTuple, (err, results) => {
-							if (err) {
-								connection.rollback();
-								res.status(500).send(err);
-							} else {
-								// Initialize all components
-								results.map((component, i) => {
-									let initCompResultsTuple = [uuidv4(), component.c_name, t_id, appt_id, null];
-									connection.query(initCompResultsSql, initCompResultsTuple, (err, results) => {
-										if (err) {
-											connection.rollback();
-											res.status(500).send(err);
-										} else {
-											if (i == results.length - 1)
-												res.status(200).send({ results }); //! This probably won't always work correctly :D
-										}
-									});
-								});
-							}
-						});
-					});
-				}
-			});
-		}
-	});
-});
-
-// Diagnose the patient
-app.post("/disease", async (req, res) => {
-	// Prepare values
-	const { appt_id, name, description } = req.body;
-	const tuple = [appt_id, name, description];
-
-	// Prepare sql
-	const testFinalizedSql = `SELECT status
-							  FROM assigned_test
-							  WHERE appt_id = '${appt_id}'`;
-	const sql = `INSERT INTO diagnosis(appt_id, name, description) VALUES (?)`;
-
-	// Retrieve all tests' results for this appointment
-	connection.query(testFinalizedSql, async (err, result) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			// Check if all tests were finalized
-			result.map( (test) => {
-				if (test.status != TEST_STATUS.finalized) {
-					res.status(500).send("There are some tests that are not yet finalized!");
-				} else {
-					// finalize diagnozing disease
-					connection.query(sql, [tuple], async (err, result) => {
-						if (err) {
-							res.status(500).send(err);
-						} else {
-							res.status(200).send(result);
-						}
-					});
-				}
-			});
-		}
-	});
-});
-
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
