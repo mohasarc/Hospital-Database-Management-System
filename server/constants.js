@@ -17,7 +17,7 @@ const COMP_SCORE = {
 };
 
 module.exports = {
-	...USER_TYPES,
+	USER_TYPES,
 	TEST_STATUS,
 	COMP_SCORE,
 };
