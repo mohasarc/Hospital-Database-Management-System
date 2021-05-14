@@ -22,8 +22,8 @@ router.post("/symptom", (req, res) => {
 });
 
 // Get symptoms shared for a particular appointment
-router.get("/symptom", (req, res) => {
-	const { appt_id } = req.body;
+router.get("/symptom/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
 	const sql = `SELECT name, description FROM has_symptoms WHERE appt_id='${appt_id}'`;
 
 	connection.query(sql, (err, results) => {

@@ -3,8 +3,8 @@ const router = express.Router();
 const { connection } = require("../index");
 
 // get all medicines of a pharmacy
-router.get("/inventory", (req, res) => {
-	const { phmcy_id } = req.body;
+router.get("/inventory/:phmcy_id", (req, res) => {
+	const { phmcy_id } = req.params;
 	const sql = `SELECT * FROM phmcy_stores_med WHERE phmcy_id='${phmcy_id}'`;
 
 	performQuery(sql, res);
@@ -45,8 +45,8 @@ router.put("/inventory/medicine", (req, res) => {
 
 // get number of medicines available in pharmacy 
 // (for a particular expiry date if specified)
-router.get("/inventory/medicine", (req, res) => {
-	const { phmcy_id, medicine_name, expiry_date } = req.body;
+router.get("/inventory/medicine/:phmcy_id/:medicine_name/:expiry_date", (req, res) => {
+	const { phmcy_id, medicine_name, expiry_date } = req.params;
 	let sql;
 	if (expiry_date) {
 		sql = `SELECT inventory_count 

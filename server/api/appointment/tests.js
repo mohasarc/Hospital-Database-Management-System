@@ -84,8 +84,8 @@ router.post("/test", (req, res) => {
 });
 
 // Get all tests for an appointment
-router.get("/test", (req, res) => {
-	const { appt_id } = req.body;
+router.get("/test/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
 	const sql = `SELECT  apt.appt_id, apt.p_id, at.t_id, apt.date, at.status
 				FROM assigned_test AS at, appointment AS apt
 				WHERE apt.appt_id=at.appt_id and apt.appt_id='${appt_id}'`;
@@ -98,8 +98,8 @@ router.get("/test", (req, res) => {
 
 // Get all components for a test
 // with test id as t_id and appointment id as appt_id
-router.get("/test/comps", (req, res) => {
-	const { t_id, appt_id } = req.body;
+router.get("/test/comps/:appt_id/:t_id", (req, res) => {
+	const { t_id, appt_id } = req.params;
 	const sql = `SELECT *
 				FROM component_result AS CR NATURAL JOIN components
 				WHERE CR.appt_id='${appt_id}' and CR.t_id='${t_id}'`;
@@ -125,8 +125,8 @@ router.post("/test/comps", (req, res) => {
 // using patient id, test id, comp. id, and
 // the current appiontment id that user has
 // selected component from
-router.get("/tests/patient/comps", (req, res) => {
-	const { p_id, t_id, c_id, appt_id } = req.body;
+router.get("/tests/patient/comps/:appt_id/:p_id/:t_id/:c_id", (req, res) => {
+	const { appt_id, p_id, t_id, c_id } = req.params;
 	const sql = `SELECT CR.c_id, CR.t_id, AP.appt_id, CR.score, AP.date
 				FROM component_result AS CR, appointment AS AP
 				WHERE CR.appt_id=AP.appt_id AND AP.p_id='${p_id}' AND CR.t_id='${t_id}' AND CR.c_id='${c_id}' and CR.appt_id <> '${appt_id}'

@@ -3,8 +3,8 @@ const router = express.Router();
 const { connection } = require('../index');
 
 // See all appointments for some time period
-router.get("/appointment", (req, res) => {
-    const { d_id, start_date, end_date } = req.body;
+router.get("/appointment/:d_if/:start_date/:end_date", (req, res) => {
+    const { d_id, start_date, end_date } = req.params;
 	const sql = `SELECT * 
                  FROM appointment
                  WHERE d_id = '${d_id}' AND date >='${start_date}' AND date <= '${end_date}'`;
@@ -19,8 +19,8 @@ router.get("/appointment", (req, res) => {
 });
     
 // Make some days unavailable for appointment
-router.post("/unavailable_date", (req, res) => {
-    const { d_id, date } = req.body;
+router.post("/unavailable_date/:d_id/:date", (req, res) => {
+    const { d_id, date } = req.params;
 	const sql = `INSERT INTO doc_schedule (d_id, unavail_date) VALUES (?)`;
     const tuple = [d_id, date];
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const { connection } = require('../index');
 
 // Read all patients
-router.get("/patient", (req, res) => {
+router.get("/", (req, res) => {
 	const sql     = `SELECT * FROM patient`;
 
 	connection.query(sql, (err, results) => {
@@ -16,7 +16,7 @@ router.get("/patient", (req, res) => {
 });
 
 // Add a patient
-router.post("/patient", (req, res) => {
+router.post("/", (req, res) => {
     const { person_id, height, weight, blood_group } = req.body;
     const height_int = parseFloat(height);
     const weight_int = parseFloat(weight);
@@ -34,7 +34,7 @@ router.post("/patient", (req, res) => {
 });
 
 // Remove a patient
-router.delete("/patient", async (req, res) => {
+router.delete("/", async (req, res) => {
 	// Prepare values
 	const { pid } = req.body;
 
@@ -53,7 +53,7 @@ router.delete("/patient", async (req, res) => {
 });
 
 // Update a patient height
-router.put("/patient/height", async (req, res) => {
+router.put("/height", async (req, res) => {
 	// Prepare values
 	const { pid, height } = req.body;
     const height_int = parseFloat(height);
@@ -74,7 +74,7 @@ router.put("/patient/height", async (req, res) => {
 });
 
 // Update a patient weight
-router.put("/patient/weight", async (req, res) => {
+router.put("/weight", async (req, res) => {
 	// Prepare values
 	const { pid, weight } = req.body;
     const weight_int = parseFloat(weight);
@@ -95,7 +95,7 @@ router.put("/patient/weight", async (req, res) => {
 });
 
 // Update a patient blood group
-router.put("/patient/blood_group", async (req, res) => {
+router.put("/blood_group", async (req, res) => {
 	// Prepare values
 	const { pid, blood_group } = req.body;
 
@@ -114,9 +114,23 @@ router.put("/patient/blood_group", async (req, res) => {
 	});
 });
 
+// Get all Appointments for a patient
+router.get("/appointment/:p_id", (req, res) => {
+	const { p_id } = req.params;
+	const sql = `SELECT * FROM appointment WHERE p_id='${p_id}'`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Get all tests for a patient
-router.get("/test", (req, res) => {
-	const { p_id } = req.body;
+router.get("/test/:p_id", (req, res) => {
+	const { p_id } = req.params;
 	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
 				FROM assigned_test AS at, appointment AS apt
 				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
@@ -129,13 +143,13 @@ router.get("/test", (req, res) => {
 });
 
 // Get all previously diagnosed diseases // TODO
-router.get("/disease", (req, res) => {
-	const { p_id } = req.body.p_id;
+router.get("/disease/:p_id", (req, res) => {
+	const { p_id } = req.params;
 	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
 				FROM assigned_test AS at, appointment AS apt
 				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
 				ORDER BY apt.date DESC`;
-				
+
 	connection.query(sql, (err, results) => {
 		if (err) res.status(500).send(err);
 		res.status(200).send(results);
