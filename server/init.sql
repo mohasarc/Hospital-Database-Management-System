@@ -144,17 +144,16 @@ CREATE TABLE pharmacy(
 );
 
 CREATE TABLE medicine(
-	medicine_name VARCHAR(50),
-	PRIMARY KEY (medicine_name)
+	name VARCHAR(50),
+	PRIMARY KEY (name)
 );
 
 CREATE TABLE phmcy_stores_med(
-	medicine_name VARCHAR(50),
+	name VARCHAR(50),
 	phmcy_id VARCHAR(50),
-    expiry_date DATE,
-	inventory_count INTEGER,
-	PRIMARY KEY (medicine_name, phmcy_id, expiry_date),
-	FOREIGN KEY (medicine_name) REFERENCES medicine(medicine_name),
+    expiry_date DATE,	
+	PRIMARY KEY (name, phmcy_id, expiry_date),
+	FOREIGN KEY (name) REFERENCES medicine(name),
 	FOREIGN KEY (phmcy_id) REFERENCES lab_technician(phmcy_id)
 );
 

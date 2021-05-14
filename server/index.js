@@ -34,6 +34,7 @@ const test = require("./api/management/test");
 const doctor = require("./api/management/employee/doctor");
 const pharmacist = require("./api/management/employee/pharmacist");
 const labTechnician = require("./api/management/employee/lab_technician");
+const pharmacy = require("./api/management/pharmacy/pharmacy");
 
 app.use("/auth", authentication);
 app.use("/appointment", appointment);
@@ -45,7 +46,8 @@ app.use(
 	test,
 	doctor,
 	pharmacist,
-	labTechnician
+	labTechnician,
+	pharmacy
 );
 
 app.listen(PORT, () => {
