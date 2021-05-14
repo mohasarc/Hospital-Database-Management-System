@@ -23,6 +23,12 @@ CREATE TABLE person(
     PRIMARY KEY (person_id)
 );
 
+CREATE TABLE manager(
+    man_id VARCHAR(50),
+    PRIMARY KEY (man_id),
+    FOREIGN KEY (man_id) REFERENCES person(person_id)
+);
+
 CREATE TABLE pharmacist(
 	ph_id VARCHAR(50),
 	qualifications VARCHAR(100) NOT NULL,
@@ -210,3 +216,8 @@ BEGIN
 WHERE appt_id=new.appt_id AND t_id=new.t_id;
 END$$
 DELIMITER ;
+
+-------------------- INIT MANAGEMENT ACCOUNT ---------------
+INSERT INTO person VALUES ("1", "Super", "m.", "Manager", 2021-05-14, 1, "managers str.", 1, "Hospital", "Hospital",
+                            1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "verydifficultpassword");
+INSERT INTO manager VALUES ("1");
