@@ -136,6 +136,62 @@ CREATE TABLE assigned_test(
 	FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
 
+CREATE TABLE pharmacy(
+	phmcy_id VARCHAR(50),
+	name VARCHAR(50),
+	room_no INTEGER,
+	PRIMARY KEY (phmcy_id)
+);
+
+CREATE TABLE medicine(
+	name VARCHAR(50),
+	PRIMARY KEY (name)
+);
+
+CREATE TABLE phmcy_stores_med(
+	name VARCHAR(50),
+	phmcy_id VARCHAR(50),
+    expiry_date DATE,	
+	inventory_count INTEGER,
+	PRIMARY KEY (name, phmcy_id, expiry_date),
+	FOREIGN KEY (name) REFERENCES medicine(name),
+	FOREIGN KEY (phmcy_id) REFERENCES lab_technician(phmcy_id)
+);
+
+CREATE TABLE works_at_phmcy(
+	ph_id VARCHAR(50),
+    phmcy_id VARCHAR(50),
+    PRIMARY KEY (ph_id, phmcy_id),
+    FOREIGN KEY (ph_id) REFERENCES pharmacist(ph_id),
+    FOREIGN KEY (phmcy_id) REFERENCES pharmacy(phmcy_id)
+)
+
+CREATE TABLE prescription(
+	appt_id VARCHAR(50),
+    medicine_name VARCHAR(50),
+    status VARCHAR(20),
+    prescribed_date DATE,
+    given_date DATE,
+	PRIMARY KEY (appt_id, medicine_name),
+	FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
+	FOREIGN KEY (medicine_name) REFERENCES medicine(medicine_name)
+);
+
+CREATE TABLE lab(
+	lab_id VARCHAR(50),
+    room_no integer,
+    PRIMARY KEY(lab_id),        
+);
+
+CREATE TABLE works_at_lab(
+	lab_id VARCHAR(50),
+    lt_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY(lab_id, lt_id),
+    FOREIGN KEY (lab_id) REFERENCES lab(lab_id),
+    FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id)
+);
+
+
 -- --------------------- TRIGGERS ------------------------
 DROP TRIGGER IF EXISTS test_status_update;
 

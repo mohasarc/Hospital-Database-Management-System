@@ -27,12 +27,29 @@ connection.connect((err) => {
 // Redirect requests
 const authentication = require("./api/authentication/authentication");
 const appointment = require("./api/appointment/appointment");
+const medicine = require("./api/management/medicine");
 const symptom = require("./api/management/symptom");
 const disease = require("./api/management/disease");
 const test = require("./api/management/test");
+const doctor = require("./api/management/employee/doctor");
+const pharmacist = require("./api/management/employee/pharmacist");
+const labTechnician = require("./api/management/employee/lab_technician");
+const pharmacy = require("./api/pharmacy/pharmacy");
+const pharmacy_man = require("./api/management/pharmacy");
+
 app.use("/auth", authentication);
 app.use("/appointment", appointment);
-app.use("/management", symptom, disease, test);
+app.use("/pharmacy", pharmacy);
+app.use( "/management",
+	medicine,
+	symptom,
+	disease,
+	test,
+	doctor,
+	pharmacist,
+	labTechnician,
+	pharmacy_man
+);
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
