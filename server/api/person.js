@@ -2,7 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { connection } = require('../index');
 
-// All endpoints that manipulate data in person table
+// Get all people who are not employees or patients
+router.get("/not_identified", (req, res) => {
+	const sql = `SELECT * FROM person WHERE person_id NOT IN (
+		(SELECT pid FROM patient AS person_id) UNION     
+		(SELECT lt_id person_id FROM lab_technician AS person_id) UNION     
+		(SELECT ph_id FROM pharmacist AS person_id) UNION     
+		(SELECT man_id FROM manager AS person_id)
+	)`;
+	performQuery(sql, res);	
+});
 
 // change first name // TODO
 
