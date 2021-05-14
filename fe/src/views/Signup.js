@@ -1,34 +1,46 @@
 import React, { PureComponent } from "react";
 import styled from "styled-components";
-import { Button, FormGroup, InputGroup, Card, RadioGroup, Radio, Divider } from "@blueprintjs/core";
+import { Button, FormGroup, InputGroup, Card, RadioGroup, Radio, Divider, Checkbox } from "@blueprintjs/core";
 import { DateInput } from "@blueprintjs/datetime";
 import moment from 'moment';
+import Loading from './Loading';
+import axios from 'axios';
 
 class Signup extends PureComponent {
 	constructor(props) {
 		super(props);
 
-		this.state = {};
+		this.state = {
+            proceedToNextStep: false
+        };
 	}
 
 	render() {
-		return (<Container>{this.state.proceedToNextStep ? this.renderUserSpecificPannel() : this.renderInitialPannel()}</Container>);
+        const { proceedToNextStep, loading } = this.state;
+		return (
+            loading ? <Loading /> :
+            <Container>
+                {proceedToNextStep ? this.renderUserSpecificPannel() : this.renderInitialPannel()}
+            </Container>
+        );
 	}
 
     renderInitialPannel = () => {
+        const { email, firstName, lastName, password, confirmPassword } = this.state;
+        console.log(this.state);
         return (
             <Card>
-                <h3 className="bp3-heading">Signup</h3>
+                <h3 className="bp3-heading">Signup as Patient</h3>
                 <Divider />
                 <h6 className="bp6-heading">Personal Info</h6>
                 <div className="row">
-                    <FormGroup label="First Name" labelFor="firstName" className="col-4">
+                    <FormGroup label="First Name" labelFor="firstName" labelInfo="(required)" className="col-4">
                         <InputGroup id="firstName" placeholder="First Name" type="text"  onChange={e => this.setState({ firstName: e.target.value })}/>
                     </FormGroup>
                     <FormGroup label="Middle Name" labelFor="middleName" className="col-4">
                         <InputGroup id="middleName" placeholder="Middle Name" type="text"  onChange={e => this.setState({ middleName: e.target.value })}/>
                     </FormGroup>
-                    <FormGroup label="Last Name" labelFor="lastName" className="col-4">
+                    <FormGroup label="Last Name" labelFor="lastName" labelInfo="(required)" className="col-4">
                         <InputGroup id="lastName" placeholder="Last Name" type="text"  onChange={e => this.setState({ lastName: e.target.value })}/>
                     </FormGroup>
                 </div>
@@ -85,51 +97,19 @@ class Signup extends PureComponent {
 
                 <Divider />
                 <h6 className="bp6-heading">Email & Password</h6>
-                <FormGroup label="Email" labelFor="email">
+                <FormGroup label="Email" labelFor="email" labelInfo="(required)">
                     <InputGroup id="email" placeholder="Email" type="text"  onChange={e => this.setState({ email: e.target.value })}/>
                 </FormGroup>
                 <div className="row">
-                    <FormGroup label="Password" labelFor="password" className="col-6">
+                    <FormGroup label="Password" labelFor="password" className="col-6" labelInfo="(required)">
                         <InputGroup id="password" placeholder="Password" type="password" onChange={e => this.setState({ password: e.target.value })} />
                     </FormGroup>
-                    <FormGroup label="Current Password" labelFor="currentPassword" className="col-6">
-                        <InputGroup id="currentPassword" placeholder="Current Password" type="password" onChange={e => this.setState({ password: e.target.value })} />
+                    <FormGroup label="Confirm Password" labelFor="confirmPassword" className="col-6" labelInfo="(required)">
+                        <InputGroup id="confirmPassword" placeholder="Confirm Password" type="password" onChange={e => this.setState({ confirmPassword: e.target.value })} />
                     </FormGroup>
                 </div>
-                <RadioGroup label="User Type" onChange={(e) => this.setState({ userType: e.target.value })} selectedValue={this.state.userType} inline={true}>
-                    <Radio label="Doctor" value="doctor" />
-                    <Radio label="Patient" value="patient" />
-                    <Radio label="Lab Technician" value="lab_technician" />
-                    <Radio label="Pharmacist" value="pharmacist" />
-                </RadioGroup>
-                <ButtonContainer>
-                    <Button text="Proceed" rightIcon="arrow-right" intent="success" onClick={() => this.setState({ proceedToNextStep: true })}/>
-                </ButtonContainer>
-            </Card>    
-        );
-    }
-
-    renderUserSpecificPannel = () => {
-        const { userType } = this.state;
-        let tabContent = null;
-        switch(userType) {
-            case "doctor":
-                tabContent = (
-                    <>
-                        <FormGroup label="Department Name" labelFor="deptName">
-                            <InputGroup id="deptName" placeholder="Department Name" type="text"  onChange={e => this.setState({ deptName: e.target.value })}/>
-                        </FormGroup>
-                        <FormGroup label="Specialization" labelFor="specialization">
-                            <InputGroup id="specialization" placeholder="Specialization" type="text"  onChange={e => this.setState({ specialization: e.target.value })}/>
-                        </FormGroup>
-                        <FormGroup label="Qualifications" labelFor="qualifications">
-                            <InputGroup id="qualifications" placeholder="Qualifications" type="text"  onChange={e => this.setState({ qualifications: e.target.value })}/>
-                        </FormGroup>
-                    </>
-                );
-                break;
-            case "patient":
-                tabContent = (
+                <Checkbox label="Register as Patient" onChange={() => this.setState({ registerAsPatient: !this.state.registerAsPatient })}/>
+                {this.state.registerAsPatient &&
                     <>
                         <FormGroup label="Height" labelFor="height">
                             <InputGroup id="height" placeholder="Height" type="text"  onChange={e => this.setState({ height: e.target.value })}/>
@@ -140,41 +120,43 @@ class Signup extends PureComponent {
                         <FormGroup label="Blood Group" labelFor="bloodGroup">
                             <InputGroup id="bloodGroup" placeholder="Blood Group" type="text"  onChange={e => this.setState({ bloodGroup: e.target.value })}/>
                         </FormGroup>
-                    </>
-
-                );
-                break;
-            case "lab_technician":
-                tabContent = (
-                    <>
-                        <FormGroup label="Expertise" labelFor="expertise">
-                            <InputGroup id="expertise" placeholder="Expertise" type="text"  onChange={e => this.setState({ expertise: e.target.value })}/>
-                        </FormGroup>
-                    </>
-
-                );
-                break;
-            case "pharmacist":
-                tabContent = (
-                    <>
-                        <FormGroup label="Qualifications" labelFor="qualifications">
-                            <InputGroup id="qualifications" placeholder="Qualifications" type="text"  onChange={e => this.setState({ qualifications: e.target.value })}/>
-                        </FormGroup>
-                    </>
-                );  
-                break;
-        }
-        return (
-            <Card>
-                <h3 className="bp3-heading">Almost there...</h3>
-                <Divider />
-                {tabContent}
+                    </>}
                 <ButtonContainer>
-                    <Button text="Go Back" rightIcon="double-chevron-left" intent="danger" onClick={() => this.setState({ proceedToNextStep: false })}/>
-                    <Button text="Register" rightIcon="arrow-right" intent="success" onClick={() => {}}/>
+                    <Button
+                        text="Proceed"
+                        rightIcon="arrow-right"
+                        intent="success"
+                        onClick={this.register}
+                        disabled={this.resolveButtonDisabledStatus()}
+                    />
                 </ButtonContainer>
-            </Card>
+            </Card>    
         );
+    }
+
+    register = () => {
+        const { history } = this.props;
+        const { firstName, middleName, lastName, dob, apartmentNo, streetName, streetNo, city, state, zip, country, countryCode, phoneNumber, gender, email,password,height,weight,bloodGroup  } = this.state;
+        let objToSend = { first_name:firstName , middle_name: middleName,  last_name: lastName,  dob: dob,  apt_num: apartmentNo,  street_name: streetName, street_num: streetNo,  city: city,  state: state,  zip: zip,  country: country,  country_code: countryCode,  number: phoneNumber,  gender: gender,  e_mail: email,  password: password };
+        if (this.state.registerAsPatient) {
+            objToSend = { ...objToSend, height, weight, blood_group: bloodGroup, type: "PATIENT" }
+        }
+        this.setState({ loading: true }, () => {
+            axios.post(`http://localhost:8000/auth/signup`, { ...objToSend }).then((res) => {
+                history.push("/login");
+            }).finally(() => {
+                this.setState({ loading: false });
+            });
+        })
+    }
+
+    resolveButtonDisabledStatus = () => {
+        const { registerAsPatient, weight, height, bloodGroup, email, password, confirmPassword, firstName, lastName } = this.state;
+        const isBasicValid = email && password && confirmPassword && (password === confirmPassword) && firstName && lastName;
+        if (registerAsPatient) {
+            return !(isBasicValid && weight && height && bloodGroup);
+        } 
+        return !isBasicValid;
     }
 }
 

@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import Login from "../views/Login";
 import Signup from "../views/Signup";
 import Patient from '../views/Patient';
+import Management from '../views/Management/Management';
 
 const Routes = () => {
 	return (
@@ -11,6 +12,7 @@ const Routes = () => {
 			<Route path={RoutePaths.Login} component={Login} exact />
 			<Route path={RoutePaths.Signup} component={Signup} exact />
 			<Route path={RoutePaths.PatientView} component={Patient} exact />
+			<Route path={RoutePaths.Management} component={Management} exact />
 		</Switch>
 	);
 };

@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import styled from "styled-components";
 import { Button, FormGroup, InputGroup, Card, RadioGroup, Radio } from "@blueprintjs/core";
 import axios from 'axios';
-import ReactLoading from 'react-loading';
+import Loading from './Loading';
 
 class Login extends PureComponent {
 	constructor(props) {
@@ -33,7 +33,7 @@ class Login extends PureComponent {
                         <Radio label="Patient" value="patient" />
                         <Radio label="Lab Technician" value="lab_technician" />
                         <Radio label="Pharmacist" value="pharmacist" />
-                        <Radio label="Management" value="management" />
+                        <Radio label="Management" value="manager" />
                     </RadioGroup>
                     <ButtonContainer>
                         <Button text="Login" disabled={!email || !password || !userType}  rightIcon="log-in" intent="success" onClick={this.loginUser}/>
@@ -44,11 +44,13 @@ class Login extends PureComponent {
 	}
 
     loginUser = async () => {
+        const { history } = this.props;
         const { email, password, userType } = this.state;
         const user = { e_mail: email, password, type: userType };
-        this.setState({ loading: true }, async () => {
-            axios.post(`http://localhost:8000/login`, { user }).then((res) => {
+        this.setState({ loading: true }, () => {
+            axios.post(`http://localhost:8000/auth/login`, { ...user }).then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data));
+                history.push("/management");
             }).finally(() => {
                 this.setState({ loading: false });
             });
@@ -68,13 +70,6 @@ const Container = styled.div`
 const ButtonContainer = styled.div`
     width: 100%;
     text-align: center;
-`;
-
-const Loading = styled(ReactLoading)`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 `;
 
 export default Login;
