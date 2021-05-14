@@ -70,7 +70,7 @@ router.get("/inventory/medicine", (req, res) => {
  */
 const performQuery = (stmt, res, values = []) => {
 	connection.query(stmt, [values], (err, result) => {
-		console.log(result);
+		// console.log(result);
 		if (err) res.status(500).send(result);
 		res.status(200).send(result);
 	});

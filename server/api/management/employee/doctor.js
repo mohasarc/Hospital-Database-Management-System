@@ -3,6 +3,16 @@ const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const { connection } = require("../../../index");
 
+router.get("/", (req, res) => {
+	const sql = `SELECT * FROM person WHERE person_id NOT IN (
+		(SELECT pid FROM patient AS person_id) UNION     
+		(SELECT lt_id person_id FROM lab_technician AS person_id) UNION     
+		(SELECT ph_id FROM pharmacist AS person_id) UNION     
+		(SELECT man_id FROM manager AS person_id)
+	)`;
+	performQuery(sql, res);	
+})
+
 // get all doctors
 router.get("/doctor", (req, res) => {
 	const sql = `SELECT * FROM person INNER JOIN doctor ON (person_id=d_id);`;
@@ -46,7 +56,7 @@ router.patch("/doctor/dept", (req, res) => {
 // response using response(res) object
 const performQuery = (stmt, res, values = []) => {
 	connection.query(stmt, [values], (err, result) => {
-		console.log(result);
+		// console.log(result);
 		if (err) res.status(500).send(result);
 		res.status(200).send(result);
 	});
