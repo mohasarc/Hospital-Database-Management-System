@@ -168,7 +168,7 @@ CREATE TABLE phmcy_stores_med(
 	inventory_count INTEGER,
 	PRIMARY KEY (name, phmcy_id, expiry_date),
 	FOREIGN KEY (name) REFERENCES medicine(name),
-	FOREIGN KEY (phmcy_id) REFERENCES lab_technician(phmcy_id)
+	FOREIGN KEY (phmcy_id) REFERENCES pharmacy(phmcy_id)
 );
 
 CREATE TABLE works_at_phmcy(
@@ -177,7 +177,7 @@ CREATE TABLE works_at_phmcy(
     PRIMARY KEY (ph_id, phmcy_id),
     FOREIGN KEY (ph_id) REFERENCES pharmacist(ph_id),
     FOREIGN KEY (phmcy_id) REFERENCES pharmacy(phmcy_id)
-)
+);
 
 CREATE TABLE prescription(
 	appt_id VARCHAR(50),
@@ -187,13 +187,13 @@ CREATE TABLE prescription(
     given_date DATE,
 	PRIMARY KEY (appt_id, medicine_name),
 	FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
-	FOREIGN KEY (medicine_name) REFERENCES medicine(medicine_name)
+	FOREIGN KEY (medicine_name) REFERENCES medicine(name)
 );
 
 CREATE TABLE lab(
 	lab_id VARCHAR(50),
     room_no integer,
-    PRIMARY KEY(lab_id),        
+    PRIMARY KEY(lab_id)   
 );
 
 CREATE TABLE works_at_lab(
