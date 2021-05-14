@@ -20,7 +20,7 @@ const COMP_SCORE = {
 const APPT_STATUS = {
 	ONGOING: 'ONGOING',
 	COMPLETE: 'COMPLETE',
-	CANCELED: 'CANCELED'
+	CANCELLED: 'CANCELLED',
 }
 
 module.exports = {

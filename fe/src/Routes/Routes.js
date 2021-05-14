@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 
 import Login from "../views/Login";
 import Signup from "../views/Signup";
-import Patient from '../views/Patient';
+import Patient from '../views/Patient/Patient';
 import Management from '../views/Management/Management';
 
 const Routes = () => {
