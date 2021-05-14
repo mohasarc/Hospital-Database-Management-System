@@ -4,7 +4,7 @@ const { connection } = require("../../../index");
 
 // get all lab_technicians
 router.get("/lt", (req, res) => {
-	const sql = `SELECT * FROM lab_technician`;
+	const sql = `SELECT * FROM person INNER JOIN lab_technician ON (person_id=lt_id)`;
 	performQuery(sql, res);
 });
 

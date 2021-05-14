@@ -23,7 +23,7 @@ router.post("/signup", async (req, res) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
-            if (type.toUpperCase() == USER_TYPES.Patient) {
+            if (type && type.toUpperCase() == USER_TYPES.Patient) {
                 sql = "INSERT INTO patient (pid, height, weight, blood_group, registration_date) VALUES (?)";
                 const { height, weight, blood_group } = req.body;
                 const height_int = parseFloat(height);
@@ -41,6 +41,7 @@ router.post("/signup", async (req, res) => {
                     }
                 });
             }
+            res.status(200).send("Person inserted successfully");
         }
 	});
 });
@@ -48,7 +49,6 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
 	const { e_mail, password, type } = req.body;
 	let sql = `SELECT * FROM person WHERE e_mail='${e_mail}' AND password='${password}'`;
-
 	connection.query(sql, (err, result, fields) => {
         if (err) {
             res.status(500).send(err);

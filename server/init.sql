@@ -218,6 +218,5 @@ END$$
 DELIMITER ;
 
 -------------------- INIT MANAGEMENT ACCOUNT ---------------
-INSERT INTO person VALUES ("1", "Super", "m.", "Manager", 2021-05-14, 1, "managers str.", 1, "Hospital", "Hospital",
-                            1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "verydifficultpassword");
+INSERT INTO person VALUES ("1", "Super", "m.", "Manager", "2021-05-14", 1, "managers str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "verydifficultpassword");
 INSERT INTO manager VALUES ("1");

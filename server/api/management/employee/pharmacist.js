@@ -4,7 +4,7 @@ const { connection } = require("../../../index");
 
 // get all pharmacists
 router.get("/pharmacist", (req, res) => {
-	const sql = `SELECT * FROM pharmacist`;
+	const sql = `SELECT * FROM person INNER JOIN pharmacist ON (person_id=ph_id)`;
 	performQuery(sql, res);
 });
 

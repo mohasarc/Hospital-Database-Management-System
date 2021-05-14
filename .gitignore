@@ -23,5 +23,7 @@
 /fe/yarn-debug.log*
 /fe/yarn-error.log*
 
+/server/.env
+
 .vscode
 .env
