@@ -2,10 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
+const cors = require('cors')
+
 const { COMP_SCORE, TEST_STATUS } = require("./constants");
 const app = express();
 const PORT = 8000;
+
 app.use(bodyParser.json());
+app.use(cors());
+
 dotenv.config();
 
 // Connect to the DB
