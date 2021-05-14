@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const { connection } = require('../../index');
+const { connection } = require('../../../index');
 
 // Read all the tests
 router.get("/test", (req, res) => {
@@ -54,5 +54,9 @@ router.delete("/test", async (req, res) => {
 		}
 	});
 });
+
+// add a test component //TODO
+
+// remove a test component //TODO
 
 module.exports = router
