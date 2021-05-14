@@ -34,20 +34,19 @@ const test = require("./api/management/test");
 const doctor = require("./api/management/employee/doctor");
 const pharmacist = require("./api/management/employee/pharmacist");
 const labTechnician = require("./api/management/employee/lab_technician");
-const pharmacy = require("./api/management/pharmacy/pharmacy");
+const pharmacy = require("./api/pharmacy/pharmacy");
 
 app.use("/auth", authentication);
 app.use("/appointment", appointment);
-app.use(
-	"/management",
+app.use("/pharmacy", pharmacy);
+app.use( "/management",
 	medicine,
 	symptom,
 	disease,
 	test,
 	doctor,
 	pharmacist,
-	labTechnician,
-	pharmacy
+	labTechnician
 );
 
 app.listen(PORT, () => {

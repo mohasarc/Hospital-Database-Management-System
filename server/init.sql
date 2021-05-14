@@ -152,6 +152,7 @@ CREATE TABLE phmcy_stores_med(
 	name VARCHAR(50),
 	phmcy_id VARCHAR(50),
     expiry_date DATE,	
+	inventory_count INTEGER,
 	PRIMARY KEY (name, phmcy_id, expiry_date),
 	FOREIGN KEY (name) REFERENCES medicine(name),
 	FOREIGN KEY (phmcy_id) REFERENCES lab_technician(phmcy_id)
