@@ -3,6 +3,7 @@ const USER_TYPES = {
 	Doctor: "DOCTOR",
 	Lab_Technician: "LAB_TECHNICIAN",
 	Pharmacist: "PHARMACIST",
+	Manager: "MANAGER",
 };
 
 const TEST_STATUS = {

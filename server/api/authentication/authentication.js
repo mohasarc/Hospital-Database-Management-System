@@ -23,82 +23,23 @@ router.post("/signup", async (req, res) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
-            switch (type.toUpperCase()) {
-                case USER_TYPES.Doctor:
-                    {
-                        sql = "INSERT INTO doctor (d_id, dept_name, specialization, qualification) VALUES (?)";
-                        const { dept_name, specialization, qualification } = req.body;
-                        tuple = [ person_id, dept_name, specialization, qualification ];
+            if (type.toUpperCase() == USER_TYPES.Patient) {
+                sql = "INSERT INTO patient (pid, height, weight, blood_group, registration_date) VALUES (?)";
+                const { height, weight, blood_group } = req.body;
+                const height_int = parseFloat(height);
+                const weight_int = parseFloat(weight);
+                const registration_date = moment(new Date()).format( "YYYY-MM-DD" );
+                tuple = [ person_id, height_int, weight_int, blood_group, registration_date ];
 
-                        connection.query(sql, [tuple], (error, result) => {
-                            if (error) {
-                                sql = `DELETE FROM person WHERE person_id='${person_id}'`; //! This can be problematic in case it fails
-                                connection.query(sql, (error, result) => {}); //! no checks are available
-                                res.status(500).send(error);
-                            } else {
-                                res.status(200).send("Doctor Inserted successfully!");
-                            }
-                        });
+                connection.query(sql, [tuple], (error, result) => {
+                    if (error) {
+                        sql = `DELETE FROM person WHERE person_id='${person_id}'`; //! This can be problematic in case it fails
+                        connection.query(sql, (error, result) => {}); //! no checks are available
+                        res.status(500).send(error);
+                    } else {
+                        res.status(200).send("Patient Inserted successfully!");
                     }
-                    break;
-                case USER_TYPES.Pharmacist:
-                    {
-                        sql = "INSERT INTO pharmacist (ph_id, qualifications) VALUES (?)";
-                        const { qualifications } = req.body;
-                        tuple = [person_id, qualifications];
-
-                        connection.query(sql, [tuple], (error, result) => {
-                            if (error) {
-                                sql = `DELETE FROM person WHERE person_id='${person_id}'`; //! same problem as above
-                                connection.query(sql, (error, result) => {}); 
-                                res.status(500).send(error);
-                            } else {
-                                res.status(200).send("Pharmacist Inserted successfully!");
-                            }
-                        });
-                    }
-                    break;
-                case USER_TYPES.Lab_Technician:
-                    {
-                        const { expertise } = req.body;
-                        sql = "INSERT INTO lab_technician (lt_id, expertise) VALUES (?);";
-                        tuple = [person_id, expertise];
-                        connection.query(sql, [tuple], (error, result) => {
-                            if (error) {
-                                sql = `DELETE FROM person WHERE person_id='${person_id}'`; //! same problem as above
-                                connection.query(sql, (error, result) => {});
-                                res.status(500).send(error);
-                            } else {
-                                res.status(200).send("Lab Technician Inserted successfully!");
-                            }
-                        });
-                    }
-                    break;
-                case USER_TYPES.Patient:
-                    {
-                        sql = "INSERT INTO patient (pid, height, weight, blood_group, registration_date) VALUES (?)";
-                        const { height, weight, blood_group } = req.body;
-                        const height_int = parseFloat(height);
-                        const weight_int = parseFloat(weight);
-                        const registration_date = moment(new Date()).format( "YYYY-MM-DD" );
-                        tuple = [ person_id, height_int, weight_int, blood_group, registration_date ];
-
-                        connection.query(sql, [tuple], (error, result) => {
-                            if (error) {
-                                sql = `DELETE FROM person WHERE person_id='${person_id}'`; //! same problem as above
-                                connection.query(sql, (error, result) => {});
-                                console.log(error);
-                                res.status(500).send(error);
-                            } else {
-                                res.status(200).send("Patient Inserted successfully!");
-                            }
-                        });
-                    }
-                    break;
-                default:
-                    {
-                        res.status(500).send("Unimplemented type");
-                    }
+                });
             }
         }
 	});
@@ -128,9 +69,12 @@ router.post("/login", async (req, res) => {
                 case USER_TYPES.Patient:
                     idFieldName = "pid";
                     break;
+                case USER_TYPES.Manager:
+                    idFieldName = 'man_id';
+                    break;
                 default:
                     res.status(500).send("Unimplemented type");
-                    return;
+                   return;
             }
 
             sql = `SELECT * FROM ${type.toLowerCase()} WHERE ${idFieldName}='${result[0].person_id}'`;
