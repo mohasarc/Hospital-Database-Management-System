@@ -16,6 +16,13 @@ router.post("/pharmacist", (req, res) => {
 	performQuery(sql, res, values);
 });
 
+// remove a pharmacist
+router.delete("/pharmacist", (req, res) => {
+	const { ph_id } = req.body;
+	const sql = `DELETE FROM pharmacist WHERE ph_id='${ph_id}'`;
+	performQuery(sql, res);
+});
+
 // Change phrmacy working at
 router.patch("/pharmacist/works_at", (req, res) => {
 	const { ph_id, phmcy_id } = req.body;

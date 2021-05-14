@@ -21,21 +21,25 @@ class Management extends PureComponent {
             pharmacists: [],
             unresolvedEmployes: [],
         };
+
 	}
 
 	componentDidMount() {
-		this.setState({ loading: true }, async () => {
-            const unresolvedEmployes = await axios.get("http://localhost:8000/management/employee");
+        this.fetchAllEmployees();
+	}
+
+    fetchAllEmployees = () => {
+        this.setState({ loading: true }, async () => {
+            const unresolvedEmployes = await axios.get("http://localhost:8000/person/not_identified");
 			const doctors = await axios.get("http://localhost:8000/management/employee/doctor");
 			const labTechnicians = await axios.get("http://localhost:8000/management/employee/lt");
 			const pharmacists = await axios.get("http://localhost:8000/management/employee/pharmacist");
 			this.setState({ loading: false, doctors: doctors.data, labTechnicians: labTechnicians.data, pharmacists: pharmacists.data, unresolvedEmployes: unresolvedEmployes.data });
 		});
-	}
+    }
 
 	render() {
 		const { loading } = this.state;
-        console.log(this.state);
         return loading ? <Loading /> : <div>
 				<H3>Welcome to the Management Page</H3>
 
@@ -86,17 +90,21 @@ class Management extends PureComponent {
                             <TableCell align="left">Department Name</TableCell>
                             <TableCell align="left">Specialization</TableCell>
                             <TableCell align="left">Expertise</TableCell>
+                            <TableCell align="left">Action</TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
                         {this.state.doctors.map((row) => (
                             <TableRow key={"doctors" + row.person_id}>
-                            <TableCell component="th" scope="row">{row.person_id}</TableCell>
-                            <TableCell align="left">{row.first_name}</TableCell>
-                            <TableCell align="left">{row.last_name}</TableCell>
-                            <TableCell align="left">{row.dept_name}</TableCell>
-                            <TableCell align="left">{row.specialization}</TableCell>
-                            <TableCell align="left">{row.qualification}</TableCell>
+                                <TableCell component="th" scope="row">{row.person_id}</TableCell>
+                                <TableCell align="left">{row.first_name}</TableCell>
+                                <TableCell align="left">{row.last_name}</TableCell>
+                                <TableCell align="left">{row.dept_name}</TableCell>
+                                <TableCell align="left">{row.specialization}</TableCell>
+                                <TableCell align="left">{row.qualification}</TableCell>
+                                <TableCell align="left">
+                                    <Button text="Delete" intent="danger" onClick={() => this.setState({ selectedEmployee: row.person_id, selectedType: "doctor"  }, () => this.deleteUser())}></Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -112,6 +120,7 @@ class Management extends PureComponent {
                             <TableCell align="left">Name</TableCell>
                             <TableCell align="left">Surname</TableCell>
                             <TableCell align="left">Qualifications</TableCell>
+                            <TableCell align="left">Actions</TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -121,6 +130,9 @@ class Management extends PureComponent {
                                 <TableCell align="left">{row.first_name}</TableCell>
                                 <TableCell align="left">{row.last_name}</TableCell>
                                 <TableCell align="left">{row.qualifications}</TableCell>
+                                <TableCell align="left">
+                                    <Button text="Delete" intent="danger" onClick={() => this.setState({ selectedEmployee: row.person_id, selectedType: "pharmacist" }, () => this.deleteUser())}></Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -137,6 +149,7 @@ class Management extends PureComponent {
                             <TableCell align="left">Name</TableCell>
                             <TableCell align="left">Surname</TableCell>
                             <TableCell align="left">Expertise</TableCell>
+                            <TableCell align="left">Action</TableCell>
                         </TableRow>
                         </TableHead>
                         <TableBody>
@@ -146,6 +159,9 @@ class Management extends PureComponent {
                                 <TableCell align="left">{row.first_name}</TableCell>
                                 <TableCell align="left">{row.last_name}</TableCell>
                                 <TableCell align="left">{row.expertise}</TableCell>
+                                <TableCell align="left">
+                                    <Button text="Delete" intent="danger" onClick={() => this.setState({ selectedEmployee: row.person_id, selectedType: "lt" }, () => this.deleteUser())}></Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -227,7 +243,7 @@ class Management extends PureComponent {
                     break;
             }
             axios.post(`http://localhost:8000/management/employee/${endpoint}`, { ...objectToSend }).then((res) => {
-                console.log(res.data);
+                this.fetchAllEmployees();
             }).finally(() => {
                 this.setState({ loading: false });
             });
@@ -248,6 +264,36 @@ class Management extends PureComponent {
             default:
                 return false;
         }   
+    }
+
+    deleteUser = () => {
+        this.setState({ loading: true }, () => {
+            const URL = `http://localhost:8000/management/employee/${this.state.selectedType}`;
+            let idFieldName = "";
+            switch(this.state.selectedType) {
+                case "doctor":
+                    idFieldName = "d_id";
+                    break;
+                case "pharmacist":
+                    idFieldName = "ph_id";
+                    break;
+                case "lt":
+                    idFieldName = "lt_id";
+                    break;
+                default: 
+                    break;
+            }
+            axios.delete(URL, {
+                headers: {},
+                data: {
+                  [idFieldName]: this.state.selectedEmployee
+                }
+              }).then(res => {
+                  this.fetchAllEmployees();
+              }).finally(() => {
+                  this.setState({ loading: false })
+              });
+        })
     }
 }
 

@@ -48,4 +48,14 @@ router.get("/not_identified", (req, res) => {
 
 // Delete account //TODO MAYBE???
 
+// Queries the given statement(stmt) and sends
+// response using response(res) object
+const performQuery = (stmt, res, values = []) => {
+	connection.query(stmt, [values], (err, result) => {
+		// console.log(result);
+		if (err) res.status(500).send(result);
+		res.status(200).send(result);
+	});
+};
+
 module.exports = router
