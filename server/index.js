@@ -31,10 +31,22 @@ const medicine = require("./api/management/medicine");
 const symptom = require("./api/management/symptom");
 const disease = require("./api/management/disease");
 const test = require("./api/management/test");
+const doctor = require("./api/management/employee/doctor");
+const pharmacist = require("./api/management/employee/pharmacist");
+const labTechnician = require("./api/management/employee/lab_technician");
 
 app.use("/auth", authentication);
 app.use("/appointment", appointment);
-app.use("/management", medicine, symptom, disease, test);
+app.use(
+	"/management",
+	medicine,
+	symptom,
+	disease,
+	test,
+	doctor,
+	pharmacist,
+	labTechnician
+);
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);

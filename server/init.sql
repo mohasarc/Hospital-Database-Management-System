@@ -177,6 +177,21 @@ CREATE TABLE prescription(
 	FOREIGN KEY (medicine_name) REFERENCES medicine(medicine_name)
 );
 
+CREATE TABLE lab(
+	lab_id VARCHAR(50),
+    room_no integer,
+    PRIMARY KEY(lab_id),        
+);
+
+CREATE TABLE works_at_lab(
+	lab_id VARCHAR(50),
+    lt_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY(lab_id, lt_id),
+    FOREIGN KEY (lab_id) REFERENCES lab(lab_id),
+    FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id)
+);
+
+
 -- --------------------- TRIGGERS ------------------------
 DROP TRIGGER IF EXISTS test_status_update;
 
