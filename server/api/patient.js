@@ -130,11 +130,12 @@ router.get("/", (req, res) => {
 
 // Get all tests for a patient
 router.get("/test", (req, res) => {
-	const p_id = req.body.p_id;
+	const { p_id } = req.body;
 	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
 				FROM assigned_test AS at, appointment AS apt
 				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
 				ORDER BY apt.date DESC`;
+
 	connection.query(sql, (err, results) => {
 		if (err) res.status(500).send(err);
 		res.status(200).send(results);
@@ -142,6 +143,18 @@ router.get("/test", (req, res) => {
 });
 
 // Get all previously diagnosed diseases // TODO
+router.get("/disease", (req, res) => {
+	const { p_id } = req.body.p_id;
+	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
+				FROM assigned_test AS at, appointment AS apt
+				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
+				ORDER BY apt.date DESC`;
+				
+	connection.query(sql, (err, results) => {
+		if (err) res.status(500).send(err);
+		res.status(200).send(results);
+	});
+});
 
 // Get all previous prescriptions // TODO
 

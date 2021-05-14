@@ -2,10 +2,34 @@ const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const { connection } = require("../../../index");
+const { APPT_STATUS } = require("../../../constants");
 
-// get all doctors
+// get all doctors (or ones available for particular date & department)
 router.get("/doctor", (req, res) => {
-	const sql = `SELECT * FROM person INNER JOIN doctor ON (person_id=d_id);`;
+	const { date, dept_name } = req.body;
+	let sql;
+
+	if (date && dept_name) {
+		sql  = `SELECT * 
+				FROM person INNER JOIN doctor ON (person_id=d_id)
+				WHERE doctor.dept_name = "${dept_name}"
+				AND doctor.d_id NOT IN (
+					(
+						SELECT d_id 
+						FROM doc_schedule
+						WHERE doc_schedule.unavail_date = "${date}"
+					) 
+					UNION
+					(
+						SELECT d_id
+						FROM appointment
+						WHERE appointment.status != "${APPT_STATUS.COMPLETE}" AND appointment.date = "${date}"
+					)
+				)`;
+	} else {
+		sql = `SELECT * FROM person INNER JOIN doctor ON (person_id=d_id);`;
+	}
+
 	performQuery(sql, res);
 });
 
