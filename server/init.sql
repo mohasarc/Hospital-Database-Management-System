@@ -76,7 +76,7 @@ CREATE TABLE appointment(
 	date DATE,
 	status VARCHAR(20),
     description VARCHAR(200),
-    PRIMARY KEY (appt_id),
+    PRIMARY KEY (d_id, date),
     FOREIGN KEY (d_id) REFERENCES doctor(d_id),
     FOREIGN KEY (p_id) REFERENCES patient(pid)
 );

@@ -114,20 +114,6 @@ router.put("/patient/blood_group", async (req, res) => {
 	});
 });
 
-// Get all Appointments for a patient
-router.get("/", (req, res) => {
-	const { p_id } = req.body;
-	const sql = `SELECT * FROM appointment WHERE p_id='${p_id}'`;
-
-	connection.query(sql, (err, results) => {
-		if (err) {
-			res.status(500).send(err);
-		} else {
-			res.status(200).send(results);
-		}
-	});
-});
-
 // Get all tests for a patient
 router.get("/test", (req, res) => {
 	const { p_id } = req.body;
