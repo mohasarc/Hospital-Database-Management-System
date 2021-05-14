@@ -55,6 +55,13 @@ CREATE TABLE doctor(
     FOREIGN KEY (d_id) REFERENCES person(person_id)
 );
 
+CREATE TABLE doc_schedule(
+	d_id VARCHAR(50),
+    unavail_date DATE,
+    PRIMARY KEY(d_id, unavail_date),
+    FOREIGN KEY (d_id) REFERENCES doctor(d_id)
+);
+
 CREATE TABLE lab_technician(
 	lt_id VARCHAR(50),
     expertise VARCHAR(50) NOT NULL,
