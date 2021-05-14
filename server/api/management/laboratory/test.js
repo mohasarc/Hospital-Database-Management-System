@@ -9,7 +9,7 @@ router.get("/test", (req, res) => {
 
 	connection.query(sql, (err, results) => {
 		if (err) {
-			res.status(200).send(err);
+			res.status(500).send(err);
 		} else {
 			res.status(200).send(results);
 		}
