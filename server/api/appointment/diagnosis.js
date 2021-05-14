@@ -47,8 +47,8 @@ router.post("/diagnosis", async (req, res) => {
 });
 
 // Get the diseases diagnosed for a particular appointment
-router.get("/diagnosis", (req, res) => {
-	const { appt_id } = req.body;
+router.get("/diagnosis/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
 	const sql = `SELECT name FROM diagnosis WHERE appt_id='${appt_id}'`;
 
 	connection.query(sql, (err, results) => {

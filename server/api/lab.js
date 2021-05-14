@@ -3,8 +3,8 @@ const router = express.Router();
 const { connection } = require("../index");
 
 // Get all tests performed by the lab technician with given id
-router.get("/lt/tests", (req, res) => {
-	const lt_id = req.body.lt_id;
+router.get("/lt/tests/:lt_id", (req, res) => {
+	const { lt_id } = req.params;
 	const sql = `SELECT *
 				FROM assigned_test NATURAL JOIN test
 				WHERE lt_id='${lt_id}'`;

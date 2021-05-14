@@ -5,8 +5,8 @@ const { connection } = require("../../../index");
 const { APPT_STATUS } = require("../../../constants");
 
 // get all doctors (or ones available for particular date & department)
-router.get("/doctor", (req, res) => {
-	const { date, dept_name } = req.body;
+router.get("/doctor/:date/:dept_name", (req, res) => {
+	const { date, dept_name } = req.params;
 	let sql;
 
 	if (date && dept_name) {
