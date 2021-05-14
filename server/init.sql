@@ -29,11 +29,20 @@ CREATE TABLE manager(
     FOREIGN KEY (man_id) REFERENCES person(person_id)
 );
 
+CREATE TABLE pharmacy(
+	phmcy_id VARCHAR(50),
+	name VARCHAR(50),
+	room_no INTEGER,
+	PRIMARY KEY (phmcy_id)
+);
+
 CREATE TABLE pharmacist(
 	ph_id VARCHAR(50),
 	qualifications VARCHAR(100) NOT NULL,
+	phmcy_id VARCHAR(50),
     PRIMARY KEY(ph_id),
-    FOREIGN KEY (ph_id) REFERENCES person(person_id)
+    FOREIGN KEY (ph_id) REFERENCES person(person_id),
+    FOREIGN KEY (phmcy_id) REFERENCES pharmacy(phmcy_id)
 );
 
 CREATE TABLE patient(
@@ -46,13 +55,20 @@ CREATE TABLE patient(
     FOREIGN KEY (pid) REFERENCES person(person_id)
 );
 
+CREATE TABLE department(
+	name VARCHAR(50) NOT NULL,
+	PRIMARY KEY (name)
+);
+
+
 CREATE TABLE doctor(
 	d_id VARCHAR(50),
 	dept_name VARCHAR(50) NOT NULL,
     specialization VARCHAR(50) NOT NULL,
     qualification VARCHAR(200) NOT NULL,
     PRIMARY KEY(d_id),
-    FOREIGN KEY (d_id) REFERENCES person(person_id)
+    FOREIGN KEY (d_id) REFERENCES person(person_id),
+    FOREIGN KEY (dept_name) REFERENCES department(name)
 );
 
 CREATE TABLE doc_schedule(
@@ -149,13 +165,6 @@ CREATE TABLE assigned_test(
 	FOREIGN KEY (t_id) REFERENCES test(t_id)
 );
 
-CREATE TABLE pharmacy(
-	phmcy_id VARCHAR(50),
-	name VARCHAR(50),
-	room_no INTEGER,
-	PRIMARY KEY (phmcy_id)
-);
-
 CREATE TABLE medicine(
 	name VARCHAR(50),
 	PRIMARY KEY (name)
@@ -203,7 +212,6 @@ CREATE TABLE works_at_lab(
     FOREIGN KEY (lab_id) REFERENCES lab(lab_id),
     FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id)
 );
-
 
 -- --------------------- TRIGGERS ------------------------
 DROP TRIGGER IF EXISTS test_status_update;

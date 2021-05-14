@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { connection } = require('../../../index');
 
-// Read all medicine
-router.get("/medicine", (req, res) => {
-	const sql     = `SELECT * FROM medicine`;
+// Read all departments
+router.get("/department", (req, res) => {
+	const sql     = `SELECT * FROM department`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -15,11 +15,11 @@ router.get("/medicine", (req, res) => {
 	});
 });
 
-// Add a medicine
-router.post("/medicine", (req, res) => {
+// Add a department
+router.post("/department", (req, res) => {
 	const { name } = req.body;
 	const tuple = [name];
-	const sql     = `INSERT INTO medicine(name) VALUES(?)`;
+	const sql     = `INSERT INTO department(name) VALUES(?)`;
 
 	connection.query(sql, [tuple], (err, results) => {
 		if (err) {
@@ -30,16 +30,13 @@ router.post("/medicine", (req, res) => {
 	});
 });
 
-// Remove a medicine
-router.delete("/medicine", async (req, res) => {
-	// Prepare values
+// Remove a department
+router.delete("/department", async (req, res) => {
 	const { name } = req.body;
 
-	// Prepare sql
-	const sql = `DELETE FROM medicine
+	const sql = `DELETE FROM department
 				 WHERE name = '${name}'`;
 
-	// Perform sql
 	connection.query(sql, async (err, result) => {
 		if (err) {
 			res.status(500).send(err);
