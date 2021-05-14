@@ -39,21 +39,21 @@ const test = require("./api/management/test");
 const doctor = require("./api/management/employee/doctor");
 const pharmacist = require("./api/management/employee/pharmacist");
 const labTechnician = require("./api/management/employee/lab_technician");
+const patient = require("./api/management/patient");
 const pharmacy = require("./api/pharmacy/pharmacy");
 const pharmacy_man = require("./api/management/pharmacy");
 
 app.use("/auth", authentication);
 app.use("/appointment", appointment);
 app.use("/pharmacy", pharmacy);
-app.use( "/management",
+app.use("/management/employee", doctor, pharmacist, labTechnician)
+app.use("/management",
 	medicine,
 	symptom,
 	disease,
 	test,
-	doctor,
-	pharmacist,
-	labTechnician,
-	pharmacy_man
+	pharmacy_man,
+	patient
 );
 
 app.listen(PORT, () => {
