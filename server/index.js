@@ -30,31 +30,36 @@ connection.connect((err) => {
 });
 
 // Redirect requests
-const authentication = require("./api/authentication/authentication");
 const appointment = require("./api/appointment/appointment");
-const medicine = require("./api/management/medicine");
-const symptom = require("./api/management/symptom");
-const disease = require("./api/management/disease");
-const test = require("./api/management/test");
-const doctor = require("./api/management/employee/doctor");
-const pharmacist = require("./api/management/employee/pharmacist");
-const labTechnician = require("./api/management/employee/lab_technician");
-const patient = require("./api/management/patient");
-const pharmacy = require("./api/pharmacy/pharmacy");
-const pharmacy_man = require("./api/management/pharmacy");
+const appt_diagnosis = require("./api/appointment/diagnosis");
+const appt_symptoms = require("./api/appointment/symptoms");
+const appt_tests = require("./api/appointment/tests");
+const authentication = require("./api/authentication/authentication");
+
+const disease_man = require("./api/management/disease");
+const doctor_man = require("./api/management/employee/doctor");
+const labTechnician_man = require("./api/management/employee/lab_technician");
+const medicine_man = require("./api/management/pharmacy/medicine");
+const pharmacist_man = require("./api/management/employee/pharmacist");
+const pharmacy_man = require("./api/management/pharmacy/pharmacy");
+const symptom_man = require("./api/management/symptom");
+const test_man = require("./api/management/laboratory/test");
+
+const doctor = require("./api/doctor");
+const lab = require("./api/lab");
+const patient = require("./api/patient");
+const person = require("./api/person");
+const pharmacy_inventory = require("./api/pharmacy_inventory");
 
 app.use("/auth", authentication);
-app.use("/appointment", appointment);
-app.use("/pharmacy", pharmacy);
-app.use("/management/employee", doctor, pharmacist, labTechnician)
-app.use("/management",
-	medicine,
-	symptom,
-	disease,
-	test,
-	pharmacy_man,
-	patient
-);
+app.use("/appointment", appointment, appt_diagnosis, appt_symptoms, appt_tests);
+app.use('/doctor', doctor);
+app.use('/laboratory', lab);
+app.use('/patient', patient);
+app.use('/person', person);
+app.use("/pharmacy_inventory", pharmacy_inventory);
+app.use("/management/employee", doctor_man, pharmacist_man, labTechnician_man)
+app.use("/management", medicine_man, symptom_man, disease_man, test_man, pharmacy_man);
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);

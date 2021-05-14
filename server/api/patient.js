@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require("uuid");
-const { connection } = require('../../index');
+const { connection } = require('../index');
 
 // Read all patients
 router.get("/patient", (req, res) => {
@@ -114,5 +113,38 @@ router.put("/patient/blood_group", async (req, res) => {
 		}
 	});
 });
+
+// Get all Appointments for a patient
+router.get("/", (req, res) => {
+	const { p_id } = req.body;
+	const sql = `SELECT * FROM appointment WHERE p_id='${p_id}'`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// Get all tests for a patient
+router.get("/test", (req, res) => {
+	const p_id = req.body.p_id;
+	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
+				FROM assigned_test AS at, appointment AS apt
+				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
+				ORDER BY apt.date DESC`;
+	connection.query(sql, (err, results) => {
+		if (err) res.status(500).send(err);
+		res.status(200).send(results);
+	});
+});
+
+// Get all previously diagnosed diseases // TODO
+
+// Get all previous prescriptions // TODO
+
+// Get all previous appointments // TODO (includes all information symptoms + tests + diagnosis + presecriptions)
 
 module.exports = router

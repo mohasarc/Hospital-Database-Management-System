@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { connection } = require('../../index');
+const { connection } = require('../../../index');
 
 // Read all medicine
 router.get("/medicine", (req, res) => {
