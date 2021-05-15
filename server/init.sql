@@ -305,8 +305,8 @@ INSERT INTO doctor VALUES ("13", "Accident&Emergency", "Emergency", "very qualif
 INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "verydifficultpassword");
 INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "verydifficultpassword");
 
-INSERT INTO lab_technician VALUES ("14", "experty 1");
-INSERT INTO lab_technician VALUES ("15", "experty 2");
+INSERT INTO lab_technician VALUES ("14", "A"); -- @mohammed - changed for sake of simplicity
+INSERT INTO lab_technician VALUES ("15", "B");
 
 INSERT INTO works_at_lab VALUES ("1", "14");
 INSERT INTO works_at_lab VALUES ("2", "15");
@@ -352,3 +352,26 @@ INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2024-01-01", 150);
 INSERT INTO phmcy_stores_med VALUES("paromol", "1", "2023-01-01", 5);
 INSERT INTO phmcy_stores_med VALUES("oredomol", "1", "2024-01-01", 17);
 INSERT INTO phmcy_stores_med VALUES("lekomol", "1", "2024-01-01", 300);
+
+
+-- ---------------- INIT TEST --------------------------
+insert into test(t_id, name, expertise_required) values (1, "TEST 1", "A");
+insert into test(t_id, name, expertise_required) values (2, "TEST 2", "A");
+insert into test(t_id, name, expertise_required) values (3, "TEST 3", "B");
+
+-- ---------------- INIT TEST  components --------------------------
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(1, "C1", 1, 5, 10);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(2, "C2", 1, 10, 20);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(3, "C1", 2, 15, 20);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(4, "C2", 2, 20, 30);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(5, "C1", 3, 50, 100);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(6, "C2", 3, 50, 100);
+
+
+-- ----------------- INIT assigned_test ---------------------------
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 1, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 2, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 3, 3, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 1, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 4, 1, 'ASSIGNED');
