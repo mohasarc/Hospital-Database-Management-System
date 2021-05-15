@@ -16,7 +16,7 @@ const Routes = () => {
 			<Route path={RoutePaths.Login} component={Login} exact />
 			<Route path={RoutePaths.Signup} component={Signup} exact />
 			<Route path={RoutePaths.PatientView} component={Patient} exact />
-			<Route path={RoutePaths.LabTech} component={LabTech} exact />
+			<Route path={RoutePaths.LtView} component={LabTech} exact />
 			<Route path={RoutePaths.Management} component={Management} exact />
 			<Route path={RoutePaths.DepartmentMan} component={DepartmentMan} exact />
 			<Route path={RoutePaths.Doctor} component={Doctor} exact />
