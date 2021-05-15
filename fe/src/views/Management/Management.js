@@ -283,6 +283,7 @@ class Management extends PureComponent {
                 default: 
                     break;
             }
+            console.log("deleting a doc with: ", this.state.selectedEmployee)
             axios.delete(URL, {
                 headers: {},
                 data: {
@@ -290,6 +291,8 @@ class Management extends PureComponent {
                 }
               }).then(res => {
                   this.fetchAllEmployees();
+              }).catch((error) => {
+                    console.log(error);
               }).finally(() => {
                   this.setState({ loading: false })
               });
