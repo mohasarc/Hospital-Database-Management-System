@@ -346,12 +346,24 @@ INSERT INTO medicine VALUES ("oredomol");
 INSERT INTO medicine VALUES ("asadomol");
 INSERT INTO medicine VALUES ("lekomol");
 
+INSERT INTO medicine VALUES ("parabol");
+INSERT INTO medicine VALUES ("likitol");
+INSERT INTO medicine VALUES ("zerol");
+INSERT INTO medicine VALUES ("hormal");
+INSERT INTO medicine VALUES ("fooolor");
+
 -- ---------------- INIT PHARMACY INVENTORY ----------
 INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2023-01-01", 100);
 INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2024-01-01", 150);
 INSERT INTO phmcy_stores_med VALUES("paromol", "1", "2023-01-01", 5);
 INSERT INTO phmcy_stores_med VALUES("oredomol", "1", "2024-01-01", 17);
 INSERT INTO phmcy_stores_med VALUES("lekomol", "1", "2024-01-01", 300);
+
+INSERT INTO phmcy_stores_med VALUES("parabol", "2", "2023-01-01", 1000);
+INSERT INTO phmcy_stores_med VALUES("likitol", "2", "2024-01-01", 500);
+INSERT INTO phmcy_stores_med VALUES("zerol", "2", "2023-01-01", 20);
+INSERT INTO phmcy_stores_med VALUES("hormal", "2", "2024-01-01", 170);
+INSERT INTO phmcy_stores_med VALUES("fooolor", "2", "2024-01-01", 900);
 
 
 -- ---------------- INIT TEST --------------------------

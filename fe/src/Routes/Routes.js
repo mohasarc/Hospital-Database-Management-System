@@ -8,7 +8,9 @@ import Management from "../views/Management/Management";
 import DepartmentMan from "../views/Management/department_man";
 import LabTech from "../views/LabTech/LabTech";
 import Doctor from "../views/Doctor/Doctor";
-import Pharmacy from "../views/Pharmacy/Pharmacy";
+
+import Pharmacy from '../views/Pharmacy/Pharmacy';
+import PharmacyDetails from "../views/Pharmacy/PharmacyDetails";
 
 const Routes = () => {
 	return (
