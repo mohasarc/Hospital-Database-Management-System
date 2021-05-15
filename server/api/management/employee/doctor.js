@@ -74,7 +74,7 @@ router.get("/doctor/:date/:dept_name", (req, res) => {
 				(
 					SELECT d_id
 					FROM appointment
-					WHERE appointment.status != "${APPT_STATUS.COMPLETE}" AND appointment.date = "${date}"
+					WHERE appointment.status != "${APPT_STATUS.CANCELLED}" AND appointment.date = "${date}"
 				)
 			)`;
 
@@ -124,7 +124,6 @@ router.patch("/doctor/dept", (req, res) => {
 // response using response(res) object
 const performQuery = (stmt, res, values = []) => {
 	connection.query(stmt, [values], (err, result) => {
-		// console.log(result);
 		if (err) res.status(500).send(result);
 		res.status(200).send(result);
 	});

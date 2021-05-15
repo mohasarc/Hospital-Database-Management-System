@@ -236,3 +236,8 @@ DELIMITER ;
 -- ------------------ INIT MANAGEMENT ACCOUNT ---------------
 INSERT INTO person VALUES ("1", "Super", "m.", "Manager", "2021-05-14", 1, "managers str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "verydifficultpassword");
 INSERT INTO manager VALUES ("1");
+
+-------------------- INIT DEPARTMENTS ---------------
+INSERT INTO department VALUES ("Orthopaedics"), ("ENT"), ("Gynaecology&Obstetrics"), ("Chest&Vascular"), ("Paediatrics&Neonatology"), ("Psychiatry"), ("Accident&Emergency"), ("DentalSurgery");
+INSERT INTO diseases VALUES  ("measles symptom"), ("rubella symptom"), ("chickenpox/shingles symptom"), ("roseola symptom"), ("smallpox symptom"), ("fifth disease symptom"), ("chikungunya virus infection symptom");
+INSERT INTO symptoms VALUES  ("measles symptom"), ("rubella symptom"), ("chickenpox/shingles symptom"), ("roseola symptom"), ("smallpox symptom"), ("fifth disease symptom"), ("chikungunya virus infection symptom");

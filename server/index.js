@@ -45,6 +45,7 @@ const pharmacist_man = require("./api/management/employee/pharmacist");
 const pharmacy_man = require("./api/management/pharmacy/pharmacy");
 const symptom_man = require("./api/management/symptom");
 const test_man = require("./api/management/laboratory/test");
+const department = require("./api/management/department/department");
 
 const doctor = require("./api/doctor");
 const lab = require("./api/lab");

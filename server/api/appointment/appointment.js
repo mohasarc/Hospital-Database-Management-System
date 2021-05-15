@@ -17,7 +17,7 @@ router.post("/", (req, res) => {
 	connection.query(sql, (err, result) => {
 		if (err) res.status(500).send(err);
 		if (result.length !== 0 && result[0].status === APPT_STATUS.CANCELLED) {
-			sql = `UPDATE appointment SET status='${APPT_STATUS.ONGOING}', p_id='${p_id}' WHERE appt_id='${result[0].appt_id}'`;
+			sql = `UPDATE appointment SET status='${APPT_STATUS.ONGOING}', p_id='${p_id}', description='${description}' WHERE appt_id='${result[0].appt_id}'`;
 			performQuery(sql, res);
 		} else {
 			// In case patient wants to make new appointment
