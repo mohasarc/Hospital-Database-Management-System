@@ -3,7 +3,7 @@ CREATE DATABASE hospitaldb;
 USE hospitaldb;
 
 CREATE TABLE person(
-	person_id VARCHAR(50),
+    person_id VARCHAR(50),
     first_name VARCHAR(50) NOT NULL,
     middle_name VARCHAR(50), 
     last_name VARCHAR(50) NOT NULL, 
@@ -211,6 +211,12 @@ CREATE TABLE works_at_lab(
     FOREIGN KEY (lab_id) REFERENCES lab(lab_id),
     FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id)
 );
+
+-- --------------------- VIEWS ------------------------
+CREATE VIEW doctor_info AS SELECT * FROM doctor JOIN person ON (doctor.d_id=person.person_id);
+CREATE VIEW patient_info AS SELECT * FROM patient JOIN person ON (patient.pid=person.person_id);
+CREATE VIEW lt_info AS SELECT * FROM lab_technician JOIN person ON (lab_technician.lt_id=person.person_id);
+CREATE VIEW pharmacist_info AS SELECT * FROM pharmacist JOIN person ON (pharmacist.ph_id=person.person_id);
 
 -- --------------------- TRIGGERS ------------------------
 DROP TRIGGER IF EXISTS test_status_update;
