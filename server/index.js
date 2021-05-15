@@ -37,6 +37,7 @@ const appt_tests = require("./api/appointment/tests");
 const authentication = require("./api/authentication/authentication");
 
 const disease_man = require("./api/management/disease");
+const dept_man = require("./api/management/department/department");
 const doctor_man = require("./api/management/employee/doctor");
 const labTechnician_man = require("./api/management/employee/lab_technician");
 const medicine_man = require("./api/management/pharmacy/medicine");
@@ -59,7 +60,7 @@ app.use('/patient', patient);
 app.use('/person', person);
 app.use("/pharmacy_inventory", pharmacy_inventory);
 app.use("/management/employee", doctor_man, pharmacist_man, labTechnician_man)
-app.use("/management", medicine_man, symptom_man, disease_man, test_man, pharmacy_man);
+app.use("/management", medicine_man, symptom_man, disease_man, test_man, pharmacy_man, dept_man);
 
 app.listen(PORT, () => {
 	console.log(`Listening on PORT: ${PORT}`);
