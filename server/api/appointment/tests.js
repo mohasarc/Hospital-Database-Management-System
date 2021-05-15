@@ -40,42 +40,28 @@ router.post("/test", (req, res) => {
 						}
 
 						// Assign lab technician
-						connection.query(
-							assignTestSql,
-							assignTestTuple,
-							(err, results) => {
-								if (err) {
-									connection.rollback();
-									res.status(500).send(err);
-								} else {
-									// Initialize all components
-									results.map((component, i) => {
-										let initCompResultsTuple = [
-											uuidv4(),
-											component.c_name,
-											t_id,
-											appt_id,
-											null,
-										];
-										connection.query(
-											initCompResultsSql,
-											initCompResultsTuple,
-											(err, results) => {
-												if (err) {
-													connection.rollback();
-													res.status(500).send(err);
-												} else {
-													if (i == results.length - 1)
-														res.status(200).send({
-															results,
-														}); //! This probably won't always work correctly :D
-												}
-											}
-										);
+						connection.query(assignTestSql, assignTestTuple, (err, results) => {
+							if (err) {
+								connection.rollback();
+								res.status(500).send(err);
+							} else {
+								// Initialize all components
+								results.map((component, i) => {
+									let initCompResultsTuple = [ uuidv4(), component.c_name, t_id, appt_id, null ];
+									connection.query( initCompResultsSql, initCompResultsTuple, (err, results) => {
+										if (err) {
+											connection.rollback();
+											res.status(500).send(err);
+										} else {
+											if (i == results.length - 1)
+												res.status(200).send({
+													results,
+												}); //! This probably won't always work correctly :D
+										}
 									});
-								}
+								});
 							}
-						);
+						});
 					});
 				}
 			});
@@ -131,7 +117,6 @@ router.get("/tests/patient/comps/:appt_id/:p_id/:t_id/:c_id", (req, res) => {
 				FROM component_result AS CR, appointment AS AP
 				WHERE CR.appt_id=AP.appt_id AND AP.p_id='${p_id}' AND CR.t_id='${t_id}' AND CR.c_id='${c_id}' and CR.appt_id <> '${appt_id}'
 				ORDER BY AP.date DESC;`;
-
 	connection.query(sql, (err, results) => {
 		if (err) res.status(500).send(err);
 		res.status(200).send(results);

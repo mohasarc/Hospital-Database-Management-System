@@ -16,6 +16,7 @@ import { DateInput } from "@blueprintjs/datetime";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Modal from 'react-modal';
+import Tests from './Tests';
 
 const TABS = {
     PersonalInfo: { value: "PERSONAL_INFORMATION", text: "Personal Information" },
@@ -168,7 +169,7 @@ class Patient extends PureComponent {
                                         <TableCell align="left">{row.status}</TableCell>
                                         <TableCell align="left">
                                             <Button text="Cancel" intent="danger" onClick={() => this.cancelAppointment(row.appt_id)}></Button>
-                                            <Button text="Info" intent="primary" onClick={() => this.getSymptomsAndDiseases(row.appt_id)}></Button>
+                                            <Button text="Info" intent="primary" disabled={row.status !== "COMPLETE"} onClick={() => this.getSymptomsAndDiseases(row.appt_id)}></Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -179,9 +180,7 @@ class Patient extends PureComponent {
                 );   
             case TABS.Tests.value:
                 return (
-                    <>
-                        To be implemented
-                    </>
+                    <Tests />
                 );
         }
     }
