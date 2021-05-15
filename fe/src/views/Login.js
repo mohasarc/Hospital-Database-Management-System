@@ -4,6 +4,8 @@ import { Button, FormGroup, InputGroup, Card, RadioGroup, Radio } from "@bluepri
 import axios from 'axios';
 import Loading from './Loading';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+
 class Login extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -18,29 +20,42 @@ class Login extends PureComponent {
 	render() {
         const { email, password, userType, loading } = this.state;
 		return (
-            loading? <Loading color={"grey"} width="10%" height="10%" type="spin"/> :
-			<Container>
-                <Card>
-                    <h3 className="bp3-heading">Login</h3>
-                    <FormGroup label="Email" labelFor="email" labelInfo="(required)">
-                        <InputGroup id="email" placeholder="Email" type="text"  onChange={e => this.setState({ email: e.target.value })}/>
-                    </FormGroup>
-                    <FormGroup label="Password" labelFor="password" labelInfo="(required)">
-                        <InputGroup id="password" placeholder="Password" type="password" onChange={e => this.setState({ password: e.target.value })} />
-                    </FormGroup>
-                    <RadioGroup label="User Type" onChange={(e) => this.setState({ userType: e.target.value })} selectedValue={userType} inline={true}>
-                        <Radio label="Doctor" value="doctor" />
-                        <Radio label="Patient" value="patient" />
-                        <Radio label="Lab Technician" value="lab_technician" />
-                        <Radio label="Pharmacist" value="pharmacist" />
-                        <Radio label="Management" value="manager" />
-                    </RadioGroup>
-                    <ButtonContainer>
-                        <Button text="Login" disabled={!email || !password || !userType}  rightIcon="log-in" intent="success" onClick={this.loginUser}/>
-                        <Link to="/signup">Register Now</Link>
-                    </ButtonContainer>
-                </Card>
-			</Container>
+            <>
+                {loading? <Loading color={"grey"} width="10%" height="10%" type="spin"/> :
+                <Container>
+                    <Card>
+                        <h3 className="bp3-heading">Login</h3>
+                        <FormGroup label="Email" labelFor="email" labelInfo="(required)">
+                            <InputGroup id="email" placeholder="Email" type="text"  onChange={e => this.setState({ email: e.target.value })}/>
+                        </FormGroup>
+                        <FormGroup label="Password" labelFor="password" labelInfo="(required)">
+                            <InputGroup id="password" placeholder="Password" type="password" onChange={e => this.setState({ password: e.target.value })} />
+                        </FormGroup>
+                        <RadioGroup label="User Type" onChange={(e) => this.setState({ userType: e.target.value })} selectedValue={userType} inline={true}>
+                            <Radio label="Doctor" value="doctor" />
+                            <Radio label="Patient" value="patient" />
+                            <Radio label="Lab Technician" value="lab_technician" />
+                            <Radio label="Pharmacist" value="pharmacist" />
+                            <Radio label="Management" value="manager" />
+                        </RadioGroup>
+                        <ButtonContainer>
+                            <Button text="Login" disabled={!email || !password || !userType}  rightIcon="log-in" intent="success" onClick={this.loginUser}/>
+                            <Link to="/signup">Register Now</Link>
+                        </ButtonContainer>
+                    </Card>
+                </Container>}
+                <ToastContainer 
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    // draggable
+                    // pauseOnHover
+                />
+            </>
 		);
 	}
 
@@ -49,8 +64,8 @@ class Login extends PureComponent {
         const { email, password, userType } = this.state;
         const user = { e_mail: email, password, type: userType };
         this.setState({ loading: true }, () => {
-            axios
-            .post(`http://localhost:8000/auth/login`, { ...user }).then((res) => {
+            axios.post(`http://localhost:8000/auth/login`, { ...user })
+            .then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data));
                 let route = "";
                 switch (userType) {
@@ -73,7 +88,7 @@ class Login extends PureComponent {
                 history.push("/" + route);
             })
             .catch((error) => {
-                console.log("ERROR: ", error);
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
             })
             .finally(() => {
                 this.setState({ loading: false });
