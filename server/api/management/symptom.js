@@ -15,6 +15,26 @@ router.get("/symptom", (req, res) => {
 	});
 });
 
+// Read all symptoms not selected for particular appointment
+router.get("/symptom/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
+	const sql     = `SELECT * 
+					 FROM symptoms as S
+					 WHERE S.name NOT IN (
+						 SELECT name
+						 FROM has_symptoms
+						 WHERE appt_id='${appt_id}'
+					 )`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Add a symptom
 router.post("/symptom", (req, res) => {
 	const { name } = req.body;
@@ -23,7 +43,7 @@ router.post("/symptom", (req, res) => {
 
 	connection.query(sql, [tuple], (err, results) => {
 		if (err) {
-			res.status(200).send(err);
+			res.status(500).send(err);
 		} else {
 			res.status(200).send(results);
 		}

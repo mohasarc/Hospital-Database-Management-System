@@ -16,6 +16,26 @@ router.get("/test", (req, res) => {
 	});
 });
 
+// Read all tests tha are not asked for a particular appointment
+router.get("/test/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
+	const sql     = `SELECT * 
+					 FROM test as T
+					 WHERE T.t_id NOT IN (
+						 SELECT t_id
+						 FROM assigned_test
+						 WHERE appt_id='${appt_id}'
+					 )`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // add test
 router.post("/test", async (req, res) => {
 	// Prepare values

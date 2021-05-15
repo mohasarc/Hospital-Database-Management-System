@@ -15,6 +15,26 @@ router.get("/disease", (req, res) => {
 	});
 });
 
+// Read all diseases not diagnosed for a particular appt
+router.get("/disease/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
+	const sql     = `SELECT * 
+					 FROM diseases as D
+					 WHERE D.name NOT IN (
+						 SELECT name
+						 FROM diagnosis
+						 WHERE appt_id='${appt_id}'
+					 )`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(200).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Add a disease
 router.post("/disease", async (req, res) => {
 	// Prepare values

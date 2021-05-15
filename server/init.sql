@@ -232,7 +232,7 @@ END$$
 DELIMITER ;
 
 -- ------------------ INIT MANAGEMENT ACCOUNT ---------------
-INSERT INTO person VALUES ("1", "Super", "m.", "Manager", "2021-05-14", 1, "managers str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "verydifficultpassword");
+INSERT INTO person VALUES ("1", "Super", "m.", "Manager", "2021-05-14", 1, "managers str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "manage@hospital.org", "12121212");
 INSERT INTO manager VALUES ("1");
 
 -- ------------------ INIT DEPARTMENTS ---------------
@@ -272,14 +272,14 @@ INSERT INTO symptoms VALUES ("feels fever");
 INSERT INTO symptoms VALUES ("feels Paresthesia");
 
 -- ------------------ INIT PATIENTS ------------------
-INSERT INTO person VALUES ("2", "Patient 1", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat1@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("3", "Patient 2", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat2@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("4", "Patient 3", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat3@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("5", "Patient 4", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat4@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("6", "Patient 5", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat5@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("7", "Patient 6", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat6@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("8", "Patient 7", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat7@sick.org", "verydifficultpassword");
-INSERT INTO person VALUES ("9", "Patient 8", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat8@sick.org", "verydifficultpassword");
+INSERT INTO person VALUES ("2", "Patient 1", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat1@sick.org", "12121212");
+INSERT INTO person VALUES ("3", "Patient 2", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat2@sick.org", "12121212");
+INSERT INTO person VALUES ("4", "Patient 3", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat3@sick.org", "12121212");
+INSERT INTO person VALUES ("5", "Patient 4", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat4@sick.org", "12121212");
+INSERT INTO person VALUES ("6", "Patient 5", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat5@sick.org", "12121212");
+INSERT INTO person VALUES ("7", "Patient 6", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat6@sick.org", "12121212");
+INSERT INTO person VALUES ("8", "Patient 7", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat7@sick.org", "12121212");
+INSERT INTO person VALUES ("9", "Patient 8", "m.", "Jack", "2021-05-14", 1, "patients str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "pat8@sick.org", "12121212");
 
 INSERT INTO patient VALUES ("2", 150, 60, "B+", "2021-05-15");
 INSERT INTO patient VALUES ("3", 160, 70, "A+", "2021-05-15");
@@ -291,10 +291,10 @@ INSERT INTO patient VALUES ("8", 210, 110, "AB+", "2021-05-15");
 INSERT INTO patient VALUES ("9", 210, 110, "AB-", "2021-05-15");
 
 -- ------------------ INIT DOCTORS -------------------
-INSERT INTO person VALUES ("10", "Doc 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc1@hospital.org", "verydifficultpassword");
-INSERT INTO person VALUES ("11", "Doc 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc2@hospital.org", "verydifficultpassword");
-INSERT INTO person VALUES ("12", "Doc 3", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc3@hospital.org", "verydifficultpassword");
-INSERT INTO person VALUES ("13", "Doc 4", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc4@hospital.org", "verydifficultpassword");
+INSERT INTO person VALUES ("10", "Doc 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc1@hospital.org", "12121212");
+INSERT INTO person VALUES ("11", "Doc 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc2@hospital.org", "12121212");
+INSERT INTO person VALUES ("12", "Doc 3", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc3@hospital.org", "12121212");
+INSERT INTO person VALUES ("13", "Doc 4", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "doc4@hospital.org", "12121212");
 
 INSERT INTO doctor VALUES ("10", "Orthopaedics", "Dermatologist", "very qualified");
 INSERT INTO doctor VALUES ("11", "Gynaecology&Obstetrics", "Gynaecology", "very qualified");
@@ -302,8 +302,8 @@ INSERT INTO doctor VALUES ("12", "Chest&Vascular", "Vascular", "very qualified")
 INSERT INTO doctor VALUES ("13", "Accident&Emergency", "Emergency", "very qualified");
 
 -- ----------------- INIT LAB TECH -------------------
-INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "verydifficultpassword");
-INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "verydifficultpassword");
+INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "12121212");
+INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "12121212");
 
 INSERT INTO lab_technician VALUES ("14", "experty 1");
 INSERT INTO lab_technician VALUES ("15", "experty 2");
@@ -311,8 +311,8 @@ INSERT INTO lab_technician VALUES ("15", "experty 2");
 INSERT INTO works_at_lab VALUES ("1", "14");
 INSERT INTO works_at_lab VALUES ("2", "15");
 -- ------------- INIT PHARMACISTS ----------------
-INSERT INTO person VALUES ("16", "Phar 1", "m.", "Jack", "2021-05-14", 1, "Pharmacists str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "phar1@hospital.org", "verydifficultpassword");
-INSERT INTO person VALUES ("17", "Phar 2", "m.", "Jack", "2021-05-14", 1, "Pharmacists str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "phar2@hospital.org", "verydifficultpassword");
+INSERT INTO person VALUES ("16", "Phar 1", "m.", "Jack", "2021-05-14", 1, "Pharmacists str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "phar1@hospital.org", "12121212");
+INSERT INTO person VALUES ("17", "Phar 2", "m.", "Jack", "2021-05-14", 1, "Pharmacists str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "phar2@hospital.org", "12121212");
 
 INSERT INTO pharmacist VALUES ("16", "qual 1");
 INSERT INTO pharmacist VALUES ("17", "qual 1");
@@ -321,20 +321,20 @@ INSERT INTO works_at_phmcy VALUES ("16", "1");
 INSERT INTO works_at_phmcy VALUES ("17", "2");
 
 -- ------------------ INIT DOC SCHEDULE --------------
-INSERT INTO doc_schedule VALUES ("10", "2021-05-10");
+INSERT INTO doc_schedule VALUES ("10", "2021-05-24");
 INSERT INTO doc_schedule VALUES ("10", "2021-05-15");
 INSERT INTO doc_schedule VALUES ("10", "2021-05-22");
 INSERT INTO doc_schedule VALUES ("10", "2021-05-25");
 
-INSERT INTO doc_schedule VALUES ("11", "2021-05-10");
+INSERT INTO doc_schedule VALUES ("11", "2021-05-24");
 INSERT INTO doc_schedule VALUES ("11", "2021-05-12");
 
 -- ---------------- INIT APPOINTMENTS ----------------
-INSERT INTO appointment VALUES ("1", "10", "2", "2021-05-11", "ONGONIG", "an appt");
-INSERT INTO appointment VALUES ("2", "11", "3", "2021-05-13", "ONGONIG", "an appt");
+INSERT INTO appointment VALUES ("1", "10", "2", "2021-05-18", "ONGOING", "an appt");
+INSERT INTO appointment VALUES ("2", "11", "3", "2021-05-22", "ONGOING", "an appt");
 
-INSERT INTO appointment VALUES ("3", "12", "4", "2021-05-10", "ONGONIG", "an appt");
-INSERT INTO appointment VALUES ("4", "13", "5", "2021-05-10", "ONGONIG", "an appt");
+INSERT INTO appointment VALUES ("3", "12", "4", "2021-05-24", "ONGOING", "an appt");
+INSERT INTO appointment VALUES ("4", "13", "5", "2021-05-24", "ONGOING", "an appt");
 
 -- day 2021-05-10 is blocked 2 doc unavail and 2 docs have appt
 
@@ -352,3 +352,26 @@ INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2024-01-01", 150);
 INSERT INTO phmcy_stores_med VALUES("paromol", "1", "2023-01-01", 5);
 INSERT INTO phmcy_stores_med VALUES("oredomol", "1", "2024-01-01", 17);
 INSERT INTO phmcy_stores_med VALUES("lekomol", "1", "2024-01-01", 300);
+
+-- ---------------- SHARED SYMPTOMS ------------------
+INSERT INTO has_symptoms VALUES("2", "abdomen pain", "nothung");
+INSERT INTO has_symptoms VALUES("2", "back pain", "nothung");
+INSERT INTO has_symptoms VALUES("2", "chest pain", "nothung");
+INSERT INTO has_symptoms VALUES("2", "ear pain", "nothung");
+INSERT INTO has_symptoms VALUES("2", "head pain", "nothung");
+INSERT INTO has_symptoms VALUES("2", "pelvis pain", "nothung");
+
+-- -------------- diagnosed diseases ------------------
+INSERT INTO diagnosis VALUES("2", "Cerebral palsy", "nothing");
+INSERT INTO diagnosis VALUES("2", "Chordoma", "nothing");
+INSERT INTO diagnosis VALUES("2", "Iron-deficiency anemia", "nothing");
+
+-- ---------------- INIT TEST -------------------------
+INSERT INTO test VALUES ("1", "test1", "experty 1");
+INSERT INTO test VALUES ("2", "test2", "experty 1");
+INSERT INTO test VALUES ("3", "test3", "experty 1");
+INSERT INTO test VALUES ("4", "test4", "experty 1");
+
+-- -------------- requested tests ---------------------
+INSERT INTO assigned_test VALUES ("14", "2", "1", "ASSIGNED");
+INSERT INTO assigned_test VALUES ("14", "2", "2", "ASSIGNED");
