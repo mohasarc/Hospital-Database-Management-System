@@ -5,6 +5,7 @@ import { DateInput } from "@blueprintjs/datetime";
 import moment from 'moment';
 import Loading from './Loading';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Signup extends PureComponent {
 	constructor(props) {
@@ -129,6 +130,7 @@ class Signup extends PureComponent {
                         onClick={this.register}
                         disabled={this.resolveButtonDisabledStatus()}
                     />
+                    <Link to="/login">Already a member?</Link>
                 </ButtonContainer>
             </Card>    
         );
@@ -169,9 +171,10 @@ const Container = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 60%;
+    text-align: center;
+    a {
+        display: block;
+    }
 `;
 
 export default Signup;

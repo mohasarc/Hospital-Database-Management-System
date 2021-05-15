@@ -58,6 +58,10 @@ class Patient extends PureComponent {
                     <Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text} onClick={() => this.setState({ activePage: TABS.PersonalInfo.value })} />
                     <Button className={Classes.MINIMAL} icon="calendar"text={TABS.Appointments.text} onClick={() => this.setState({ activePage: TABS.Appointments.value })}  />
                     <Button className={Classes.MINIMAL} icon="lab-test"text={TABS.Tests.text} onClick={() => this.setState({ activePage: TABS.Tests.value })}  />
+                    <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
+                        localStorage.removeItem("user");
+                        this.props.history.push("/login");
+                    }}/>
                 </NavbarGroup>
                 <Body>
                     {this.renderView()}

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Button, FormGroup, InputGroup, Card, RadioGroup, Radio } from "@blueprintjs/core";
 import axios from 'axios';
 import Loading from './Loading';
-
+import { Link } from 'react-router-dom';
 class Login extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -37,6 +37,7 @@ class Login extends PureComponent {
                     </RadioGroup>
                     <ButtonContainer>
                         <Button text="Login" disabled={!email || !password || !userType}  rightIcon="log-in" intent="success" onClick={this.loginUser}/>
+                        <Link to="/signup">Register Now</Link>
                     </ButtonContainer>
                 </Card>
 			</Container>
@@ -51,7 +52,25 @@ class Login extends PureComponent {
             axios
             .post(`http://localhost:8000/auth/login`, { ...user }).then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data));
-                history.push("/management");
+                let route = "";
+                switch (userType) {
+                    case "doctor":
+                        route = "doctor";
+                        break;
+                    case "patient":
+                        route = "patient";
+                        break;
+                    case "lab_technician":
+                        route = "lt";
+                        break;
+                    case "pharmacist":
+                        route = "pharmacist";
+                        break;
+                    case "manager":
+                        route = "management";
+                        break;
+                }
+                history.push("/" + route);
             })
             .catch((error) => {
                 console.log("ERROR: ", error);
@@ -75,6 +94,9 @@ const Container = styled.div`
 const ButtonContainer = styled.div`
     width: 100%;
     text-align: center;
+    a {
+        display: block;
+    }
 `;
 
 export default Login;
