@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import styled from 'styled-components';
-import { Alignment, Button, Classes, Divider, H5, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, Switch } from "@blueprintjs/core";
+import { Alignment, Button, Classes, Divider, H5, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, FormGroup, InputGroup } from "@blueprintjs/core";
 import { Form } from 'react-bootstrap';
 import { USER_PROPERTIES } from './UserProperties';
 import axios from 'axios';
@@ -12,12 +12,15 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import moment from 'moment';
+import { DateInput } from "@blueprintjs/datetime";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+import Modal from 'react-modal';
 
 const TABS = {
     PersonalInfo: { value: "PERSONAL_INFORMATION", text: "Personal Information" },
     Appointments: { value: "APPOINTMENTS", text: "Appointments" }
 }
-
 class Patient extends PureComponent {
 	constructor(props) {
 		super(props);
@@ -25,16 +28,24 @@ class Patient extends PureComponent {
 		this.state = {
             activePage: TABS.Appointments.value,
             appointments: [],
+            departments: [],
+            availableDocs: [],
+            deptName: undefined,
+            showSymptomsAndDiagnosis: false,
+            symptoms: [],
+            diagnosis: [],
             ...JSON.parse(localStorage.getItem("user")),
         };
 	}
 
     componentDidMount() {
         this.getAllAppointmentsForPatient();
+        this.getAllDepartments();
     }
 
 	render() {
-        // console.log(this.state);
+        console.log(this.state.symptoms);
+        console.log(this.state.diagnosis);
         return (
             <div>
                 <NavbarGroup align={Alignment.RIGHT} >
@@ -46,13 +57,30 @@ class Patient extends PureComponent {
                 <Body>
                     {this.renderView()}
                 </Body>
+                <Modal isOpen={this.state.showSymptomsAndDiagnosis} contentLabel="Example Modal" ariaHideApp={false}>
+                    <div>
+                        <h3>Symptoms</h3>
+                        <ol>
+                            {this.state.symptoms.map(symptom => {
+                                return <li>{symptom.name}</li>
+                            })}
+                        </ol>
+                        <h3>Diagnosis</h3>
+                        <ol>
+                            {this.state.diagnosis.map(dia => {
+                                return <li>{dia.name}</li>
+                            })}
+                        </ol>
+                    </div>
+                    <Button text="Exit" intent="danger" onClick={() => this.setState({ showSymptomsAndDiagnosis: false, symptoms: [], diagnosis: [] })}/>
+                </Modal>
             </div>
 
 		);
 	}
 
     renderView = () => {
-        const { activePage } = this.state;
+        const { activePage, deptName, appointmentDate } = this.state;
         switch(activePage) {
             case TABS.PersonalInfo.value:
                 return (
@@ -78,7 +106,49 @@ class Patient extends PureComponent {
                 return (
                     <>
                         <H5>{TABS.Appointments.text}</H5>
-                        <Button intent="success" text="Book Appointment" onClick={this.bookAppointment}/>
+                        <AppointmentSearchOptionsContainer>
+                            <FormGroup label="Appointment Date" labelFor="appointmentDate">
+                                <DateInput 
+                                    formatDate={date => moment(date).format("YYYY-MM-DD")} 
+                                    onChange={(date) => this.setState({ appointmentDate: moment(date).format("YYYY-MM-DD") })} 
+                                    parseDate={str => new Date(str)} placeholder={"YYYY-MM-DD"}
+                                />
+                            </FormGroup>
+                            <FormGroup label="Department Name" labelFor="deptName">
+                                <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Select a department" />
+                            </FormGroup>   
+                            <Button onClick={this.listAvailableDoctors} text="List available doctors" intent="primary" disabled={!deptName || !appointmentDate} />
+                        </AppointmentSearchOptionsContainer>
+                        <TableContainer component={Paper}>
+                            <Table aria-label="simple table">
+                                <TableHead>
+                                <TableRow>
+                                    <TableCell align="left">Name</TableCell>
+                                    <TableCell align="left">Specialization</TableCell>
+                                    <TableCell align="left">Qualifications</TableCell>
+                                    <TableCell align="left">Email</TableCell>
+                                    <TableCell align="left">Actions</TableCell>
+                                </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                {this.state.availableDocs.map((row) => (
+                                    <TableRow key={"appointment" + row.person_id}>
+                                        <TableCell align="left">{`${row.first_name} ${row.middle_name || ""} ${row.last_name}`}</TableCell>
+                                        <TableCell align="left">{row.specialization}</TableCell>
+                                        <TableCell align="left">{row.qualification}</TableCell>
+                                        <TableCell align="left">{row.e_mail}</TableCell>
+                                        <TableCell align="left">
+                                            <FormGroup label="Description" labelFor="description">
+                                                <InputGroup id="description" placeholder="Description" type="text"  onChange={e => this.setState({ description: e.target.value })}/>
+                                            </FormGroup>
+                                            <Button intent="success" text="Book Appointment" onClick={() => this.bookAppointment(row.person_id)}/>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+
                         <TableContainer component={Paper}>
                             <Table aria-label="simple table">
                                 <TableHead>
@@ -99,6 +169,7 @@ class Patient extends PureComponent {
                                         <TableCell align="left">{row.status}</TableCell>
                                         <TableCell align="left">
                                             <Button text="Cancel" intent="danger" onClick={() => this.cancelAppointment(row.appt_id)}></Button>
+                                            <Button text="Info" intent="primary" onClick={() => this.getSymptomsAndDiseases(row.appt_id)}></Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -120,17 +191,16 @@ class Patient extends PureComponent {
         })
     }
 
-    bookAppointment = () => {
-        const { pid } = this.state;
+    bookAppointment = (d_id) => {
+        const { pid, description } = this.state;
         const objToSend = {
             p_id: pid, 
-            d_id: "d8d60d7b-8256-417f-b3d8-769ed2d47939", 
-            description: "Yo dawg i am sick"
+            d_id: d_id, 
+            description
         }
         this.setState({ loading: true }, () => {
             axios.post(`http://localhost:8000/appointment`, { ...objToSend }).then((res) => {
-                // localStorage.setItem("user", JSON.stringify(res.data));
-                // history.push("/management");?
+                this.getAllAppointmentsForPatient();
             }).finally(() => {
                 this.setState({ loading: false });
             });
@@ -141,6 +211,40 @@ class Patient extends PureComponent {
         axios.patch(`http://localhost:8000/appointment`, { appt_id }).then(res => {
             this.getAllAppointmentsForPatient();
         })
+    }
+
+    listAvailableDoctors = () => {
+        this.setState({ loading: true }, () => {
+            const { deptName, appointmentDate } = this.state;
+            axios.get(`http://localhost:8000/management/employee/doctor/${appointmentDate}/${deptName}`).then(res => {
+                this.setState({ availableDocs: res.data })    
+            }).finally(() => {
+                this.setState({ loading: false })
+            })
+        })
+    }
+
+    getAllDepartments = () => {
+        this.setState({ loading: true }, () => {
+            axios.get("http://localhost:8000/management/department").then((res) => {
+                this.setState({ departments: res.data }, () => {
+                    this.setState({ loading: false });
+                })
+            })
+
+        })
+
+    }
+
+    getSymptomsAndDiseases = (appt_id) => {
+        this.setState({ showSymptomsAndDiagnosis: true }, () => {
+            axios.get(`http://localhost:8000/appointment/symptom/${appt_id}`).then(res => {
+                this.setState({ symptoms: res.data });
+            });
+            axios.get(`http://localhost:8000/appointment/diagnosis/${appt_id}`).then(res => {
+                this.setState({ diagnosis: res.data });
+            });
+        });
     }
 }
 
@@ -155,5 +259,9 @@ const Body = styled.div`
 
 const PropertiesContainer = styled.div`
     width: 30%;
+`;
+
+const AppointmentSearchOptionsContainer = styled.div`
+    
 `;
 export default Patient;
