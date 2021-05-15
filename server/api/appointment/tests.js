@@ -96,7 +96,7 @@ router.get("/test/:appt_id", (req, res) => {
 	});
 });
 
-// Get all components for a test
+// Get result of all components of a test
 // with test id as t_id and appointment id as appt_id
 router.get("/test/comps/:appt_id/:t_id", (req, res) => {
 	const { t_id, appt_id } = req.params;
@@ -137,5 +137,6 @@ router.get("/tests/patient/comps/:appt_id/:p_id/:t_id/:c_id", (req, res) => {
 		res.status(200).send(results);
 	});
 });
+
 
 module.exports = router;

@@ -2,12 +2,27 @@ const express = require("express");
 const router = express.Router();
 const { connection } = require("../index");
 
+// // Get all tests performed by the lab technician with given id
+// router.get("/lt/tests/:lt_id", (req, res) => {
+// 	const { lt_id } = req.params;
+// 	const sql = `SELECT *
+// 				FROM assigned_test NATURAL JOIN test
+// 				WHERE lt_id='${lt_id}'`;
+// 	connection.query(sql, (err, results) => {
+// 		if (err) {
+// 			res.status(500).send(err);
+// 		} else {
+// 			res.status(200).send(results);
+// 		}
+// 	});
+// });
+
 // Get all tests performed by the lab technician with given id
 router.get("/lt/tests/:lt_id", (req, res) => {
 	const { lt_id } = req.params;
-	const sql = `SELECT *
-				FROM assigned_test NATURAL JOIN test
-				WHERE lt_id='${lt_id}'`;
+	const sql = `SELECT AT.t_id, T.name, AT.lt_id, At.appt_id, app.date, AT.status
+				FROM assigned_test AS AT NATURAL JOIN test AS T, appointment AS app
+				WHERE AT.lt_id='${lt_id}' AND app.appt_id=AT.appt_id;`;
 	connection.query(sql, (err, results) => {
 		if (err) {
 			res.status(500).send(err);
