@@ -28,7 +28,7 @@ class Patient extends PureComponent {
 		super(props);
 
 		this.state = {
-            activePage: TABS.Tests.value,
+            activePage: TABS.Appointments.value,
             appointments: [],
             departments: [],
             availableDocs: [],
