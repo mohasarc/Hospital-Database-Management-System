@@ -17,6 +17,8 @@ import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Modal from 'react-modal';
 import Tests from './Tests';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const TABS = {
     PersonalInfo: { value: "PERSONAL_INFORMATION", text: "Personal Information" },
@@ -36,6 +38,7 @@ class Patient extends PureComponent {
             showSymptomsAndDiagnosis: false,
             symptoms: [],
             diagnosis: [],
+            unavailableDates: undefined,
             ...JSON.parse(localStorage.getItem("user")),
         };
 	}
@@ -112,12 +115,18 @@ class Patient extends PureComponent {
                                     formatDate={date => moment(date).format("YYYY-MM-DD")} 
                                     onChange={(date) => this.setState({ appointmentDate: moment(date).format("YYYY-MM-DD") })} 
                                     parseDate={str => new Date(str)} placeholder={"YYYY-MM-DD"}
+                                    minDate={new Date()}
                                 />
                             </FormGroup>
                             <FormGroup label="Department Name" labelFor="deptName">
                                 <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Select a department" />
                             </FormGroup>   
-                            <Button onClick={this.listAvailableDoctors} text="List available doctors" intent="primary" disabled={!deptName || !appointmentDate} />
+                            <Button onClick={this.listAvailableDoctors} text="List Available Dates" intent="primary" disabled={!deptName || !appointmentDate} />
+                            {this.state.unavailableDates && <Calendar 
+                                tileDisabled={({ date }) => this.state.unavailableDates.includes(moment(date).format("YYYY-MM-DD"))}
+                                onChange={this.getDoctorsForADate}
+                                minDate={new Date()}
+                            />}
                         </AppointmentSearchOptionsContainer>
                         <TableContainer component={Paper}>
                             <Table aria-label="simple table">
@@ -196,15 +205,18 @@ class Patient extends PureComponent {
     }
 
     bookAppointment = (d_id) => {
-        const { pid, description } = this.state;
+        const { pid, description, potentialDate } = this.state;
         const objToSend = {
             p_id: pid, 
             d_id: d_id, 
+            date: moment(potentialDate).format("YYYY-MM-DD"),
             description
         }
         this.setState({ loading: true }, () => {
             axios.post(`http://localhost:8000/appointment`, { ...objToSend }).then((res) => {
-                this.getAllAppointmentsForPatient();
+                this.setState({ availableDocs: [], unavailableDates: undefined }, () => {
+                    this.getAllAppointmentsForPatient();
+                })
             }).finally(() => {
                 this.setState({ loading: false });
             });
@@ -218,14 +230,19 @@ class Patient extends PureComponent {
     }
 
     listAvailableDoctors = () => {
+        const { appointmentDate, deptName } = this.state;
+        let startDate = new Date(appointmentDate);
+        let endDate = new Date(appointmentDate);
+        endDate.setDate(endDate.getDate() + 30);
         this.setState({ loading: true }, () => {
-            const { deptName, appointmentDate } = this.state;
-            axios.get(`http://localhost:8000/management/employee/doctor/${appointmentDate}/${deptName}`).then(res => {
-                this.setState({ availableDocs: res.data })    
+            startDate = moment(startDate).format("YYYY-MM-DD");
+            endDate = moment(endDate).format("YYYY-MM-DD");
+            axios.get(`http://localhost:8000/management/employee/doctor/${startDate}/${endDate}/${deptName}`).then((res) => {
+                this.setState({ unavailableDates: res.data.map(data => moment(data.date).format("YYYY-MM-DD")) });
             }).finally(() => {
-                this.setState({ loading: false })
+                this.setState({ loading: false });
             })
-        })
+        });
     }
 
     getAllDepartments = () => {
@@ -249,6 +266,18 @@ class Patient extends PureComponent {
                 this.setState({ diagnosis: res.data });
             });
         });
+    }
+
+    getDoctorsForADate = (date) => {
+        this.setState({ loading: true, potentialDate: date }, () => {
+            const { deptName } = this.state;
+            const appointmentDate = moment(date).format("YYYY-MM-DD");
+            axios.get(`http://localhost:8000/management/employee/doctor/${appointmentDate}/${deptName}`).then(res => {
+                this.setState({ availableDocs: res.data })    
+            }).finally(() => {
+                this.setState({ loading: false })
+            })
+        })
     }
 }
 
