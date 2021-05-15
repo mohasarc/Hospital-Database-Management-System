@@ -21,24 +21,21 @@ const TestsView = (props) => {
         activeTab: TEST_TABS.Assigned,
     });
 
-    console.log("assig ===> ", props.assigned);
-    console.log("prep ===> ", props.preparing);
-
     const renderSelectedTest = () => {
         switch (state.activeTab) {
             case TEST_TABS.Assigned:
                 return (
-                    <CollapsibleTable rows={props.assigned} />
+                    <CollapsibleTable tests={props.assigned} withInput />
                 );
 
             case TEST_TABS.Preparing:
                 return (
-                    <CollapsibleTable rows={props.preparing} />
+                    <CollapsibleTable tests={props.preparing} withInput />
                 );
 
             case TEST_TABS.Finalized:
                 return (
-                    <CollapsibleTable rows={props.finalized} />
+                    <CollapsibleTable tests={props.finalized} />
                 );
 
             default:
@@ -49,7 +46,7 @@ const TestsView = (props) => {
     return (
         <>
             <TestsContainer>
-                <NavbarGroup align={Alignment.CENTER} style={{ justifyContent: "space-around" }}>
+                <NavbarGroup align={Alignment.CENTER} style={{ justifyContent: "space-around", border: '1px solid grey' }}>
                     <Button className={Classes.MINIMAL} icon="tag" text={TEST_TABS.Assigned}
                         active={state.activeTab === TEST_TABS.Assigned}
                         intent="primary"

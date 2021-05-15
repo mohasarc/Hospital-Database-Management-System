@@ -113,6 +113,7 @@ router.get("/test/comps/:appt_id/:t_id", (req, res) => {
 router.post("/test/comps", (req, res) => {
 	const { t_id, c_id, appt_id, score } = req.body;
 	const values = [c_id, t_id, appt_id, score];
+	console.log("vale s===== >", values);
 	const sql = `INSERT INTO component_result(c_id, t_id, appt_id, score) VALUES(?);`;
 
 	connection.query(sql, [values], (err, results) => {

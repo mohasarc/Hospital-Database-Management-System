@@ -32,6 +32,28 @@ router.get("/lt/tests/:lt_id", (req, res) => {
 	});
 });
 
+// Get components for a test of an appiontment 
+// wiht status as preparing or finalized 
+router.get("/lt/tests/:lt_id/:appt_id/:t_id", (req, res) => {
+	const { lt_id, appt_id, t_id } = req.params;
+	const sql = `select A.appt_id, A.t_id, C.c_id, C.c_name, C.min_interval, C.max_interval, A.score
+				from components as C 
+				left join (
+						select AT.appt_id, AT.t_id, AT.status, CR.score , CR.c_id
+						from assigned_test as AT,  component_result as CR
+						where AT.lt_id='${lt_id}' and AT.appt_id=CR.appt_id and 
+						AT.appt_id='${appt_id}' and AT.t_id=${t_id} and CR.t_id='${t_id}'
+					) as A on C.t_id=A.t_id and C.c_id=A.c_id
+				where C.t_id=${t_id}`;
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Get all tests performed at a particular lab (using technician expertise + which lab they work at) //TODO
 // GET "/tests"
 

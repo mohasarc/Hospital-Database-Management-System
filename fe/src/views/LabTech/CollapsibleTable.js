@@ -1,41 +1,46 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import React, { useState, useRef } from 'react';
 
+import {
+    Box,
+    Collapse,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    Paper,
+}
+    from "@material-ui/core";
+
+import { H2, Icon, NumericInput } from "@blueprintjs/core";
 
 import { Button, Classes, Spinner } from "@blueprintjs/core";
 import moment from 'moment';
 import axios from 'axios';
 
-const useRowStyles = makeStyles({
-    root: {
-        '& > *': {
-            borderBottom: 'unset',
-        },
-    },
-});
+const AddScore = (props) => {
+    const { comp, onClick } = props;
+    const [val, setVal] = useState(0);
 
+    return (
+        <>
+            <NumericInput allowNumericCharactersOnly={true} min="0" max={comp.max_interval} value={val} onValueChange={(v) => setVal(v)} />
+            <Button text="Add Score" className={Classes.MINIMAL} rightIcon="add" intent="primary" onClick={() => onClick(val, comp)} />
+        </>
+    );
+
+}
 
 const Row = (props) => {
-    const { row } = props;
+    const { test, withInput } = props;
     const [open, setOpen] = useState(false);
-    const classes = useRowStyles();
     const [comps, setComps] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const fetchComponents = async (t_id) => {
-        const url = `http://localhost:8000/management/test/comps/${t_id}`;
+        const url = `http://localhost:8000/laboratory/lt/tests/${test.lt_id}/${test.appt_id}/${test.t_id}`;
         setOpen(!open);
         setLoading(true);
         const components = await (await axios.get(url)).data;
@@ -43,15 +48,53 @@ const Row = (props) => {
         setLoading(false);
     }
 
+    const addScoreHandler = async (score, comp) => {
+        // Add component result        
+        const url = `http://localhost:8000/appointment/test/comps`;
+        const body = { t_id: test.t_id, c_id: comp.c_id, appt_id: test.appt_id, score: score };
+        const res = await axios.post(url, body);
+        window.location.reload();
+    }
+
+    const buildCompItem = (comp) => {
+        return (
+            <>
+                <TableRow key={`${comp.c_id}-${comp.t_id}`}>
+                    <TableCell component="th" scope="row">
+                        {comp.c_name}
+                    </TableCell>
+                    <TableCell>{comp.min_interval}</TableCell>
+                    <TableCell >{comp.max_interval}</TableCell>
+                    {comp.score && <TableCell >{comp.score}</TableCell>}
+
+                    {(!withInput || comp.score) &&
+                        <>
+                            <TableCell align="left">
+                                <Icon icon="tick-circle" intent="success" />
+                            </TableCell>
+                        </>}
+                    {<TableCell align="right">
+                        {(withInput && !comp.score) &&
+                            <>
+                                <TableRow>
+                                    <AddScore comp={comp} onClick={addScoreHandler} />
+                                </TableRow>
+                            </>}
+                    </TableCell>}
+                </TableRow>
+            </>
+        );
+    }
+
     return (
         <React.Fragment>
-            <TableRow className={classes.root}>
-                <TableCell align="left">{row.t_id}</TableCell>
-                <TableCell align="left">{row.name}</TableCell>
-                <TableCell align="left">{row.appt_id}</TableCell>
-                <TableCell align="left">{moment(row.date).format("YYYY-MM-DD")}</TableCell>
+            <TableRow key={`${test.t_id}-${test.appt_id}`}>
+                <TableCell align="left">{test.t_id}</TableCell>
+                <TableCell align="left">{test.name}</TableCell>
+                <TableCell align="left">{test.appt_id}</TableCell>
+                <TableCell align="left">{moment(test.date).format("YYYY-MM-DD")}</TableCell>
                 <TableCell>
-                    {<Button className={Classes.MINIMAL} icon={!open ? "chevron-down" : "chevron-down"} onClick={() => fetchComponents(row.t_id)} />}
+                    {<Button className={Classes.MINIMAL} icon={!open ? "chevron-down" : "chevron-down"} onClick={() => fetchComponents(test.t_id)} />}
                 </TableCell>
             </TableRow>
             <TableRow>
@@ -65,26 +108,13 @@ const Row = (props) => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Name</TableCell>
-                                        <TableCell align="left">Min. Interval</TableCell>
-                                        <TableCell align="left">Max. Interval</TableCell>
+                                        <TableCell >Min. Interval</TableCell>
+                                        <TableCell >Max. Interval</TableCell>
+                                        <TableCell >Score</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {comps.map((comp) => (
-                                        <TableRow key={comp.c_name}>
-                                            <TableCell component="th" scope="row">
-                                                {comp.c_name}
-                                            </TableCell>
-                                            <TableCell>{comp.min_interval}</TableCell>
-                                            <TableCell align="left">{comp.max_interval}</TableCell>
-                                            <TableCell align="right">
-                                                {<Button text="Add Score" className={Classes.MINIMAL} rightIcon="add" intent="primary" onClick={() => console.log("++++++++++")} />}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {/* {loading ? <Spinner /> : <>
-                                        
-                                    </>} */}
+                                    {comps.map(buildCompItem)}
                                 </TableBody>
                             </Table>
                         </Box>
@@ -95,28 +125,10 @@ const Row = (props) => {
     );
 }
 
-Row.propTypes = {
-    row: PropTypes.shape({
-        calories: PropTypes.number.isRequired,
-        carbs: PropTypes.number.isRequired,
-        fat: PropTypes.number.isRequired,
-        history: PropTypes.arrayOf(
-            PropTypes.shape({
-                amount: PropTypes.number.isRequired,
-                customerId: PropTypes.string.isRequired,
-                date: PropTypes.string.isRequired,
-            }),
-        ).isRequired,
-        name: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired,
-        protein: PropTypes.number.isRequired,
-    }).isRequired,
-};
 
-export default function CollapsibleTable(props) {
-    console.log("list prosp ===> ", props.rows);
+const CollapsibleTable = (props) => {
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
             <Table aria-label="collapsible table">
                 <TableHead>
                     <TableRow>
@@ -128,11 +140,16 @@ export default function CollapsibleTable(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {props.rows.map((row) => (
-                        <Row key={row.name} row={row} />
+                    {props.tests.length === 0 && <H2>No Tests Found!</H2>}
+                    {props.tests.map((test) => (
+                        <Row key={`${test.appt_id}-${test.t_id}`} test={test} withInput={props.withInput} />
                     ))}
                 </TableBody>
             </Table>
         </TableContainer>
     );
 }
+
+export default CollapsibleTable;
+
+

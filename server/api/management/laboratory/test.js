@@ -36,7 +36,7 @@ router.delete("/test", async (req, res) => {
 	performQuery(sql, res);
 });
 
-// add a test component //TODO
+// add a test component
 router.post("/test/comps", (req, res) => {
 	const { c_id, c_name, t_id, min_interval, max_interval } = req.body;
 	const values = [c_id, c_name, t_id, min_interval, max_interval];

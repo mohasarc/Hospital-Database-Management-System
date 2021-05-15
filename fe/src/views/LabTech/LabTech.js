@@ -38,6 +38,7 @@ class LabTech extends PureComponent {
 	}
 
 	componentDidMount() {
+		// console.log("**************************");
 		this.fetchTests();
 	}
 
