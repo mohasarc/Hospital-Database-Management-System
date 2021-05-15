@@ -79,7 +79,7 @@ CREATE TABLE lab_technician(
 CREATE TABLE appointment(
 	appt_id VARCHAR(50),
     d_id VARCHAR(50),
-    p_id VARCHAR(50),
+    p_id VARCHAR(50) NOT NULL,
 	date DATE,
 	status VARCHAR(20),
     description VARCHAR(200),
