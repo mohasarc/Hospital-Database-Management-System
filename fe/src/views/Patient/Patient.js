@@ -19,14 +19,15 @@ import Modal from 'react-modal';
 
 const TABS = {
     PersonalInfo: { value: "PERSONAL_INFORMATION", text: "Personal Information" },
-    Appointments: { value: "APPOINTMENTS", text: "Appointments" }
+    Appointments: { value: "APPOINTMENTS", text: "Appointments" },
+    Tests: { value: "TESTS", text: "Tests" }
 }
 class Patient extends PureComponent {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-            activePage: TABS.Appointments.value,
+            activePage: TABS.Tests.value,
             appointments: [],
             departments: [],
             availableDocs: [],
@@ -44,8 +45,6 @@ class Patient extends PureComponent {
     }
 
 	render() {
-        console.log(this.state.symptoms);
-        console.log(this.state.diagnosis);
         return (
             <div>
                 <NavbarGroup align={Alignment.RIGHT} >
@@ -53,6 +52,7 @@ class Patient extends PureComponent {
                     <NavbarDivider />
                     <Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text} onClick={() => this.setState({ activePage: TABS.PersonalInfo.value })} />
                     <Button className={Classes.MINIMAL} icon="calendar"text={TABS.Appointments.text} onClick={() => this.setState({ activePage: TABS.Appointments.value })}  />
+                    <Button className={Classes.MINIMAL} icon="lab-test"text={TABS.Tests.text} onClick={() => this.setState({ activePage: TABS.Tests.value })}  />
                 </NavbarGroup>
                 <Body>
                     {this.renderView()}
@@ -101,7 +101,6 @@ class Patient extends PureComponent {
                         </PropertiesContainer>
                     </>
                 );
-                break;
             case TABS.Appointments.value:
                 return (
                     <>
@@ -177,7 +176,13 @@ class Patient extends PureComponent {
                             </Table>
                         </TableContainer>
                     </>
-                );                
+                );   
+            case TABS.Tests.value:
+                return (
+                    <>
+                        To be implemented
+                    </>
+                );
         }
     }
 
