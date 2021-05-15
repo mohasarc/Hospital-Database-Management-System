@@ -10,6 +10,7 @@ import axios from "axios";
 import React, { PureComponent } from "react";
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import Loading from "../Loading";
+import { ToastContainer, toast } from 'react-toastify';
 
 class Management extends PureComponent {
 	constructor(props) {
@@ -40,7 +41,7 @@ class Management extends PureComponent {
 
 	render() {
 		const { loading } = this.state;
-        return loading ? <Loading /> : <div>
+        return <> {loading ? <Loading /> : <div>
 				<H3>Welcome to the Management Page</H3>
 
                 <H5>Unresolved Employees</H5>
@@ -168,8 +169,19 @@ class Management extends PureComponent {
                     </Table>
                 </TableContainer>
                 <Divider />
-			</div>
-		;
+			</div>}
+            <ToastContainer 
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                // draggable
+                // pauseOnHover
+            />
+		</>;
 	}
 
     renderForm = () => {
@@ -242,9 +254,14 @@ class Management extends PureComponent {
                 default: 
                     break;
             }
-            axios.post(`http://localhost:8000/management/employee/${endpoint}`, { ...objectToSend }).then((res) => {
+            axios.post(`http://localhost:8000/management/employee/${endpoint}`, { ...objectToSend })
+            .then((res) => {
                 this.fetchAllEmployees();
-            }).finally(() => {
+            })
+            .catch(error => {
+			    toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
 
@@ -292,7 +309,7 @@ class Management extends PureComponent {
               }).then(res => {
                   this.fetchAllEmployees();
               }).catch((error) => {
-                    console.log(error);
+                    toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
               }).finally(() => {
                   this.setState({ loading: false })
               });

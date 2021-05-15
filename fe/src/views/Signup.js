@@ -5,6 +5,8 @@ import { DateInput } from "@blueprintjs/datetime";
 import moment from 'moment';
 import Loading from './Loading';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 class Signup extends PureComponent {
 	constructor(props) {
@@ -18,16 +20,28 @@ class Signup extends PureComponent {
 	render() {
         const { proceedToNextStep, loading } = this.state;
 		return (
-            loading ? <Loading /> :
-            <Container>
-                {proceedToNextStep ? this.renderUserSpecificPannel() : this.renderInitialPannel()}
-            </Container>
+            <>
+                {loading ? <Loading /> :
+                <Container>
+                    {proceedToNextStep ? this.renderUserSpecificPannel() : this.renderInitialPannel()}
+                </Container>}
+                <ToastContainer 
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    // draggable
+                    // pauseOnHover
+                />
+            </>
         );
 	}
 
     renderInitialPannel = () => {
         const { email, firstName, lastName, password, confirmPassword } = this.state;
-        console.log(this.state);
         return (
             <Card>
                 <h3 className="bp3-heading">Signup as Patient</h3>
@@ -129,6 +143,7 @@ class Signup extends PureComponent {
                         onClick={this.register}
                         disabled={this.resolveButtonDisabledStatus()}
                     />
+                    <Link to="/login">Already a member?</Link>
                 </ButtonContainer>
             </Card>    
         );
@@ -142,9 +157,15 @@ class Signup extends PureComponent {
             objToSend = { ...objToSend, height, weight, blood_group: bloodGroup, type: "PATIENT" }
         }
         this.setState({ loading: true }, () => {
-            axios.post(`http://localhost:8000/auth/signup`, { ...objToSend }).then((res) => {
+            axios.post(`http://localhost:8000/auth/signup`, { ...objToSend })
+            .then((res) => {
+                toast("Successfully signed up.", { style:{ backgroundColor: "green", color: "white"} })
                 history.push("/login");
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
@@ -169,9 +190,10 @@ const Container = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 60%;
+    text-align: center;
+    a {
+        display: block;
+    }
 `;
 
 export default Signup;

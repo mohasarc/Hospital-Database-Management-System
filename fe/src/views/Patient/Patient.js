@@ -19,6 +19,7 @@ import Modal from 'react-modal';
 import Tests from './Tests';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 const TABS = {
     PersonalInfo: { value: "PERSONAL_INFORMATION", text: "Personal Information" },
@@ -58,6 +59,10 @@ class Patient extends PureComponent {
                     <Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text} onClick={() => this.setState({ activePage: TABS.PersonalInfo.value })} />
                     <Button className={Classes.MINIMAL} icon="calendar"text={TABS.Appointments.text} onClick={() => this.setState({ activePage: TABS.Appointments.value })}  />
                     <Button className={Classes.MINIMAL} icon="lab-test"text={TABS.Tests.text} onClick={() => this.setState({ activePage: TABS.Tests.value })}  />
+                    <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
+                        localStorage.removeItem("user");
+                        this.props.history.push("/login");
+                    }}/>
                 </NavbarGroup>
                 <Body>
                     {this.renderView()}
@@ -71,6 +76,17 @@ class Patient extends PureComponent {
                     </div>
                     <Button text="Exit" intent="danger" onClick={() => this.setState({ showSymptomsAndDiagnosis: false, symptoms: [], diagnosis: [] })}/>
                 </Modal>
+                <ToastContainer 
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    // draggable
+                    // pauseOnHover
+                />
             </div>
 
 		);
@@ -229,9 +245,14 @@ class Patient extends PureComponent {
 
     getAllAppointmentsForPatient = () => {
         this.setState({ loading: true }, () => {
-            axios.get(`http://localhost:8000/appointment/${this.state.pid}`).then((res) => {
+            axios.get(`http://localhost:8000/appointment/${this.state.pid}`)
+            .then((res) => {
                 this.setState({ appointments: res.data });
-            }).finally(() => {
+            })
+            .catch((error) => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
@@ -246,11 +267,16 @@ class Patient extends PureComponent {
             description
         }
         this.setState({ loading: true }, () => {
-            axios.post(`http://localhost:8000/appointment`, { ...objToSend }).then((res) => {
+            axios.post(`http://localhost:8000/appointment`, { ...objToSend })
+            .then((res) => {
                 this.setState({ availableDocs: [], unavailableDates: undefined }, () => {
                     this.getAllAppointmentsForPatient();
                 })
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
@@ -259,6 +285,8 @@ class Patient extends PureComponent {
     cancelAppointment = (appt_id) => {
         axios.patch(`http://localhost:8000/appointment`, { appt_id }).then(res => {
             this.getAllAppointmentsForPatient();
+        }).catch(error => {
+            toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
         })
     }
 
@@ -270,9 +298,14 @@ class Patient extends PureComponent {
         this.setState({ loading: true }, () => {
             startDate = moment(startDate).format("YYYY-MM-DD");
             endDate = moment(endDate).format("YYYY-MM-DD");
-            axios.get(`http://localhost:8000/management/employee/doctor/${startDate}/${endDate}/${deptName}`).then((res) => {
+            axios.get(`http://localhost:8000/management/employee/doctor/${startDate}/${endDate}/${deptName}`)
+            .then((res) => {
                 this.setState({ unavailableDates: res.data.map(data => moment(data.date).format("YYYY-MM-DD")) });
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             })
         });
@@ -280,23 +313,33 @@ class Patient extends PureComponent {
 
     getAllDepartments = () => {
         this.setState({ loading: true }, () => {
-            axios.get("http://localhost:8000/management/department").then((res) => {
+            axios.get("http://localhost:8000/management/department")
+            .then((res) => {
                 this.setState({ departments: res.data }, () => {
                     this.setState({ loading: false });
                 })
             })
-
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
         })
-
     }
 
     getSymptomsAndDiseases = (appt_id) => {
         this.setState({ showSymptomsAndDiagnosis: true }, () => {
-            axios.get(`http://localhost:8000/appointment/symptom/${appt_id}`).then(res => {
+            axios.get(`http://localhost:8000/appointment/symptom/${appt_id}`)
+            .then(res => {
                 this.setState({ symptoms: res.data });
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
             });
-            axios.get(`http://localhost:8000/appointment/diagnosis/${appt_id}`).then(res => {
+            axios.get(`http://localhost:8000/appointment/diagnosis/${appt_id}`)
+            .then(res => {
                 this.setState({ diagnosis: res.data });
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
             });
         });
     }
@@ -305,9 +348,14 @@ class Patient extends PureComponent {
         this.setState({ loading: true, potentialDate: date }, () => {
             const { deptName } = this.state;
             const appointmentDate = moment(date).format("YYYY-MM-DD");
-            axios.get(`http://localhost:8000/management/employee/doctor/${appointmentDate}/${deptName}`).then(res => {
+            axios.get(`http://localhost:8000/management/employee/doctor/${appointmentDate}/${deptName}`)
+            .then(res => {
                 this.setState({ availableDocs: res.data })    
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false })
             })
         })

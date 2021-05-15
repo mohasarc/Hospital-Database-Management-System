@@ -59,6 +59,10 @@ const TestsView = (props) => {
                         active={state.activeTab === TEST_TABS.Finalized}
                         intent="primary"
                         onClick={() => setState({ activeTab: TEST_TABS.Finalized })} />
+                    <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
+                        localStorage.removeItem("user");
+                        this.props.history.push("/login");
+                    }}/>
                 </NavbarGroup>
                 <TestsBody>
                     {renderSelectedTest()}

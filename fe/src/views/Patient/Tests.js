@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import moment from 'moment';
 import { Alignment, Button, Classes, Divider, H5, H6, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, FormGroup, InputGroup } from "@blueprintjs/core";
+import { ToastContainer, toast } from 'react-toastify';
 
 class Tests extends PureComponent {
 	constructor(props) {
@@ -108,6 +109,17 @@ class Tests extends PureComponent {
                         </Table>
                     </TableContainer>
                 </div>}
+                <ToastContainer 
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    // draggable
+                    // pauseOnHover
+                />
             </div>
 
 		);
@@ -118,7 +130,11 @@ class Tests extends PureComponent {
         this.setState({ loading: true }, () => {
             axios.get(`http://localhost:8000/patient/test/${patient.pid}`).then((res) => {
                 this.setState({ tests: res.data });
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
@@ -126,9 +142,14 @@ class Tests extends PureComponent {
 
     getTestComponentDetails = (appt_id, t_id) => {
         this.setState({ loading: true }, () => {
-            axios.get(`http://localhost:8000/appointment/test/comps/${appt_id}/${t_id}`).then((res) => {
+            axios.get(`http://localhost:8000/appointment/test/comps/${appt_id}/${t_id}`)
+            .then((res) => {
                 this.setState({ components: res.data });
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
@@ -139,9 +160,14 @@ class Tests extends PureComponent {
         const p_id = patient.pid;
         const { appt_id, c_id, t_id } = component;
         this.setState({ loading: true }, () => {
-            axios.get(`http://localhost:8000/appointment/tests/patient/comps/${appt_id}/${p_id}/${t_id}/${c_id}`).then((res) => {
+            axios.get(`http://localhost:8000/appointment/tests/patient/comps/${appt_id}/${p_id}/${t_id}/${c_id}`)
+            .then((res) => {
                 this.setState({ componentDetails: res.data, selectedComponentName: component.c_name });
-            }).finally(() => {
+            })
+            .catch(error => {
+                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })

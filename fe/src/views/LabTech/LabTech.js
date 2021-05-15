@@ -13,6 +13,7 @@ import axios from "axios";
 import { USER_PROPERTIES } from "../Patient/UserProperties";
 import TestsView from "./TestsView";
 import { TEST_STATUS } from '../../constants';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 const TABS = {
@@ -58,6 +59,17 @@ class LabTech extends PureComponent {
 						onClick={() => this.setState({ activeTab: TABS.Tests.value })} />
 				</NavbarGroup>
 				<Body>{this.renderBody()}</Body>
+				<ToastContainer 
+                    position="bottom-right"
+                    autoClose={5000}
+                    hideProgressBar={true}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    // draggable
+                    // pauseOnHover
+                />
 			</div>
 		);
 	}
@@ -69,7 +81,9 @@ class LabTech extends PureComponent {
 			const preparing = res.data.filter((test) => test.status === TEST_STATUS.preparing);
 			const finalized = res.data.filter((test) => test.status === TEST_STATUS.finalized);
 			this.setState({ assigned: assigned, preparing: preparing, finalized: finalized })
-		})
+		}).catch(error => {
+			toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+		});
 	}
 
 	renderBody = () => {
