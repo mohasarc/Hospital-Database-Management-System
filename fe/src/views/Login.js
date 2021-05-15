@@ -48,10 +48,15 @@ class Login extends PureComponent {
         const { email, password, userType } = this.state;
         const user = { e_mail: email, password, type: userType };
         this.setState({ loading: true }, () => {
-            axios.post(`http://localhost:8000/auth/login`, { ...user }).then((res) => {
+            axios
+            .post(`http://localhost:8000/auth/login`, { ...user }).then((res) => {
                 localStorage.setItem("user", JSON.stringify(res.data));
                 history.push("/management");
-            }).finally(() => {
+            })
+            .catch((error) => {
+                console.log("ERROR: ", error);
+            })
+            .finally(() => {
                 this.setState({ loading: false });
             });
         })
