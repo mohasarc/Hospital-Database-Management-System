@@ -7,6 +7,7 @@ import Patient from '../views/Patient/Patient';
 import Management from '../views/Management/Management';
 import DepartmentMan from "../views/Management/department_man";
 import Doctor from "../views/Doctor/Doctor";
+import Pharmacy from "../views/Pharmacy/Pharmacy";
 
 const Routes = () => {
 	return (
@@ -17,6 +18,7 @@ const Routes = () => {
 			<Route path={RoutePaths.Management} component={Management} exact />
 			<Route path={RoutePaths.DepartmentMan} component={DepartmentMan} exact />
 			<Route path={RoutePaths.Doctor} component={Doctor} exact />
+			<Route path={RoutePaths.Pharmacy} component={Pharmacy} exact />
 		</Switch>
 	);
 };
