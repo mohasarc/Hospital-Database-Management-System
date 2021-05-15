@@ -5,7 +5,7 @@ const { connection } = require('../../../index');
 
 // Read all pharmacies
 router.get("/pharmacy", (req, res) => {
-	const sql     = `SELECT * FROM pharmacy`;
+	const sql = `SELECT * FROM pharmacy`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -19,9 +19,9 @@ router.get("/pharmacy", (req, res) => {
 // Add a pharmacy
 router.post("/pharmacy", (req, res) => {
 	const { name, room_no } = req.body;
-    const phmcy_id = uuidv4();
+	const phmcy_id = uuidv4();
 	const tuple = [phmcy_id, name, room_no];
-	const sql     = `INSERT INTO pharmacy(phmcy_id, name, room_no) VALUES(?)`;
+	const sql = `INSERT INTO pharmacy(phmcy_id, name, room_no) VALUES(?)`;
 
 	connection.query(sql, [tuple], (err, results) => {
 		if (err) {
@@ -44,6 +44,7 @@ router.delete("/pharmacy", async (req, res) => {
 	// Perform sql
 	connection.query(sql, async (err, result) => {
 		if (err) {
+			console.log(err);
 			res.status(500).send(err);
 		} else {
 			res.status(200).send(result);

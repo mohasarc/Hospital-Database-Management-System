@@ -25,8 +25,7 @@ import PharmacyDetails from './PharmacyDetails';
 import axios from 'axios';
 
 const Row = (props) => {
-    const { phar, onClick } = props;
-    const [loading, setLoading] = useState(false);
+    const { phar, onViewDetails, onRemove } = props;
 
     return (
         <React.Fragment>
@@ -35,7 +34,10 @@ const Row = (props) => {
                 <TableCell >{phar.name}</TableCell>
                 <TableCell >{phar.room_no}</TableCell>
                 <TableCell>
-                    {<Button text="Details" intent="primary" className={Classes.MINIMAL} icon="list-detail-view" onClick={() => onClick(phar)} />}
+                    {<Button text="Details" intent="primary" className={Classes.MINIMAL} icon="list-detail-view" onClick={() => onViewDetails(phar)} />}
+                </TableCell>
+                <TableCell>
+                    {<Button text="Remove" intent="danger" className={Classes.MINIMAL} icon="trash" onClick={() => onRemove(phar)} />}
                 </TableCell>
             </TableRow>
         </React.Fragment>
@@ -67,7 +69,13 @@ const PharmacyList = (props) => {
         console.log(newPhar.name, newPhar.room_no);
         const url = 'http://localhost:8000/management/pharmacy';
         const res = await axios.post(url, newPhar);
-        console.log(res);
+        window.location.reload();
+    }
+
+    const removePhar = async (phar) => {
+        const url = 'http://localhost:8000/management/pharmacy';
+        const res = await axios.delete(url, { data: { phmcy_id: phar.phmcy_id } });
+        window.location.reload();
     }
 
     const renderAddForm = () => {
@@ -107,13 +115,15 @@ const PharmacyList = (props) => {
                                 <TableCell>ID</TableCell>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Room NO</TableCell>
-                                {/* <TableCell /> */}
+                                <TableCell />
+                                <TableCell />
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {pharmacies?.length === 0 && <H2>No Pharmacies Found!</H2>}
                             {pharmacies?.map((phar) => (
-                                <Row key={`${phar.phmcy_id}`} phar={phar} onClick={openDetails} />
+                                <Row key={`${phar.phmcy_id}`} phar={phar}
+                                    onViewDetails={openDetails} onRemove={removePhar} />
                             ))}
                         </TableBody>
                     </Table>
