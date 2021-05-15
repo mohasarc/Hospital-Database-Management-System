@@ -4,7 +4,61 @@ const { v4: uuidv4 } = require("uuid");
 const { connection } = require("../../../index");
 const { APPT_STATUS } = require("../../../constants");
 
-// get all doctors (or ones available for particular date & department)
+// Get all dates that all doctors are busy for specific dept
+router.get("/doctor/:start_date/:end_date/:dept_name", (req, res) => {
+	const { start_date, end_date, dept_name } = req.params;
+	const sql  = `
+			(
+				SELECT DISTINCT U.unavail_date as date
+				FROM doc_schedule as U
+				WHERE unavail_date >= "${start_date}" AND unavail_date <= "${end_date}" 
+				AND NOT EXISTS (
+						SELECT d_id
+						FROM doctor
+						WHERE dept_name = "${dept_name}" AND d_id NOT IN (
+							(
+							SELECT S.d_id
+							FROM doc_schedule as S
+							WHERE S.unavail_date = U.unavail_date
+							)
+							UNION
+							(
+							SELECT d_id
+							FROM appointment
+							WHERE status = "ONGOING" AND date = U.unavail_date
+							)
+						)
+				)
+			) 
+			UNION
+			(
+				SELECT date
+				FROM appointment as A
+				WHERE A.status = "ONGOING" AND A.date >= "${start_date}" AND A.date <= "${end_date}" 
+				AND NOT EXISTS (
+						SELECT d_id
+						FROM doctor
+						WHERE dept_name = "${dept_name}" AND d_id NOT IN (
+							(
+								SELECT T.d_id
+								FROM appointment as T
+								WHERE T.date = A.date
+							)
+							UNION
+							(
+								SELECT d_id
+								FROM doc_schedule
+								WHERE unavail_date = A.date
+							)
+			
+						)
+				)
+			)`;
+
+	performQuery(sql, res);
+});
+
+// get all doctors  available for particular date & department
 router.get("/doctor/:date/:dept_name", (req, res) => {
 	const { date, dept_name } = req.params;
 	const sql  = `SELECT * 
