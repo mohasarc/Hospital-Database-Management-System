@@ -8,6 +8,21 @@ import {
     Alignment,
     Spinner,
 } from "@blueprintjs/core";
+
+import {
+    Box,
+    Collapse,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    Paper,
+}
+    from "@material-ui/core";
+
 import styled from "styled-components";
 import { Form } from "react-bootstrap";
 import axios from "axios";
@@ -65,6 +80,8 @@ class Pharmacy extends PureComponent {
         const phars = await (await axios.get(url)).data;
         this.setState({ pharmacies: phars, loading: false });
     }
+
+
 
     renderBody = () => {
         const { activeTab } = this.state;
