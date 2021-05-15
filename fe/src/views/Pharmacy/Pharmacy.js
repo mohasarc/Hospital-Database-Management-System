@@ -9,25 +9,12 @@ import {
     Spinner,
 } from "@blueprintjs/core";
 
-import {
-    Box,
-    Collapse,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography,
-    Paper,
-}
-    from "@material-ui/core";
-
 import styled from "styled-components";
 import { Form } from "react-bootstrap";
 import axios from "axios";
 import { USER_PROPERTIES } from "../Patient/UserProperties";
 import PharmacyList from "./PharmacyList";
+import Medicines from "./Medicines";
 
 
 const TABS = {
@@ -88,21 +75,7 @@ class Pharmacy extends PureComponent {
         switch (activeTab) {
             case TABS.Medicine.value:
                 return (
-                    <PropertiesContainer>
-                        {USER_PROPERTIES.map((property, index) => {
-                            if (this.state.user[property.value]) {
-                                return (
-                                    <Form.Group controlId={"property " + index} id={"property " + index} >
-                                        <Form.Label>
-                                            {property.text}
-                                        </Form.Label>
-                                        <Form.Control placeholder="Fetching Details" value={this.state.user[property.value]} readOnly />
-                                    </Form.Group>
-                                );
-                            }
-                            return null;
-                        })}
-                    </PropertiesContainer>
+                    <Medicines />
                 );
             default:
                 return (

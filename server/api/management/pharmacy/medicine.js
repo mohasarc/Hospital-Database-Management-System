@@ -4,7 +4,7 @@ const { connection } = require('../../../index');
 
 // Read all medicine
 router.get("/medicine", (req, res) => {
-	const sql     = `SELECT * FROM medicine`;
+	const sql = `SELECT * FROM medicine`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
@@ -19,7 +19,7 @@ router.get("/medicine", (req, res) => {
 router.post("/medicine", (req, res) => {
 	const { name } = req.body;
 	const tuple = [name];
-	const sql     = `INSERT INTO medicine(name) VALUES(?)`;
+	const sql = `INSERT INTO medicine(name) VALUES(?)`;
 
 	connection.query(sql, [tuple], (err, results) => {
 		if (err) {
@@ -34,6 +34,8 @@ router.post("/medicine", (req, res) => {
 router.delete("/medicine", async (req, res) => {
 	// Prepare values
 	const { name } = req.body;
+
+	console.log('name', name);
 
 	// Prepare sql
 	const sql = `DELETE FROM medicine
