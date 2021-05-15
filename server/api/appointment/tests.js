@@ -82,7 +82,7 @@ router.get("/test/:appt_id", (req, res) => {
 	});
 });
 
-// Get all components for a test
+// Get result of all components of a test
 // with test id as t_id and appointment id as appt_id
 router.get("/test/comps/:appt_id/:t_id", (req, res) => {
 	const { t_id, appt_id } = req.params;
@@ -99,6 +99,7 @@ router.get("/test/comps/:appt_id/:t_id", (req, res) => {
 router.post("/test/comps", (req, res) => {
 	const { t_id, c_id, appt_id, score } = req.body;
 	const values = [c_id, t_id, appt_id, score];
+	console.log("vale s===== >", values);
 	const sql = `INSERT INTO component_result(c_id, t_id, appt_id, score) VALUES(?);`;
 
 	connection.query(sql, [values], (err, results) => {
@@ -122,5 +123,6 @@ router.get("/tests/patient/comps/:appt_id/:p_id/:t_id/:c_id", (req, res) => {
 		res.status(200).send(results);
 	});
 });
+
 
 module.exports = router;
