@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 import styled from 'styled-components';
-import { Alignment, Button, Classes, Divider, H5, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Alignment, Button, Classes, Divider, H5, H6, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, FormGroup, InputGroup } from "@blueprintjs/core";
 import { Form } from 'react-bootstrap';
 import { USER_PROPERTIES } from './UserProperties';
 import axios from 'axios';
@@ -49,9 +49,10 @@ class Patient extends PureComponent {
     }
 
 	render() {
+        console.log(this.state.appoitnments)
         return (
             <div>
-                <NavbarGroup align={Alignment.RIGHT} >
+                <NavbarGroup align={Alignment.RIGHT}>
                     <NavbarHeading align={Alignment.LEFT}>Patient Profile</NavbarHeading>
                     <NavbarDivider />
                     <Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text} onClick={() => this.setState({ activePage: TABS.PersonalInfo.value })} />
@@ -64,17 +65,9 @@ class Patient extends PureComponent {
                 <Modal isOpen={this.state.showSymptomsAndDiagnosis} contentLabel="Example Modal" ariaHideApp={false}>
                     <div>
                         <h3>Symptoms</h3>
-                        <ol>
-                            {this.state.symptoms.map(symptom => {
-                                return <li>{symptom.name}</li>
-                            })}
-                        </ol>
+                        <ol>{this.state.symptoms.map(symptom => { return <li>{symptom.name}</li>})}</ol>
                         <h3>Diagnosis</h3>
-                        <ol>
-                            {this.state.diagnosis.map(dia => {
-                                return <li>{dia.name}</li>
-                            })}
-                        </ol>
+                        <ol>{this.state.diagnosis.map(dia => { return <li>{dia.name}</li> })}</ol>
                     </div>
                     <Button text="Exit" intent="danger" onClick={() => this.setState({ showSymptomsAndDiagnosis: false, symptoms: [], diagnosis: [] })}/>
                 </Modal>
@@ -109,8 +102,33 @@ class Patient extends PureComponent {
                 return (
                     <>
                         <H5>{TABS.Appointments.text}</H5>
-                        <AppointmentSearchOptionsContainer>
-                            <FormGroup label="Appointment Date" labelFor="appointmentDate">
+                        {/* <AppointmentSearchOptionsContainer>
+                            <AppointmentDateContainer>
+                                <FormGroup label="Appointment Date" labelFor="appointmentDate">
+                                    <DateInput 
+                                        formatDate={date => moment(date).format("YYYY-MM-DD")} 
+                                        onChange={(date) => this.setState({ appointmentDate: moment(date).format("YYYY-MM-DD") })} 
+                                        parseDate={str => new Date(str)} placeholder={"YYYY-MM-DD"}
+                                        minDate={new Date()}
+                                    />
+                                </FormGroup>
+                            </AppointmentDateContainer>
+                            <DepartmentsContainer>
+                                <FormGroup label="Department Name" labelFor="deptName">
+                                    <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Department" />
+                                </FormGroup>   
+                            </DepartmentsContainer>
+                            <OperationsContainer>
+                                {this.state.unavailableDates && <Calendar 
+                                    tileDisabled={({ date }) => this.state.unavailableDates.includes(moment(date).format("YYYY-MM-DD"))}
+                                    onChange={this.getDoctorsForADate}
+                                    minDate={new Date()}
+                                    />}
+                                <Button onClick={this.listAvailableDoctors} text="List Available Dates" intent="primary" disabled={!deptName || !appointmentDate} />
+                            </OperationsContainer>
+                        </AppointmentSearchOptionsContainer> */}
+                        <div className="row no-gutters">
+                            <FormGroup label="Appointment Date" labelFor="appointmentDate" className="col-3">
                                 <DateInput 
                                     formatDate={date => moment(date).format("YYYY-MM-DD")} 
                                     onChange={(date) => this.setState({ appointmentDate: moment(date).format("YYYY-MM-DD") })} 
@@ -118,73 +136,88 @@ class Patient extends PureComponent {
                                     minDate={new Date()}
                                 />
                             </FormGroup>
-                            <FormGroup label="Department Name" labelFor="deptName">
-                                <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Select a department" />
-                            </FormGroup>   
-                            <Button onClick={this.listAvailableDoctors} text="List Available Dates" intent="primary" disabled={!deptName || !appointmentDate} />
-                            {this.state.unavailableDates && <Calendar 
+                            <DepartmentsContainer className="col-3">
+                                <FormGroup label="Department Name" labelFor="deptName">
+                                    <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Department" />
+                                </FormGroup>   
+                            </DepartmentsContainer>
+                            <StyledButton onClick={this.listAvailableDoctors} text="List Available Dates" intent="primary" disabled={!deptName || !appointmentDate} className="col-2" />
+                        </div>
+                        {this.state.unavailableDates && <Calendar 
                                 tileDisabled={({ date }) => this.state.unavailableDates.includes(moment(date).format("YYYY-MM-DD"))}
                                 onChange={this.getDoctorsForADate}
                                 minDate={new Date()}
-                            />}
-                        </AppointmentSearchOptionsContainer>
-                        <TableContainer component={Paper}>
-                            <Table aria-label="simple table">
-                                <TableHead>
-                                <TableRow>
-                                    <TableCell align="left">Name</TableCell>
-                                    <TableCell align="left">Specialization</TableCell>
-                                    <TableCell align="left">Qualifications</TableCell>
-                                    <TableCell align="left">Email</TableCell>
-                                    <TableCell align="left">Actions</TableCell>
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {this.state.availableDocs.map((row) => (
-                                    <TableRow key={"appointment" + row.person_id}>
-                                        <TableCell align="left">{`${row.first_name} ${row.middle_name || ""} ${row.last_name}`}</TableCell>
-                                        <TableCell align="left">{row.specialization}</TableCell>
-                                        <TableCell align="left">{row.qualification}</TableCell>
-                                        <TableCell align="left">{row.e_mail}</TableCell>
-                                        <TableCell align="left">
-                                            <FormGroup label="Description" labelFor="description">
-                                                <InputGroup id="description" placeholder="Description" type="text"  onChange={e => this.setState({ description: e.target.value })}/>
-                                            </FormGroup>
-                                            <Button intent="success" text="Book Appointment" onClick={() => this.bookAppointment(row.person_id)}/>
-                                        </TableCell>
+                                className="col-4"
+                                />}
+                        <AvailableDocsContainer>
+                            <Divider />
+                            <H5>Available Doctors</H5>
+                            {this.state.availableDocs && this.state.availableDocs.length !== 0 ?
+                            <TableContainer component={Paper}>
+                                <Table aria-label="simple table">
+                                    <TableHead>
+                                    <TableRow>
+                                        <TableCell align="left">Name</TableCell>
+                                        <TableCell align="left">Specialization</TableCell>
+                                        <TableCell align="left">Qualifications</TableCell>
+                                        <TableCell align="left">Email</TableCell>
+                                        <TableCell align="left">Actions</TableCell>
                                     </TableRow>
-                                ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
+                                    <TableBody>
+                                    {this.state.availableDocs.map((row) => (
+                                        <TableRow key={"appointment" + row.person_id}>
+                                            <TableCell align="left">{`${row.first_name} ${row.middle_name || ""} ${row.last_name}`}</TableCell>
+                                            <TableCell align="left">{row.specialization}</TableCell>
+                                            <TableCell align="left">{row.qualification}</TableCell>
+                                            <TableCell align="left">{row.e_mail}</TableCell>
+                                            <TableCell align="left">
+                                                <FormGroup label="Description" labelFor="description">
+                                                    <InputGroup id="description" placeholder="Description" type="text"  onChange={e => this.setState({ description: e.target.value })}/>
+                                                </FormGroup>
+                                                <Button intent="success" text="Book Appointment" onClick={() => this.bookAppointment(row.person_id)}/>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer> : <H6>No Available Doctors</H6> }
+                        </AvailableDocsContainer>
 
-                        <TableContainer component={Paper}>
-                            <Table aria-label="simple table">
-                                <TableHead>
-                                <TableRow>
-                                    <TableCell align="left">Date</TableCell>
-                                    <TableCell align="left">Doctor Name</TableCell>
-                                    <TableCell align="left">Description</TableCell>
-                                    <TableCell align="left">Status</TableCell>
-                                    <TableCell align="left">Actions</TableCell>
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {this.state.appointments.map((row) => (
-                                    <TableRow key={"appointment" + row.appt_id}>
-                                        <TableCell component="th" scope="row">{moment(row.date).format("YYYY-MM-DD")}</TableCell>
-                                        <TableCell align="left">{`${row.first_name} ${row.middle_name || ""} ${row.last_name}`}</TableCell>
-                                        <TableCell align="left">{row.description}</TableCell>
-                                        <TableCell align="left">{row.status}</TableCell>
-                                        <TableCell align="left">
-                                            <Button text="Cancel" intent="danger" onClick={() => this.cancelAppointment(row.appt_id)}></Button>
-                                            <Button text="Info" intent="primary" disabled={row.status !== "COMPLETE"} onClick={() => this.getSymptomsAndDiseases(row.appt_id)}></Button>
-                                        </TableCell>
+                        <AppoitnmentsContainer>
+                            <Divider />
+                            {this.state.availableDocs && this.state.appointments.length !== 0 ?
+                            <>
+                            <H5>Appointments</H5>
+                            <TableContainer component={Paper}>
+                                <Table aria-label="simple table">
+                                    <TableHead>
+                                    <TableRow>
+                                        <TableCell align="left">Date</TableCell>
+                                        <TableCell align="left">Doctor Name</TableCell>
+                                        <TableCell align="left">Description</TableCell>
+                                        <TableCell align="left">Status</TableCell>
+                                        <TableCell align="left">Actions</TableCell>
                                     </TableRow>
-                                ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                    </TableHead>
+                                    <TableBody>
+                                    {this.state.appointments.map((row) => (
+                                        <TableRow key={"appointment" + row.appt_id}>
+                                            <TableCell component="th" scope="row">{moment(row.date).format("YYYY-MM-DD")}</TableCell>
+                                            <TableCell align="left">{`${row.first_name} ${row.middle_name || ""} ${row.last_name}`}</TableCell>
+                                            <TableCell align="left">{row.description}</TableCell>
+                                            <TableCell align="left">{row.status}</TableCell>
+                                            <TableCell align="left">
+                                                <Button text="Cancel" intent="danger" onClick={() => this.cancelAppointment(row.appt_id)}></Button>
+                                                <Button text="Info" intent="primary" disabled={row.status !== "COMPLETE"} onClick={() => this.getSymptomsAndDiseases(row.appt_id)}></Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer> </>: <H6>No Appointments Booked!</H6>}
+                        </AppoitnmentsContainer>
+
                     </>
                 );   
             case TABS.Tests.value:
@@ -295,6 +328,34 @@ const PropertiesContainer = styled.div`
 `;
 
 const AppointmentSearchOptionsContainer = styled.div`
-    
+
+`;
+
+const DepartmentsContainer = styled.div`
+    width: 15%;
+    display: inline-block;
+`;
+
+const AppointmentDateContainer = styled.div`
+    display: inline-block;
+`;
+
+const AppoitnmentsContainer = styled.div`
+    margin-top: 100px;
+`;
+
+const AvailableDocsContainer = styled.div`
+    margin-top: 100px;
+`;
+
+const OperationsContainer = styled.div`
+    display: inline-block;
+`;
+
+const StyledButton = styled(Button)`
+    height: 20px;
+    position: relative;
+    top: 25px;
+    left: 10px;
 `;
 export default Patient;
