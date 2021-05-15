@@ -89,10 +89,10 @@ const Row = (props) => {
     return (
         <React.Fragment>
             <TableRow key={`${test.t_id}-${test.appt_id}`}>
-                <TableCell align="left">{test.t_id}</TableCell>
-                <TableCell align="left">{test.name}</TableCell>
-                <TableCell align="left">{test.appt_id}</TableCell>
-                <TableCell align="left">{moment(test.date).format("YYYY-MM-DD")}</TableCell>
+                <TableCell >{test.t_id}</TableCell>
+                <TableCell >{test.name}</TableCell>
+                <TableCell >{test.appt_id}</TableCell>
+                <TableCell >{moment(test.date).format("YYYY-MM-DD")}</TableCell>
                 <TableCell>
                     {<Button className={Classes.MINIMAL} icon={!open ? "chevron-down" : "chevron-down"} onClick={() => fetchComponents(test.t_id)} />}
                 </TableCell>
@@ -133,9 +133,9 @@ const CollapsibleTable = (props) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>ID</TableCell>
-                        <TableCell align="left">Name</TableCell>
-                        <TableCell align="left">Appt. ID</TableCell>
-                        <TableCell align="left">Date</TableCell>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Appt. ID</TableCell>
+                        <TableCell>Date</TableCell>
                         <TableCell />
                     </TableRow>
                 </TableHead>

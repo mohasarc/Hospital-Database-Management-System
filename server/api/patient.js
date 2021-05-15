@@ -131,10 +131,10 @@ router.get("/appointment/:p_id", (req, res) => {
 // Get all tests for a patient
 router.get("/test/:p_id", (req, res) => {
 	const { p_id } = req.params;
-	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status
-				FROM assigned_test AS at, appointment AS apt
-				WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
-				ORDER BY apt.date DESC`;
+	const sql = `SELECT at.t_id, apt.p_id, at.appt_id, apt.date, at.status, test.name
+			FROM (assigned_test AS at, appointment AS apt) JOIN test ON (at.t_id=test.t_id)
+			WHERE apt.appt_id=at.appt_id AND apt.p_id='${p_id}'
+			ORDER BY apt.date DESC`;
 
 	connection.query(sql, (err, results) => {
 		if (err) res.status(500).send(err);

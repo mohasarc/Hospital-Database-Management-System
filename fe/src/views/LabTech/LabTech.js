@@ -51,9 +51,11 @@ class LabTech extends PureComponent {
 					</NavbarHeading>
 					<NavbarDivider />
 					<Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text}
-						onClick={() => this.setState({ activePage: TABS.PersonalInfo.value })} />
+						active={this.state.activeTab === TABS.PersonalInfo.value}
+						onClick={() => this.setState({ activeTab: TABS.PersonalInfo.value })} />
 					<Button className={Classes.MINIMAL} icon="lab-test" text={TABS.Tests.text}
-						onClick={() => this.setState({ activePage: TABS.Tests.value })} />
+						active={this.state.activeTab === TABS.Tests.value}
+						onClick={() => this.setState({ activeTab: TABS.Tests.value })} />
 				</NavbarGroup>
 				<Body>{this.renderBody()}</Body>
 			</div>
@@ -71,8 +73,8 @@ class LabTech extends PureComponent {
 	}
 
 	renderBody = () => {
-		const { activePage } = this.state;
-		switch (activePage) {
+		const { activeTab } = this.state;
+		switch (activeTab) {
 			case TABS.PersonalInfo.value:
 				return (
 					<PropertiesContainer>
@@ -91,14 +93,12 @@ class LabTech extends PureComponent {
 						})}
 					</PropertiesContainer>
 				);
-			case TABS.Tests.value:
+			default:
 				return (
 					<TestsView assigned={this.state.assigned}
 						preparing={this.state.preparing}
 						finalized={this.state.finalized} />
 				);
-			default:
-				break;
 		}
 	};
 }
