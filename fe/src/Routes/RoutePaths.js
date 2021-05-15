@@ -4,4 +4,5 @@ export const RoutePaths = {
     PatientView: "/patient",
     Management: "/management",
     DepartmentMan: "/management/department",
+    Doctor: "/Doctor",
 }
