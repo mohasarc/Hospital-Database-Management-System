@@ -23,7 +23,6 @@ router.post("/inventory/medicine", (req, res) => {
 // remove a medicine of a particular date if date was specified
 router.delete("/inventory/medicine", (req, res) => {
 	const { name, phmcy_id, expiry_date } = req.body;
-	console.log('body ===> ', req.body);
 	let sql;
 	if (expiry_date) {
 		sql = `DELETE FROM phmcy_stores_med WHERE phmcy_id='${phmcy_id}' AND name='${name}' AND expiry_date='${expiry_date}'`;
@@ -34,13 +33,26 @@ router.delete("/inventory/medicine", (req, res) => {
 	performQuery(sql, res);
 });
 
+// Remove N number of a medicine from inventory
+router.put("/inventory/medicine", (req, res) => {
+	const { name, phmcy_id, count } = req.body;
+	const sql = `UPDATE phmcy_stores_med SET 
+				inventory_count = 
+					CASE
+						WHEN inventory_count - '${count}' > 0 then inventory_count - '${count}'
+						else 0
+					end
+				where name = "${name}" and phmcy_id='${phmcy_id}';`;
+	performQuery(sql, res);
+});
+
+
 // update inventory count
 router.put("/inventory/medicine", (req, res) => {
 	const { name, phmcy_id, expiry_date, inventory_count } = req.body;
 	const sql = `UPDATE phmcy_stores_med
 				 SET inventory_count = '${inventory_count}'
 				 WHERE phmcy_id='${phmcy_id}' AND name='${name}' AND expiry_date='${expiry_date}'`;
-
 	performQuery(sql, res);
 });
 

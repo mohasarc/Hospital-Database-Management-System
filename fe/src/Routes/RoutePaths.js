@@ -7,4 +7,5 @@ export const RoutePaths = {
     DepartmentMan: "/management/department",
     Doctor: "/doctor",
     Pharmacy: "/pharmacy",
+    Pharmacist: "/pharmacist",
 }
