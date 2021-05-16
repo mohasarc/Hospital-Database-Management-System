@@ -380,21 +380,18 @@ INSERT INTO test VALUES ("1", "test1", "experty 1");
 INSERT INTO test VALUES ("2", "test2", "experty 1");
 INSERT INTO test VALUES ("3", "test3", "experty 1");
 INSERT INTO test VALUES ("4", "test4", "experty 1");
+insert into test(t_id, name, expertise_required) values ("5", "TEST 1", "A");
+insert into test(t_id, name, expertise_required) values ("6", "TEST 2", "A");
+insert into test(t_id, name, expertise_required) values ("7", "TEST 3", "B");
 
 -- -------------- requested tests ---------------------
 INSERT INTO assigned_test VALUES ("14", "2", "1", "ASSIGNED");
-INSERT INTO assigned_test VALUES ("14", "2", "2", "ASSIGNED");
 INSERT INTO phmcy_stores_med VALUES("parabol", "2", "2023-01-01", 1000);
 INSERT INTO phmcy_stores_med VALUES("likitol", "2", "2024-01-01", 500);
 INSERT INTO phmcy_stores_med VALUES("zerol", "2", "2023-01-01", 20);
 INSERT INTO phmcy_stores_med VALUES("hormal", "2", "2024-01-01", 170);
 INSERT INTO phmcy_stores_med VALUES("fooolor", "2", "2024-01-01", 900);
 
-
--- ---------------- INIT TEST --------------------------
-insert into test(t_id, name, expertise_required) values (1, "TEST 1", "A");
-insert into test(t_id, name, expertise_required) values (2, "TEST 2", "A");
-insert into test(t_id, name, expertise_required) values (3, "TEST 3", "B");
 
 -- ---------------- INIT TEST  components --------------------------
 insert into components(c_id, c_name, t_id, min_interval, max_interval) values(1, "C1", 1, 5, 10);

@@ -2,6 +2,7 @@ const express = require("express");
 const { TEST_STATUS } = require("../../constants");
 const router = express.Router();
 const { connection } = require("../../index");
+const { v4: uuidv4 } = require("uuid");
 
 // Assign test to technician
 router.post("/test", (req, res) => {
