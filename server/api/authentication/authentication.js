@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
             tableName = "patient_info";
             break;
         case USER_TYPES.Manager:
-            tableName = 'manager JOIN person ON (manager.man_id=person.person_id';
+            tableName = 'manager JOIN person ON (manager.man_id=person.person_id)';
             break;
         default:
             res.status(500).send("Unimplemented type");
