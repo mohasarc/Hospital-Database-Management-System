@@ -11,6 +11,7 @@ import Doctor from "../views/Doctor/Doctor";
 
 import Pharmacy from '../views/Pharmacy/Pharmacy';
 import PharmacyDetails from "../views/Pharmacy/PharmacyDetails";
+import Pharmacist from "../views/pharmacist/Pharmacist";
 
 const Routes = () => {
 	return (
@@ -23,6 +24,7 @@ const Routes = () => {
 			<Route path={RoutePaths.DepartmentMan} component={DepartmentMan} exact />
 			<Route path={RoutePaths.Doctor} component={Doctor} exact />
 			<Route path={RoutePaths.Pharmacy} component={Pharmacy} exact />
+			<Route path={RoutePaths.Pharmacist} component={Pharmacist} exact />
 		</Switch>
 	);
 };

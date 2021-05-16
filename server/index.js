@@ -52,6 +52,7 @@ const doctor = require("./api/doctor");
 const lab = require("./api/lab");
 const patient = require("./api/patient");
 const person = require("./api/person");
+const pharmacist = require("./api/pharmacist");
 const pharmacy_inventory = require("./api/pharmacy_inventory");
 
 app.use("/auth", authentication);
@@ -60,6 +61,7 @@ app.use('/doctor', doctor);
 app.use('/laboratory', lab);
 app.use('/patient', patient);
 app.use('/person', person);
+app.use('/pharmacist', pharmacist);
 app.use("/pharmacy_inventory", pharmacy_inventory);
 app.use("/management/employee", doctor_man, pharmacist_man, labTechnician_man)
 app.use("/management", medicine_man, symptom_man, disease_man, test_man, pharmacy_man, dept_man);

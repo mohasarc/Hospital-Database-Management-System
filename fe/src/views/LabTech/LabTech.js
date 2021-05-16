@@ -39,8 +39,11 @@ class LabTech extends PureComponent {
 	}
 
 	componentDidMount() {
-		// console.log("**************************");
-		this.fetchTests();
+		if (!this.state.user || !this.state.user.lt_id) {
+			this.props.history.push("/login");
+		}
+		else
+			this.fetchTests();
 	}
 
 	render() {
@@ -57,6 +60,10 @@ class LabTech extends PureComponent {
 					<Button className={Classes.MINIMAL} icon="lab-test" text={TABS.Tests.text}
 						active={this.state.activeTab === TABS.Tests.value}
 						onClick={() => this.setState({ activeTab: TABS.Tests.value })} />
+					<Button className={Classes.MINIMAL} icon="log-out" text={"Logout"} onClick={() => {
+						localStorage.removeItem("user");
+						this.props.history.push("/login");
+					}} />
 				</NavbarGroup>
 				<Body>{this.renderBody()}</Body>
 			</div>
@@ -71,7 +78,7 @@ class LabTech extends PureComponent {
 			const finalized = res.data.filter((test) => test.status === TEST_STATUS.finalized);
 			this.setState({ assigned: assigned, preparing: preparing, finalized: finalized })
 		}).catch(error => {
-			toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+			toast(error.message, { style: { backgroundColor: "red", color: "white" } })
 		});
 	}
 

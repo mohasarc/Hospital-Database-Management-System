@@ -95,9 +95,6 @@ const Body = styled.div`
 	border-top: 1px solid grey;
 `;
 
-const PropertiesContainer = styled.div`
-	width: 30%;
-`;
 
 
 export default Pharmacy;
