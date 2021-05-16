@@ -75,7 +75,7 @@ class Management extends PureComponent {
 		const { loading } = this.state;
         return <> {loading ? <Loading /> : <div>
                 <NavbarGroup align={Alignment.RIGHT}>
-                    <NavbarHeading align={Alignment.LEFT}>Patient Profile</NavbarHeading>
+                    <NavbarHeading align={Alignment.LEFT}>Manager Profile</NavbarHeading>
                     <NavbarDivider />
                     <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
                         localStorage.removeItem("user");
