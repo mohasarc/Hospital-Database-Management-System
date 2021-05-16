@@ -15,6 +15,26 @@ router.get("/medicine", (req, res) => {
 	});
 });
 
+// Read all medicines tha are not added for a particular appointment
+router.get("/medicine/:appt_id", (req, res) => {
+	const { appt_id } = req.params;
+	const sql     = `SELECT * 
+					 FROM medicine as M
+					 WHERE M.name NOT IN (
+						 SELECT name
+						 FROM prescription
+						 WHERE appt_id='${appt_id}'
+					 )`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
 // Add a medicine
 router.post("/medicine", (req, res) => {
 	const { name } = req.body;

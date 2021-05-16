@@ -34,6 +34,7 @@ const appointment = require("./api/appointment/appointment");
 const appt_diagnosis = require("./api/appointment/diagnosis");
 const appt_symptoms = require("./api/appointment/symptoms");
 const appt_tests = require("./api/appointment/tests");
+const appt_prescription = require("./api/appointment/prescription");
 const authentication = require("./api/authentication/authentication");
 
 const disease_man = require("./api/management/disease");
@@ -54,7 +55,7 @@ const person = require("./api/person");
 const pharmacy_inventory = require("./api/pharmacy_inventory");
 
 app.use("/auth", authentication);
-app.use("/appointment", appointment, appt_diagnosis, appt_symptoms, appt_tests);
+app.use("/appointment", appointment, appt_diagnosis, appt_symptoms, appt_tests, appt_prescription);
 app.use('/doctor', doctor);
 app.use('/laboratory', lab);
 app.use('/patient', patient);

@@ -1,70 +1,81 @@
 const express = require("express");
+const { TEST_STATUS } = require("../../constants");
 const router = express.Router();
 const { connection } = require("../../index");
 
 // Assign test to technician
 router.post("/test", (req, res) => {
-	//! TO BE TESTED !!!!
 	const { t_id, appt_id } = req.body;
 
 	// get all technicians with the same qualification
 	const selectTechnicialSql = `SELECT lt_id
 								 FROM lab_technician
-								 WHERE expertise = ( SELECT expertise_required
-													 FROM tests
+								 WHERE expertise IN ( SELECT expertise_required
+													 FROM test
 													 WHERE t_id = '${t_id}')`;
 	const componentNamesSql = `select c_name 
 							   FROM components
 							   WHERE t_id = '${t_id}'`;
 
-	connection.query(selectTechnicialSql, (err, results) => {
+	connection.query(selectTechnicialSql, (err, tech_results) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
-			// Get a random one
-			const lt_id =
-				results[(Math.random() * results.length) % results.length]
-					.lt_id;
-			const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id) VALUES (?)`;
-			const assignTestTuple = [lt_id, appt_id, t_id];
-			const initCompResultsSql = `INSERT INTO component_result(c_id, c_name, t_id, appt_id, score) VALUES (?)`;
-
-			connection.query(componentNamesSql, (err, results) => {
-				//? I HATE CALLBACKS :'(
-				if (err) {
-					res.status(500).send(err);
-				} else {
-					connection.beginTransaction((err) => {
-						if (err) {
-							res.status(500).send(err);
-						}
-
-						// Assign lab technician
-						connection.query(assignTestSql, assignTestTuple, (err, results) => {
+			if (tech_results.length == 0) {
+				res.status(500).send("NO LAB TECHNICIANS");
+			} else {
+				console.log("there is more than one lab tech")
+				// Get a random one
+				const lt_id = tech_results[(Math.random() * (tech_results.length - 1))].lt_id;
+				const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id, status) VALUES (?)`;
+				const assignTestTuple = [lt_id, appt_id, t_id, TEST_STATUS.assigned];
+				var initCompResultsSql = `INSERT INTO component_result(c_id, c_name, t_id, appt_id, score) VALUES`;
+	
+				connection.query(componentNamesSql, (err, comp_results) => {
+					//? I HATE CALLBACKS :'(
+					if (err) {
+						res.status(500).send(err);
+					} else {
+						connection.beginTransaction((err) => {
 							if (err) {
-								connection.rollback();
+								console.log("error0:", err);
+	
 								res.status(500).send(err);
-							} else {
-								// Initialize all components
-								results.map((component, i) => {
-									let initCompResultsTuple = [ uuidv4(), component.c_name, t_id, appt_id, null ];
-									connection.query( initCompResultsSql, initCompResultsTuple, (err, results) => {
-										if (err) {
-											connection.rollback();
-											res.status(500).send(err);
-										} else {
-											if (i == results.length - 1)
-												res.status(200).send({
-													results,
-												}); //! This probably won't always work correctly :D
-										}
-									});
-								});
 							}
+	
+							// Assign lab technician
+							connection.query(assignTestSql, [assignTestTuple], (err, in_results) => {
+								if (err) {
+									connection.rollback();
+									console.log("error1:", err);
+									res.status(500).send(err);
+								} else {
+									// Initialize all components
+									if ( comp_results.length > 0 ){
+										var initCompResultsTuple = [];
+										comp_results.map((component, i) => {
+											initCompResultsSql += '(?)'
+											initCompResultsTuple.push([ uuidv4(), component.c_name, t_id, appt_id, null ]);
+										});
+	
+										connection.query( initCompResultsSql, initCompResultsTuple, (err, init_results) => {
+											if (err) {
+												connection.rollback();
+												console.log("error2:", err);
+												res.status(500).send(err);
+											} else {
+												res.status(200).send({
+													init_results,
+												});
+											}
+										});
+									}
+								}
+							});
 						});
-					});
-				}
-			});
+					}
+				});
+			}
 		}
 	});
 });
@@ -72,9 +83,16 @@ router.post("/test", (req, res) => {
 // Get all tests for an appointment
 router.get("/test/:appt_id", (req, res) => {
 	const { appt_id } = req.params;
-	const sql = `SELECT  apt.appt_id, apt.p_id, at.t_id, apt.date, at.status
-				FROM assigned_test AS at, appointment AS apt
-				WHERE apt.appt_id=at.appt_id and apt.appt_id='${appt_id}'`;
+	const sql = `
+				SELECT *
+				FROM (
+					SELECT  apt.appt_id, apt.p_id, at.t_id, apt.date, at.status
+					FROM assigned_test AS at, appointment AS apt
+					WHERE apt.appt_id=at.appt_id and apt.appt_id='${appt_id}'
+				) AS T
+				INNER JOIN test
+				ON T.t_id = test.t_id
+				`;
 
 	connection.query(sql, (err, results) => {
 		if (err) res.status(500).send(err);
@@ -124,5 +142,23 @@ router.get("/tests/patient/comps/:appt_id/:p_id/:t_id/:c_id", (req, res) => {
 	});
 });
 
+router.delete("/test/:appt_id/:t_id", (req, res) => {
+	const { appt_id, t_id } = req.params;
+	const sql1 = `DELETE FROM assigned_test
+					WHERE appt_id='${appt_id}' AND t_id='${t_id}'`;
+	const sql2 = `DELETE FROM component_result
+					WHERE appt_id='${appt_id}' AND t_id='${t_id}'`;
+
+	connection.query(sql1, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			connection.query(sql2, (err, results) => {
+				if (err) res.status(500).send(err);
+				res.status(200).send(results);
+			});
+		}
+	});
+});
 
 module.exports = router;

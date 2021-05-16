@@ -13,7 +13,7 @@ router.post("/symptom", (req, res) => {
 		[patient_symptoms_tuple],
 		(err, results) => {
 			if (err) {
-				res.status(200).send(err);
+				res.status(500).send(err);
 			} else {
 				res.status(200).send(results);
 			}
@@ -28,7 +28,21 @@ router.get("/symptom/:appt_id", (req, res) => {
 
 	connection.query(sql, (err, results) => {
 		if (err) {
-			res.status(200).send(err);
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// remove symptoms shared for a particular appointment
+router.delete("/symptom/:appt_id/:name", (req, res) => {
+	const { appt_id, name } = req.params;
+	const sql = `DELETE FROM has_symptoms WHERE appt_id='${appt_id}' AND name='${name}'`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
 		} else {
 			res.status(200).send(results);
 		}

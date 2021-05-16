@@ -1,4 +1,5 @@
 const express = require("express");
+const { TEST_STATUS } = require("../../constants");
 const router = express.Router();
 const { connection } = require("../../index");
 
@@ -49,11 +50,26 @@ router.post("/diagnosis", async (req, res) => {
 // Get the diseases diagnosed for a particular appointment
 router.get("/diagnosis/:appt_id", (req, res) => {
 	const { appt_id } = req.params;
-	const sql = `SELECT name FROM diagnosis WHERE appt_id='${appt_id}'`;
+	const sql = `SELECT * FROM diagnosis WHERE appt_id='${appt_id}'`;
 
 	connection.query(sql, (err, results) => {
 		if (err) {
-			res.status(200).send(err);
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+});
+
+// Get the diseases diagnosed for a particular appointment
+router.delete("/diagnosis/:appt_id/:name", (req, res) => {
+	const { appt_id, name } = req.params;
+	const sql = `DELETE FROM diagnosis 
+				 WHERE appt_id='${appt_id}' AND name='${name}'`;
+
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
 		} else {
 			res.status(200).send(results);
 		}
