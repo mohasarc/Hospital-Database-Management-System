@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { toast } from 'react-toastify';
+
 import {
     Box,
     Collapse,
@@ -66,41 +68,51 @@ const PharmacyList = (props) => {
     const onPharAddRoom = (val) => setNewPhar({ ...newPhar, room_no: val });
 
     const addNewPhar = async () => {
-        console.log(newPhar.name, newPhar.room_no);
-        const url = 'http://localhost:8000/management/pharmacy';
-        const res = await axios.post(url, newPhar);
-        window.location.reload();
+        try {
+            const url = 'http://localhost:8000/management/pharmacy';
+            const res = await axios.post(url, newPhar);
+            pharmacies.push(newPhar);
+            setAddMed(false);
+            window.location.reload();
+            toast('Pharmacy was added!', { style: { backgroundColor: "green", color: "white" } });
+        } catch (error) {
+            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
+        }
     }
 
     const removePhar = async (phar) => {
-        const url = 'http://localhost:8000/management/pharmacy';
-        const res = await axios.delete(url, { data: { phmcy_id: phar.phmcy_id } });
-        window.location.reload();
+        try {
+            const url = 'http://localhost:8000/management/pharmacy';
+            const res = await axios.delete(url, { data: { phmcy_id: phar.phmcy_id } });
+            window.location.reload();
+            toast('Pharmacy was added!', { style: { backgroundColor: "green", color: "white" } });
+        } catch (error) {
+
+            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
+        }
     }
 
     const renderAddForm = () => {
         return (
             <PDiv>
-                <TableRow>
-                    {/* <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}> */}
-                    <Collapse in={addPhar} timeout="auto" unmountOnExit>
-                        {/* <Container> */}
-                        <Card>
-                            {/* <h3 className="bp3-heading">Login</h3> */}
-                            <FormGroup label="Name" labelFor="name" labelInfo="(required)">
-                                <InputGroup id="name" placeholder="Name" type="text" onChange={e => onPharAddName(e.target.value)} />
-                            </FormGroup>
-                            <FormGroup label="Room No" labelFor="roomNo" labelInfo="(required)">
-                                <InputGroup id="roomNo" placeholder="Room No" type="text" onChange={e => onPharAddRoom(e.target.value)} />
-                            </FormGroup>
-                            <PDiv>
-                                <Button text="Add" rightIcon="chevron-right" intent="success" onClick={addNewPhar} />
-                            </PDiv>
-                        </Card>
-                        {/* </Container> */}
-                    </Collapse>
-                    {/* </TableCell> */}
-                </TableRow>
+                {/* <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}> */}
+                <Collapse in={addPhar} timeout="auto" unmountOnExit>
+                    {/* <Container> */}
+                    <Card>
+                        {/* <h3 className="bp3-heading">Login</h3> */}
+                        <FormGroup label="Name" labelFor="name" labelInfo="(required)">
+                            <InputGroup id="name" placeholder="Name" type="text" onChange={e => onPharAddName(e.target.value)} />
+                        </FormGroup>
+                        <FormGroup label="Room No" labelFor="roomNo" labelInfo="(required)">
+                            <InputGroup id="roomNo" placeholder="Room No" type="text" onChange={e => onPharAddRoom(e.target.value)} />
+                        </FormGroup>
+                        <PDiv>
+                            <Button text="Add" rightIcon="chevron-right" intent="success" onClick={addNewPhar} />
+                        </PDiv>
+                    </Card>
+                    {/* </Container> */}
+                </Collapse>
+                {/* </TableCell> */}
             </PDiv>
         );
     }

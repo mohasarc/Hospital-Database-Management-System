@@ -15,7 +15,7 @@ router.post("/inventory/medicine", (req, res) => {
 	const { name, phmcy_id, expiry_date, inventory_count } = req.body;
 	const values = [name, phmcy_id, expiry_date, inventory_count];
 	const sql = `INSERT INTO phmcy_stores_med(name, phmcy_id, expiry_date, inventory_count) VALUES(?)`;
-
+	// res.status(500).send(" eror roofadfila dfj");
 	performQuery(sql, res, values);
 });
 
@@ -31,7 +31,6 @@ router.delete("/inventory/medicine", (req, res) => {
 		sql = `DELETE FROM phmcy_stores_med WHERE phmcy_id='${phmcy_id}' AND name='${name}'`;
 	}
 
-	console.log('sql ===> ', sql);
 	performQuery(sql, res);
 });
 

@@ -41,7 +41,7 @@ router.delete("/pharmacy", async (req, res) => {
 	const sql = `DELETE FROM pharmacy
 				 WHERE phmcy_id = '${phmcy_id}'`;
 
-	// Perform sql
+	// Perform sql	
 	connection.query(sql, async (err, result) => {
 		if (err) {
 			console.log(err);

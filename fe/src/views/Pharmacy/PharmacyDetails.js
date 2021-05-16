@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { toast } from 'react-toastify';
+
 import {
     Table,
     TableBody,
@@ -65,50 +67,62 @@ const PharmacyDetails = (props) => {
 
 
     const addNewMedicine = async () => {
-        const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
-        const res = await axios.post(url, newMed);
-        console.log(res);
+        try {
+            const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
+            const res = await axios.post(url, newMed);
+            toast("Medicine was added!", { style: { backgroundColor: "green", color: "white" } });
+            setMedicines([...medicines, newMed]);
+            setAddMed(false);
+        } catch (error) {
+            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
+        }
     }
 
     const removeMed = async (med) => {
-        const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
-        const body = { name: med.name, phmcy_id: phar.phmcy_id };
-        const res = await axios.delete(url, { data: body });
-        window.location.reload();
+        try {
+            const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
+            const body = { name: med.name, phmcy_id: phar.phmcy_id };
+            const res = await axios.delete(url, { data: body });
+            const meds = medicines.filter((m) => m.name != med.name);
+            toast("Medicine was removed!", { style: { backgroundColor: "green", color: "white" } });
+            setMedicines(meds);
+            setAddMed(false);
+        } catch (error) {
+            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
+        }
     }
 
 
     const renderAddForm = () => {
         return (
             <PDiv>
-                <TableRow>
-                    {/* <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}> */}
-                    <Collapse in={addMed} timeout="auto" unmountOnExit>
-                        {/* <Container> */}
-                        <Card>
-                            {/* <h3 className="bp3-heading">Login</h3> */}
-                            <FormGroup label="Name" labelFor="name" labelInfo="(required)">
-                                <InputGroup id="name" placeholder="Name" type="text" onChange={e => setNewMed({ ...newMed, name: e.target.value })} />
-                            </FormGroup>
-                            <FormGroup label="Pharmacy ID" labelFor="phmcy_id" labelInfo="(required)">
-                                <InputGroup id="phmcy_id" placeholder="Pharmacy ID" type="text" onChange={e => setNewMed({ ...newMed, phmcy_id: e.target.value })} />
-                            </FormGroup>
-                            <FormGroup label="Inventory Count" labelFor="inventory_count" labelInfo="(required)">
-                                <InputGroup id="inventory_count" placeholder="Inventory Count" type="text" onChange={e => setNewMed({ ...newMed, inventory_count: e.target.value })} />
-                            </FormGroup>
 
-                            <FormGroup label="Expiry Date" labelFor="expiry_date" labelInfo="(required)">
-                                <InputGroup id="expiry_date" placeholder="Expiry Date" type="text" onChange={e => setNewMed({ ...newMed, expiry_date: e.target.value })} />
-                            </FormGroup>
+                {/* <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}> */}
+                <Collapse in={addMed} timeout="auto" unmountOnExit>
+                    {/* <Container> */}
+                    <Card>
+                        {/* <h3 className="bp3-heading">Login</h3> */}
+                        <FormGroup label="Name" labelFor="name" labelInfo="(required)">
+                            <InputGroup id="name" placeholder="Name" type="text" onChange={e => setNewMed({ ...newMed, name: e.target.value })} />
+                        </FormGroup>
+                        <FormGroup label="Pharmacy ID" labelFor="phmcy_id" labelInfo="(required)">
+                            <InputGroup id="phmcy_id" placeholder="Pharmacy ID" type="text" onChange={e => setNewMed({ ...newMed, phmcy_id: e.target.value })} />
+                        </FormGroup>
+                        <FormGroup label="Inventory Count" labelFor="inventory_count" labelInfo="(required)">
+                            <InputGroup id="inventory_count" placeholder="Inventory Count" type="text" onChange={e => setNewMed({ ...newMed, inventory_count: e.target.value })} />
+                        </FormGroup>
 
-                            <PDiv>
-                                <Button text="Add" rightIcon="chevron-right" intent="success" onClick={addNewMedicine} />
-                            </PDiv>
-                        </Card>
-                        {/* </Container> */}
-                    </Collapse>
-                    {/* </TableCell> */}
-                </TableRow>
+                        <FormGroup label="Expiry Date" labelFor="expiry_date" labelInfo="(required)">
+                            <InputGroup id="expiry_date" placeholder="Expiry Date" type="text" onChange={e => setNewMed({ ...newMed, expiry_date: e.target.value })} />
+                        </FormGroup>
+
+                        <PDiv>
+                            <Button text="Add" rightIcon="chevron-right" intent="success" onClick={addNewMedicine} />
+                        </PDiv>
+                    </Card>
+                    {/* </Container> */}
+                </Collapse>
+                {/* </TableCell> */}
             </PDiv>
         );
     }
@@ -162,7 +176,7 @@ const SpinDiv = styled.div`
 
 const PDiv = styled.div`
     width: 100%;
-    height: 100%;
+    height: 100%;    
     padding-top: 10px;
 `;
 

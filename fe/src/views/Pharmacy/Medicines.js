@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
+import { toast } from 'react-toastify';
+
 import {
     Box,
     Collapse,
@@ -55,10 +57,16 @@ const Medicines = () => {
     }
 
     const removeMed = async (med) => {
-        const url = `http://localhost:8000/management/medicine`;
-        const body = { name: med.name };
-        const res = await axios.delete(url, { data: body });
-        window.location.reload();
+        try {
+            const url = `http://localhost:8000/management/medicine`;
+            const body = { name: med.name };
+            const res = await axios.delete(url, { data: body });
+            const meds = medicines.filter((m) => m.name != med.name);
+            toast("Medicine was removed!", { style: { backgroundColor: "green", color: "white" } });
+            setMedicines(meds);
+        } catch (error) {
+            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
+        }
     }
 
     return (
