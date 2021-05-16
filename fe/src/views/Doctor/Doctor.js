@@ -66,6 +66,9 @@ class Doctor extends PureComponent {
 	}
 
 	componentDidMount() {
+        if (!localStorage.getItem("user") || !this.state.hasOwnProperty("d_id")) {
+            this.props.history.push("/login");
+        }
         this.fetchAllAppointments();
         this.fetchAllUnavailableDates();
 	}
@@ -597,6 +600,10 @@ class Doctor extends PureComponent {
                     this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
                     this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
                     }}  />
+                <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
+                        localStorage.removeItem("user");
+                        this.props.history.push("/login");
+                    }}/>
             </NavbarGroup>
             <Jumbotron>
 				<H3>Welcome Doctor</H3>

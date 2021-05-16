@@ -45,12 +45,14 @@ class Patient extends PureComponent {
 	}
 
     componentDidMount() {
+        if (!localStorage.getItem("user") || !this.state.hasOwnProperty("pid")) {
+            this.props.history.push("/login");
+        }
         this.getAllAppointmentsForPatient();
         this.getAllDepartments();
     }
 
 	render() {
-        console.log(this.state.appoitnments)
         return (
             <div>
                 <NavbarGroup align={Alignment.RIGHT}>
