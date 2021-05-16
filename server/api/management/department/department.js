@@ -15,6 +15,19 @@ router.get("/department", (req, res) => {
 	});
 });
 
+router.get("/departmentWithDoctors", (req, res) => {
+	const sql = `SELECT * FROM department WHERE name IN (
+		SELECT dept_name FROM doctor
+	)`;
+	connection.query(sql, (err, results) => {
+		if (err) {
+			res.status(500).send(err);
+		} else {
+			res.status(200).send(results);
+		}
+	});
+})
+
 // Add a department
 router.post("/department", (req, res) => {
 	const { name } = req.body;
