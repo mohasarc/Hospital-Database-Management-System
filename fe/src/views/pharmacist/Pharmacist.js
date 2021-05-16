@@ -38,6 +38,9 @@ class Pharmacist extends PureComponent {
     }
 
     componentDidMount() {
+        if (!this.state.pharmacy || !this.state.pharmacy.phmcy_id) {
+            this.props.history.push("/login");
+        }
         this.fetchPharmacy();
     }
 
@@ -62,6 +65,10 @@ class Pharmacist extends PureComponent {
                     <Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text}
                         active={this.state.activeTab === TABS.PersonalInfo.value}
                         onClick={() => this.setState({ activeTab: TABS.PersonalInfo.value })} />
+                    <Button className={Classes.MINIMAL} icon="log-out" text={"Logout"} onClick={() => {
+                        localStorage.removeItem("user");
+                        this.props.history.push("/login");
+                    }} />
                 </NavbarGroup>
                 <Body>
                     {this.renderBody()}
