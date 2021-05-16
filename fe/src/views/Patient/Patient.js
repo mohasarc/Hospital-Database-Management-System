@@ -78,17 +78,6 @@ class Patient extends PureComponent {
                     </div>
                     <Button text="Exit" intent="danger" onClick={() => this.setState({ showSymptomsAndDiagnosis: false, symptoms: [], diagnosis: [] })}/>
                 </Modal>
-                <ToastContainer 
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={true}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    // draggable
-                    // pauseOnHover
-                />
             </div>
 
 		);
@@ -99,13 +88,13 @@ class Patient extends PureComponent {
         switch(activePage) {
             case TABS.PersonalInfo.value:
                 return (
-                    <>
+                    <PropertiesContainer>
                         <H5>{TABS.PersonalInfo.text}</H5>
-                        <PropertiesContainer>
+                        <div className="row">
                             {USER_PROPERTIES.map((property, index) => {
                                 if (this.state[property.value]) {
                                     return (
-                                        <Form.Group controlId={"property " + index} id={"property " + index}>
+                                        <Form.Group controlId={"property " + index} id={"property " + index} className="col-4">
                                             <Form.Label>{property.text}</Form.Label>
                                             <Form.Control placeholder="Fetching Details" value={this.state[property.value]} readOnly />
                                         </Form.Group>
@@ -113,8 +102,8 @@ class Patient extends PureComponent {
                                 }
                                 return null;
                             })}  
-                        </PropertiesContainer>
-                    </>
+                        </div>
+                    </PropertiesContainer>
                 );
             case TABS.Appointments.value:
                 return (
@@ -273,10 +262,11 @@ class Patient extends PureComponent {
             .then((res) => {
                 this.setState({ availableDocs: [], unavailableDates: undefined }, () => {
                     this.getAllAppointmentsForPatient();
-                })
+                });
+                toast("Appointment Successfully booked!", { style: { backgroundColor: "green", color: "white" } });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not book appointment.", { style:{ backgroundColor: "red", color: "white"} })
             })
             .finally(() => {
                 this.setState({ loading: false });
@@ -286,9 +276,10 @@ class Patient extends PureComponent {
 
     cancelAppointment = (appt_id) => {
         axios.patch(`http://localhost:8000/appointment`, { appt_id }).then(res => {
+            toast("Appointment Successfully cancelled!", { style: { backgroundColor: "green", color: "white" } });
             this.getAllAppointmentsForPatient();
         }).catch(error => {
-            toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+            toast("Could not cancel appointment.", { style:{ backgroundColor: "red", color: "white"} })
         })
     }
 
@@ -305,7 +296,7 @@ class Patient extends PureComponent {
                 this.setState({ unavailableDates: res.data.map(data => moment(data.date).format("YYYY-MM-DD")) });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not fetch available doctors, try again.", { style:{ backgroundColor: "red", color: "white"} })
             })
             .finally(() => {
                 this.setState({ loading: false });
@@ -334,14 +325,14 @@ class Patient extends PureComponent {
                 this.setState({ symptoms: res.data });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not fetch symptoms.", { style:{ backgroundColor: "red", color: "white"} });
             });
             axios.get(`http://localhost:8000/appointment/diagnosis/${appt_id}`)
             .then(res => {
                 this.setState({ diagnosis: res.data });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not fetch diseases.", { style:{ backgroundColor: "red", color: "white"} });
             });
         });
     }
@@ -355,7 +346,7 @@ class Patient extends PureComponent {
                 this.setState({ availableDocs: res.data })    
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not fetch doctors for this date, try again.", { style:{ backgroundColor: "red", color: "white"} });
             })
             .finally(() => {
                 this.setState({ loading: false })
@@ -374,7 +365,7 @@ const Body = styled.div`
 `;
 
 const PropertiesContainer = styled.div`
-    width: 30%;
+    padding: 50px;
 `;
 
 const AppointmentSearchOptionsContainer = styled.div`

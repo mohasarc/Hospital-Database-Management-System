@@ -132,7 +132,7 @@ class Tests extends PureComponent {
                 this.setState({ tests: res.data });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not get tests.", { style:{ backgroundColor: "red", color: "white"} })
             })
             .finally(() => {
                 this.setState({ loading: false });
@@ -147,7 +147,7 @@ class Tests extends PureComponent {
                 this.setState({ components: res.data });
             })
             .catch(error => {
-                toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
+                toast("Could not get components.", { style:{ backgroundColor: "red", color: "white"} })
             })
             .finally(() => {
                 this.setState({ loading: false });
@@ -163,6 +163,9 @@ class Tests extends PureComponent {
             axios.get(`http://localhost:8000/appointment/tests/patient/comps/${appt_id}/${p_id}/${t_id}/${c_id}`)
             .then((res) => {
                 this.setState({ componentDetails: res.data, selectedComponentName: component.c_name });
+                if (res.data && res.data.length == 0) {
+                    toast("No history available for this component.", { style:{ backgroundColor: "red", color: "white"} })
+                }
             })
             .catch(error => {
                 toast(error.message, { style:{ backgroundColor: "red", color: "white"} })
