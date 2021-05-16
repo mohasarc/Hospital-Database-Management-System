@@ -48,51 +48,34 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
 	const { e_mail, password, type } = req.body;
-	let sql = `SELECT * FROM person WHERE e_mail='${e_mail}' AND password='${password}'`;
+    let tableName = "";
+    switch (type.toUpperCase()) {
+        case USER_TYPES.Doctor:
+            tableName = "doctor_info";
+            break;
+        case USER_TYPES.Pharmacist:
+            tableName = "pharmacist_info";
+            break;
+        case USER_TYPES.Lab_Technician:
+            tableName = "lt_info";
+            break;
+        case USER_TYPES.Patient:
+            tableName = "patient_info";
+            break;
+        case USER_TYPES.Manager:
+            tableName = 'manager JOIN person ON (manager.man_id=person.person_id';
+            break;
+        default:
+            res.status(500).send("Unimplemented type");
+            return;
+    }
+	let sql = `SELECT * FROM ${tableName} WHERE e_mail='${e_mail}' AND password='${password}'`;
 	connection.query(sql, (err, result, fields) => {
         if (err) {
             res.status(500).send(err);
-        } else if (result.length < 1){
-            res.status(500).send("Wrong credentials!");
-        } else {
-            let idFieldName = "";
-            switch (type.toUpperCase()) {
-                case USER_TYPES.Doctor:
-                    idFieldName = "d_id";
-                    break;
-                case USER_TYPES.Pharmacist:
-                    idFieldName = "ph_id";
-                    break;
-                case USER_TYPES.Lab_Technician:
-                    idFieldName = "lt_id";
-                    break;
-                case USER_TYPES.Patient:
-                    idFieldName = "pid";
-                    break;
-                case USER_TYPES.Manager:
-                    idFieldName = 'man_id';
-                    break;
-                default:
-                    res.status(500).send("Unimplemented type");
-                   return;
-            }
-
-            sql = `SELECT * FROM ${type.toLowerCase()} WHERE ${idFieldName}='${result[0].person_id}'`;
-            if (result.length == 0) {
-                res.status(404).send("User does not exist");
-            } else {
-                connection.query(sql, (err, in_result, fields) => {
-                    if (err) {
-                        res.status(500).send(err);
-                    } else {
-                        if (in_result.length == 0) {
-                            res.status(404).send(`${type.toLowerCase()} does not exist`);
-                        } else {
-                            res.status(200).send({ ...in_result[0], ...result[0] });
-                        }
-                    }
-                });
-            }
+        } 
+        else {
+            res.status(200).send(result[0]);
         }
 	});
 });

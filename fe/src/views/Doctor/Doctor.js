@@ -59,6 +59,7 @@ class Doctor extends PureComponent {
             diseaseDescription: "",
             docName: "",
             deptName: undefined,
+            detailAppt: {},
             activePage: TABS.ALL_APPOINTMENTS.value,
             ...JSON.parse(localStorage.getItem("user")),
         };
@@ -130,8 +131,10 @@ class Doctor extends PureComponent {
         this.setState({ symptomsNotSelected });
     }
 
-    fetchMedicinesNotPrescribed = async () => {
-
+    fetchMedicinesNotPrescribed = async (appt_id) => {
+        const medicinesNotPrescribed = (await axios.get(`http://localhost:8000/management/medicine/${appt_id}`)).data;
+        console.log("medicinesNotPrescribed: ", medicinesNotPrescribed);
+        this.setState({ medicinesNotPrescribed });
     }
 
     isUnavailalbe = (date) => {
@@ -212,6 +215,26 @@ class Doctor extends PureComponent {
         }
     }
 
+    addMedicine = async (name, appt_id) => {
+        try {
+            await axios.post(`http://localhost:8000/appointment/prescription`,{appt_id, name});
+            this.fetchApptPrescription(appt_id);
+            this.fetchMedicinesNotPrescribed(appt_id);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    removeMedicine = async (name, appt_id) => {
+        try {
+            await axios.delete(`http://localhost:8000/appointment/prescription/${appt_id}/${name}`);
+            this.fetchApptPrescription(appt_id);
+            this.fetchMedicinesNotPrescribed(appt_id);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     makeDayOff = async (date) => {
         const { d_id } = this.state;
         let yes;
@@ -266,7 +289,7 @@ class Doctor extends PureComponent {
                 return this.renderCurAppointment();
             case TABS.PERSONAL_INFO.value: 
                 return this.renderDocInformation();
-            case TABS.APPOINTMENT_DETAILS:
+            case TABS.APPOINTMENT_DETAILS.value:
                 return this.renderAppointmentDetails();
         }
     }
@@ -288,12 +311,12 @@ class Doctor extends PureComponent {
                         <TableBody>
                         {this.state.appointments.map((row) => (
                             <TableRow key={row.name}>
-                                <TableCell component="th" scope="row">{moment(row.data).format("YYYY-MM-DD")}</TableCell>
+                                <TableCell component="th" scope="row">{moment(row.date).format("YYYY-MM-DD")}</TableCell>
                                 <TableCell component="th" scope="row">{row.first_name + ' ' + row.middle_name + ' ' + row.last_name}</TableCell>
                                 <TableCell component="th" scope="row">{calculateAge(new Date(row.dob))}</TableCell>
                                 <TableCell component="th" scope="row">
                                     <Button onClick={() => {this.cancelAppt(row)}}>cancel</Button>
-                                    <Button onClick={() => {this.setState({ activePage: TABS.APPOINTMENT_DETAILS.value })}} >details</Button>
+                                    <Button onClick={() => {this.setState({ activePage: TABS.APPOINTMENT_DETAILS.value, detailAppt: row })}} >details</Button>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -309,8 +332,12 @@ class Doctor extends PureComponent {
         var todayAppt;
         
         appointments.map(( appt ) => {
-            todayAppt = appt;
+            if (moment(appt.date).format("YYYY-MM-DD") == moment(new Date).format("YYYY-MM-DD"))
+                todayAppt = appt;
         });
+
+        if (!todayAppt)
+            return <></>;
 
         return (
             <>
@@ -480,22 +507,23 @@ class Doctor extends PureComponent {
                         <TableRow key={medicine.name}>
                             <TableCell component="th" scope="row">{medicine.name}</TableCell>
                             <TableCell component="th" scope="row">
-                                <Button onClick={() => {this.removeSymptom(medicine)}}>-</Button>
+                                <Button onClick={() => {this.removeMedicine(medicine.name, todayAppt.appt_id)}}>-</Button>
                             </TableCell>
                         </TableRow>
                     ))}
                     <TableRow>
                             <TableCell component="th" scope="row">
-                                <Form.Control size="sm" as="select">
+                                <Form.Control  onChange={(e)=> this.setState({selectedMedicine: e.target.value})}  size="sm" as="select">
                                     {
-                                        this.state.medicinesNotPrescribed.map((medicine) => {
+                                        this.state.medicinesNotPrescribed.map((medicine, i) => {
+                                            if (i == 0) this.setState({selectedMedicine: medicine.name});
                                             return <option>{medicine.name}</option>
                                         })
                                     }
                                 </Form.Control>
                             </TableCell>
                             <TableCell component="th" scope="row">
-                                <Button>+</Button>
+                            <Button onClick={() => this.addMedicine(this.state.selectedMedicine, todayAppt.appt_id)} >+</Button>
                             </TableCell>
                     </TableRow>
                     </TableBody>
@@ -506,7 +534,21 @@ class Doctor extends PureComponent {
     }
 
     renderAppointmentDetails = () => {
-
+        const {detailAppt} = this.state;
+        return (
+            <>
+                <H5>Appointment Details</H5>
+                <Card>
+                    <Card.Header>Petient Info</Card.Header>
+                    <ListGroup variant="flush">
+                        <ListGroup.Item>Name: {detailAppt.first_name + ' ' + detailAppt.middle_name + ' ' + detailAppt.last_name}</ListGroup.Item>
+                        <ListGroup.Item>Age: {calculateAge(new Date(detailAppt.dob))}</ListGroup.Item>
+                        <ListGroup.Item>Country: {detailAppt.country}</ListGroup.Item>
+                        <ListGroup.Item>Appointment date: {moment(detailAppt.date).format("YYYY-MM-DD")}</ListGroup.Item>
+                    </ListGroup>
+                </Card>
+            </>
+        )
     }
 
     renderDocInformation = () => {
@@ -548,10 +590,11 @@ class Doctor extends PureComponent {
                     this.fetchApptSymptoms(todayAppt.appt_id);
                     this.fetchApptDiagnosis(todayAppt.appt_id);
                     this.fetchApptTests(todayAppt.appt_id);
+                    this.fetchApptPrescription(todayAppt.appt_id);
                     this.fetchsymptomsNotSelected(todayAppt.appt_id);
                     this.fetchTestsNotSelected(todayAppt.appt_id);
                     this.fetchDiseasesNotDiagnosed(todayAppt.appt_id);
-                    // this.fetchApptPrescription(todayAppt.appt_id);
+                    this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
                     this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
                     }}  />
             </NavbarGroup>

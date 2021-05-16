@@ -3,7 +3,7 @@ CREATE DATABASE hospitaldb;
 USE hospitaldb;
 
 CREATE TABLE person(
-	person_id VARCHAR(50),
+    person_id VARCHAR(50),
     first_name VARCHAR(50) NOT NULL,
     middle_name VARCHAR(50), 
     last_name VARCHAR(50) NOT NULL, 
@@ -189,13 +189,10 @@ CREATE TABLE works_at_phmcy(
 
 CREATE TABLE prescription(
 	appt_id VARCHAR(50),
-    medicine_name VARCHAR(50),
-    status VARCHAR(20),
-    prescribed_date DATE,
-    given_date DATE,
-	PRIMARY KEY (appt_id, medicine_name),
+    name VARCHAR(50),
+	PRIMARY KEY (appt_id, name),
 	FOREIGN KEY (appt_id) REFERENCES appointment(appt_id),
-	FOREIGN KEY (medicine_name) REFERENCES medicine(name)
+	FOREIGN KEY (name) REFERENCES medicine(name)
 );
 
 CREATE TABLE lab(
@@ -211,6 +208,12 @@ CREATE TABLE works_at_lab(
     FOREIGN KEY (lab_id) REFERENCES lab(lab_id),
     FOREIGN KEY (lt_id) REFERENCES lab_technician(lt_id)
 );
+
+-- --------------------- VIEWS ------------------------
+CREATE VIEW doctor_info AS SELECT * FROM doctor JOIN person ON (doctor.d_id=person.person_id);
+CREATE VIEW patient_info AS SELECT * FROM patient JOIN person ON (patient.pid=person.person_id);
+CREATE VIEW lt_info AS SELECT * FROM lab_technician JOIN person ON (lab_technician.lt_id=person.person_id);
+CREATE VIEW pharmacist_info AS SELECT * FROM pharmacist JOIN person ON (pharmacist.ph_id=person.person_id);
 
 -- --------------------- TRIGGERS ------------------------
 DROP TRIGGER IF EXISTS test_status_update;
@@ -305,8 +308,8 @@ INSERT INTO doctor VALUES ("13", "Accident&Emergency", "Emergency", "very qualif
 INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "12121212");
 INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "12121212");
 
-INSERT INTO lab_technician VALUES ("14", "experty 1");
-INSERT INTO lab_technician VALUES ("15", "experty 2");
+INSERT INTO lab_technician VALUES ("14", "A"); -- @mohammed - changed for sake of simplicity
+INSERT INTO lab_technician VALUES ("15", "B");
 
 INSERT INTO works_at_lab VALUES ("1", "14");
 INSERT INTO works_at_lab VALUES ("2", "15");
@@ -346,6 +349,12 @@ INSERT INTO medicine VALUES ("oredomol");
 INSERT INTO medicine VALUES ("asadomol");
 INSERT INTO medicine VALUES ("lekomol");
 
+INSERT INTO medicine VALUES ("parabol");
+INSERT INTO medicine VALUES ("likitol");
+INSERT INTO medicine VALUES ("zerol");
+INSERT INTO medicine VALUES ("hormal");
+INSERT INTO medicine VALUES ("fooolor");
+
 -- ---------------- INIT PHARMACY INVENTORY ----------
 INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2023-01-01", 100);
 INSERT INTO phmcy_stores_med VALUES("medimol", "1", "2024-01-01", 150);
@@ -375,3 +384,31 @@ INSERT INTO test VALUES ("4", "test4", "experty 1");
 -- -------------- requested tests ---------------------
 INSERT INTO assigned_test VALUES ("14", "2", "1", "ASSIGNED");
 INSERT INTO assigned_test VALUES ("14", "2", "2", "ASSIGNED");
+INSERT INTO phmcy_stores_med VALUES("parabol", "2", "2023-01-01", 1000);
+INSERT INTO phmcy_stores_med VALUES("likitol", "2", "2024-01-01", 500);
+INSERT INTO phmcy_stores_med VALUES("zerol", "2", "2023-01-01", 20);
+INSERT INTO phmcy_stores_med VALUES("hormal", "2", "2024-01-01", 170);
+INSERT INTO phmcy_stores_med VALUES("fooolor", "2", "2024-01-01", 900);
+
+
+-- ---------------- INIT TEST --------------------------
+insert into test(t_id, name, expertise_required) values (1, "TEST 1", "A");
+insert into test(t_id, name, expertise_required) values (2, "TEST 2", "A");
+insert into test(t_id, name, expertise_required) values (3, "TEST 3", "B");
+
+-- ---------------- INIT TEST  components --------------------------
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(1, "C1", 1, 5, 10);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(2, "C2", 1, 10, 20);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(3, "C1", 2, 15, 20);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(4, "C2", 2, 20, 30);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(5, "C1", 3, 50, 100);
+insert into components(c_id, c_name, t_id, min_interval, max_interval) values(6, "C2", 3, 50, 100);
+
+
+-- ----------------- INIT assigned_test ---------------------------
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 1, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 2, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 3, 3, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 1, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 4, 1, 'ASSIGNED');

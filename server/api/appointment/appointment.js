@@ -7,9 +7,9 @@ const { APPT_STATUS } = require("../../constants");
 
 // Create an appointment
 router.post("/", (req, res) => {
-	const { p_id, d_id, description } = req.body;
+	const { p_id, d_id, description, date } = req.body;
 	const appt_id = uuidv4();
-	const date = moment(new Date()).format("YYYY-MM-DD");
+	// const date = moment(new Date()).format("YYYY-MM-DD");
 	const status = APPT_STATUS.ONGOING;
 
 	// In case appointment cancelled and patients wants to make again
