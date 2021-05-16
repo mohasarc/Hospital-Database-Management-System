@@ -45,12 +45,14 @@ class Patient extends PureComponent {
 	}
 
     componentDidMount() {
+        if (!localStorage.getItem("user") || !this.state.hasOwnProperty("pid")) {
+            this.props.history.push("/login");
+        }
         this.getAllAppointmentsForPatient();
         this.getAllDepartments();
     }
 
 	render() {
-        console.log(this.state.appoitnments)
         return (
             <div>
                 <NavbarGroup align={Alignment.RIGHT}>
@@ -154,7 +156,7 @@ class Patient extends PureComponent {
                             </FormGroup>
                             <DepartmentsContainer className="col-3">
                                 <FormGroup label="Department Name" labelFor="deptName">
-                                    <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value })} value={this.state.deptName} placeholder="Department" />
+                                    <Dropdown options={this.state.departments.map(department => department.name)} onChange={(val) => this.setState({ deptName: val.value, availableDocs: [], unavailableDates: undefined })} value={this.state.deptName} placeholder="Department" />
                                 </FormGroup>   
                             </DepartmentsContainer>
                             <StyledButton onClick={this.listAvailableDoctors} text="List Available Dates" intent="primary" disabled={!deptName || !appointmentDate} className="col-2" />
@@ -264,7 +266,7 @@ class Patient extends PureComponent {
             p_id: pid, 
             d_id: d_id, 
             date: moment(potentialDate).format("YYYY-MM-DD"),
-            description
+            description: description || " "
         }
         this.setState({ loading: true }, () => {
             axios.post(`http://localhost:8000/appointment`, { ...objToSend })
@@ -313,7 +315,7 @@ class Patient extends PureComponent {
 
     getAllDepartments = () => {
         this.setState({ loading: true }, () => {
-            axios.get("http://localhost:8000/management/department")
+            axios.get("http://localhost:8000/management/departmentWithDoctors")
             .then((res) => {
                 this.setState({ departments: res.data }, () => {
                     this.setState({ loading: false });
