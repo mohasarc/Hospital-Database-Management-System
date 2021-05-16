@@ -25,17 +25,6 @@ class Signup extends PureComponent {
                 <Container>
                     {proceedToNextStep ? this.renderUserSpecificPannel() : this.renderInitialPannel()}
                 </Container>}
-                <ToastContainer 
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={true}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    // draggable
-                    // pauseOnHover
-                />
             </>
         );
 	}
@@ -44,7 +33,7 @@ class Signup extends PureComponent {
         const { email, firstName, lastName, password, confirmPassword } = this.state;
         return (
             <Card>
-                <h3 className="bp3-heading">Signup as Patient</h3>
+                <h3 className="bp3-heading">Signup</h3>
                 <Divider />
                 <h6 className="bp6-heading">Personal Info</h6>
                 <div className="row">

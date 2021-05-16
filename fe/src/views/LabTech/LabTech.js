@@ -59,17 +59,6 @@ class LabTech extends PureComponent {
 						onClick={() => this.setState({ activeTab: TABS.Tests.value })} />
 				</NavbarGroup>
 				<Body>{this.renderBody()}</Body>
-				<ToastContainer 
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={true}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    // draggable
-                    // pauseOnHover
-                />
 			</div>
 		);
 	}

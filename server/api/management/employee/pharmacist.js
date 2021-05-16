@@ -23,6 +23,24 @@ router.delete("/pharmacist", (req, res) => {
 	performQuery(sql, res);
 });
 
+router.post("/pharmacist/assign", (req, res) => {
+	const { ph_id, phmcy_id } = req.body;
+	const sql = `INSERT INTO works_at_phmcy VALUES(?)`;
+	const values = [ph_id, phmcy_id];
+	performQuery(sql, res, values);
+});
+
+router.post("/pharmacist/unassign", (req, res) => {
+	const { ph_id } = req.body;
+	const sql = `DELETE FROM works_at_phmcy WHERE ph_id=${ph_id}`;
+	performQuery(sql, res);
+});
+
+router.get("/pharmacist/pharmaciesAndPharmacists", (req, res) => {
+	const sql = `SELECT * FROM (works_at_phmcy NATURAL JOIN pharmacy NATURAL JOIN pharmacist_info)`;
+	performQuery(sql, res);
+})
+
 // Change phrmacy working at
 router.patch("/pharmacist/works_at", (req, res) => {
 	const { ph_id, phmcy_id } = req.body;
