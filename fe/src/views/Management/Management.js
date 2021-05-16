@@ -1,4 +1,4 @@
-import { Alignment, Button, Classes, Divider, FormGroup, H3, H5, InputGroup, NavbarDivider, NavbarGroup, NavbarHeading, } from "@blueprintjs/core";
+import { Alignment, Button, Classes, Divider, FormGroup, H3, H5, H6, InputGroup, NavbarDivider, NavbarGroup, NavbarHeading, } from "@blueprintjs/core";
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,6 +12,9 @@ import { Dropdown, DropdownButton } from 'react-bootstrap';
 import Loading from "../Loading";
 import { ToastContainer, toast } from 'react-toastify';
 import styled from "styled-components";
+import Medicines from './Medicines';
+import PharmacyList from './PharmacyList';
+import Modal from 'react-modal';
 
 class Management extends PureComponent {
 	constructor(props) {
@@ -22,13 +25,34 @@ class Management extends PureComponent {
             labTechnicians: [],
             pharmacists: [],
             unresolvedEmployes: [],
+            pharmacies: [],
+            assignPharmacist: false,
+            pharmacistsAtPharmacies: [],
         };
 
 	}
 
 	componentDidMount() {
         this.fetchAllEmployees();
+        this.fetchPharmacies();
+        this.fetchPharmacistsAtPharmacies();
 	}
+
+    fetchPharmacistsAtPharmacies = () => {
+        this.setState({ loading: true }, () => {
+            axios.get("http://localhost:8000/management/employee/pharmacist/pharmaciesAndPharmacists")
+            .then(({ data }) => {
+                console.log(data);
+                this.setState({ pharmacistsAtPharmacies: data });
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+            .finally(() => {
+                this.setState({ loading: false });
+            })
+        })
+    }
 
     fetchAllEmployees = () => {
         this.setState({ loading: true }, async () => {
@@ -38,6 +62,13 @@ class Management extends PureComponent {
 			const pharmacists = await axios.get("http://localhost:8000/management/employee/pharmacist");
 			this.setState({ loading: false, doctors: doctors.data, labTechnicians: labTechnicians.data, pharmacists: pharmacists.data, unresolvedEmployes: unresolvedEmployes.data });
 		});
+    }
+
+    fetchPharmacies = async () => {
+        const url = `http://localhost:8000/management/pharmacy`;
+        this.setState({ loading: true });
+        const phars = await (await axios.get(url)).data;
+        this.setState({ pharmacies: phars, loading: false });
     }
 
 	render() {
@@ -134,7 +165,7 @@ class Management extends PureComponent {
                 
                 <Divider />
                 <PharmacistsContainer>
-                    <H5>Pharmacists</H5>
+                    <H5>All Pharmacists</H5>
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table">
                             <TableHead>
@@ -153,18 +184,46 @@ class Management extends PureComponent {
                                     <TableCell align="left">{row.first_name}</TableCell>
                                     <TableCell align="left">{row.last_name}</TableCell>
                                     <TableCell align="left">{row.qualifications}</TableCell>
-                                    <TableCell align="left">
+                                    <TableCell align="left" style={{ display: 'flex' }}>
                                         <Button text="Delete" intent="danger" onClick={() => this.setState({ selectedEmployee: row.person_id, selectedType: "pharmacist" }, () => this.deleteUser())}></Button>
+                                        <Button text="Assign" intent="success" onClick={() => this.setState({ selectedEmployee: row.person_id, assignPharmacist: true })}></Button>
                                     </TableCell>
                                 </TableRow>
                             ))}
                             </TableBody>
                         </Table>
-                        </TableContainer>
+                    </TableContainer>
                 </PharmacistsContainer>
-                
+                <Modal isOpen={this.state.assignPharmacist} contentLabel="Example Modal" ariaHideApp={false}>
+                {this.state.assignPharmacist && <TableContainer>
+                            <H6>Pharmacies</H6>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="left">ID</TableCell>
+                                    <TableCell align="left">Name</TableCell>
+                                    <TableCell align="left">Room No.</TableCell>
+                                    <TableCell align="left">Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            {this.state.pharmacies.map(pharmacy => {
+                                return <TableRow key={"pharmacy" + pharmacy.phmcy_id}>
+                                <TableCell component="th" scope="row">{pharmacy.phmcy_id}</TableCell>
+                                <TableCell align="left">{pharmacy.name}</TableCell>
+                                <TableCell align="left">{pharmacy.room_no}</TableCell>
+                                <TableCell align="left" style={{ display: 'flex' }}>
+                                    <Button text="Assign" intent="success" onClick={() => this.assignPharmacist(pharmacy.phmcy_id)}></Button>
+                                </TableCell>
+                            </TableRow>
+                            })}                    
+                        </Table>
+
+                        </TableContainer>}
+                    <Button text="Close" intent="danger" onClick={() => this.setState({ selectedEmployee: '', assignPharmacist: false })} />
+                </Modal>
+
                 <LTContainer>
-                    <H5>Lab Technicians</H5>
+                    <H5>All Lab Technicians</H5>
                     <TableContainer component={Paper}>
                         <Table aria-label="simple table">
                             <TableHead>
@@ -192,26 +251,62 @@ class Management extends PureComponent {
                         </Table>
                     </TableContainer>
                 </LTContainer>
-                </Container>
-			</div>}
-            <ToastContainer 
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={true}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                // draggable
-                // pauseOnHover
-            />
+
+                <Divider />
+                {this.state.pharmacistsAtPharmacies.length !== 0 &&
+                <AssignedPharmacistsContainer>
+                    <H5 style={{ textAlign: 'center' }}>Assigned Pharmacists</H5>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                            <TableRow>
+                                <TableCell align="left">Pharmacist ID</TableCell>
+                                <TableCell align="left">Pharmacist Name</TableCell>
+                                <TableCell align="left">Pharmacist Surname</TableCell>
+                                <TableCell align="left">Qualifications</TableCell>
+                                <TableCell align="left">Pharmacy Name</TableCell>
+                                <TableCell align="left">Pharmacy Room No</TableCell>
+                                <TableCell align="left">Action</TableCell>
+                            </TableRow>
+                            </TableHead>
+                            <TableBody>
+                            {this.state.pharmacistsAtPharmacies.map((row) => (
+                                <TableRow key={"lt" + row.ph_id}>
+                                    <TableCell component="th" scope="row">{row.ph_id}</TableCell>
+                                    <TableCell align="left">{row.first_name}</TableCell>
+                                    <TableCell align="left">{row.last_name}</TableCell>
+                                    <TableCell align="left">{row.qualifications}</TableCell>
+                                    <TableCell align="left">{row.name}</TableCell>
+                                    <TableCell align="left">{row.room_no}</TableCell>
+                                    <TableCell align="left">
+                                        <Button text="Delete" intent="danger" onClick={() => this.unassignPharmacist(row.ph_id)}></Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Divider />
+                </AssignedPharmacistsContainer>}
+                <div>
+                    <PharmaciesContainer>
+                        <H5 style={{ textAlign: 'center' }}>Pharmacies</H5>
+                        <PharmacyList pharmacies={this.state.pharmacies} pharmacists={this.state.pharmacists} />        
+                    </PharmaciesContainer>
+                    <Divider />
+                    <MedicinesContainer>
+                        <Medicines />
+                    </MedicinesContainer>
+                </div>
+                
+            </Container>
+        </div>}
 		</>;
 	}
 
     renderForm = () => {
         const { eventKey } = this.state;
         let tabContent = null;
-        console.log("called")
         switch (eventKey) {
             case "doctor":
                 tabContent = (
@@ -309,6 +404,43 @@ class Management extends PureComponent {
         }   
     }
 
+    assignPharmacist = (phmcy_id) => {
+        const { selectedEmployee } = this.state;
+        this.setState({ loading: true }, () => {
+            axios.post(`http://localhost:8000/management/employee/pharmacist/assign`, { ph_id: selectedEmployee, phmcy_id })
+            .then((res) => {
+                this.fetchPharmacistsAtPharmacies();
+                this.setState({ assignPharmacist: false });
+                toast("Successfully assigned pharmacist.", { style:{ backgroundColor: "green", color: "white"} })
+            })
+            .catch(error => {
+			    toast("Could not assign pharmacist.", { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
+                this.setState({ loading: false, });
+            });
+        })
+        
+        // console.log(phmcy_id);
+        // console.log(selectedEmployee);
+    }
+
+    unassignPharmacist = (ph_id) => {
+        this.setState({ loading: true }, () => {
+            axios.post(`http://localhost:8000/management/employee/pharmacist/unassign`, { ph_id })
+            .then(res => {
+                this.fetchPharmacistsAtPharmacies();
+                toast("Successfully unassigned pharmacist.", { style:{ backgroundColor: "green", color: "white"} })
+            })
+            .catch(err => {
+			    toast("Could not unassign pharmacist.", { style:{ backgroundColor: "red", color: "white"} })
+            })
+            .finally(() => {
+                this.setState({ loading: false });
+            })
+        })
+    }
+
     deleteUser = () => {
         this.setState({ loading: true }, () => {
             const URL = `http://localhost:8000/management/employee/${this.state.selectedType}`;
@@ -326,7 +458,6 @@ class Management extends PureComponent {
                 default: 
                     break;
             }
-            console.log("deleting a doc with: ", this.state.selectedEmployee)
             axios.delete(URL, {
                 headers: {},
                 data: {
@@ -384,9 +515,26 @@ const LTContainer = styled.div`
     width: 50%;
     display: inline-block;
     text-align: center;
-
     padding: 10px;
 `;
 
+const PharmaciesContainer = styled.div`
+    width: 80%;
+    margin-top: 50px;
+    padding: 15px;
+    display: inline-block;
+    position: relative;
+    left: 10%;
+`;
+
+const MedicinesContainer = styled.div`
+    width: 60%;
+    position: absolute;
+    left: 20%;
+`;
+
+const AssignedPharmacistsContainer = styled.div`
+    padding: 30px;
+`;
 
 export default Management;

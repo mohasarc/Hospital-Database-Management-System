@@ -44,17 +44,6 @@ class Login extends PureComponent {
                         </ButtonContainer>
                     </Card>
                 </Container>}
-                <ToastContainer 
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={true}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    // draggable
-                    // pauseOnHover
-                />
             </>
 		);
 	}

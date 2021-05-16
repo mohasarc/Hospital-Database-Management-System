@@ -182,7 +182,7 @@ CREATE TABLE phmcy_stores_med(
 CREATE TABLE works_at_phmcy(
 	ph_id VARCHAR(50),
     phmcy_id VARCHAR(50),
-    PRIMARY KEY (ph_id, phmcy_id),
+    PRIMARY KEY (ph_id),
     FOREIGN KEY (ph_id) REFERENCES pharmacist(ph_id),
     FOREIGN KEY (phmcy_id) REFERENCES pharmacy(phmcy_id)
 );
