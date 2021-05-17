@@ -283,6 +283,20 @@ class Doctor extends PureComponent {
         }
     }
 
+    endAppt = async (appt_id) => {
+        let yes = window.confirm("Are you sure you want to end this appointment?");
+
+        if (yes) {
+            console.log("appt_id", appt_id);
+            try {
+                await axios.patch(`http://localhost:8000/appointment/end`, {appt_id});
+                this.fetchAllAppointments();
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
     renderView = () => {
         const { activePage } = this.state;
         switch(activePage) {
@@ -531,6 +545,10 @@ class Doctor extends PureComponent {
                     </TableRow>
                     </TableBody>
                 </Table>
+            </TableContainer>
+            <br/>
+            <TableContainer>
+                <Button onClick={() => {this.endAppt(todayAppt.appt_id)}}>End appointment</Button>
             </TableContainer>
             </>
         );

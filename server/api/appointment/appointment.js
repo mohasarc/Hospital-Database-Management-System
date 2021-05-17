@@ -42,6 +42,13 @@ router.patch("/", (req, res) => {
 	performQuery(sql, res);
 })
 
+// End an appointment
+router.patch("/end", (req, res) => {
+	const { appt_id } = req.body;
+	const sql = `UPDATE appointment SET status='${APPT_STATUS.COMPLETE}' WHERE appt_id='${appt_id}'`;
+	performQuery(sql, res);
+})
+
 // get appointment details //TODO
 
 const performQuery = (stmt, res, values = []) => {
