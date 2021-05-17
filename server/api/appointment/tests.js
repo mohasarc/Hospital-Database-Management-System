@@ -14,29 +14,34 @@ router.post("/test", (req, res) => {
 								 WHERE expertise IN ( SELECT expertise_required
 													 FROM test
 													 WHERE t_id = '${t_id}')`;
-	const componentNamesSql = `select c_name 
+	const componentNamesSql = `select * 
 							   FROM components
 							   WHERE t_id = '${t_id}'`;
+
+	console.log('at post /test', t_id, appt_id);
 
 	connection.query(selectTechnicialSql, (err, tech_results) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
 			if (tech_results.length == 0) {
+				console.log("no lab tech");
 				res.status(500).send("NO LAB TECHNICIANS");
 			} else {
-				console.log("there is more than one lab tech")
+				console.log("lab techs: ", tech_results);
 				// Get a random one
 				const lt_id = tech_results[(Math.random() * (tech_results.length - 1))].lt_id;
+				console.log("random lab tech: ", lt_id);
 				const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id, status) VALUES (?)`;
 				const assignTestTuple = [lt_id, appt_id, t_id, TEST_STATUS.assigned];
-				var initCompResultsSql = `INSERT INTO component_result(c_id, c_name, t_id, appt_id, score) VALUES`;
+				var initCompResultsSql = `INSERT INTO component_result(c_id, t_id, appt_id, score) VALUES`;
 	
 				connection.query(componentNamesSql, (err, comp_results) => {
 					//? I HATE CALLBACKS :'(
 					if (err) {
 						res.status(500).send(err);
 					} else {
+						console.log("found some components: ", comp_results);
 						connection.beginTransaction((err) => {
 							if (err) {
 								console.log("error0:", err);
@@ -51,12 +56,13 @@ router.post("/test", (req, res) => {
 									console.log("error1:", err);
 									res.status(500).send(err);
 								} else {
+									console.log("a test was assigned: ", in_results);
 									// Initialize all components
 									if ( comp_results.length > 0 ){
 										var initCompResultsTuple = [];
 										comp_results.map((component, i) => {
-											initCompResultsSql += '(?)'
-											initCompResultsTuple.push([ uuidv4(), component.c_name, t_id, appt_id, null ]);
+											initCompResultsSql += i<comp_results.length-1?'(?),':'(?)';
+											initCompResultsTuple.push([ component.c_id, t_id, appt_id, null ]);
 										});
 	
 										connection.query( initCompResultsSql, initCompResultsTuple, (err, init_results) => {
@@ -69,6 +75,10 @@ router.post("/test", (req, res) => {
 													init_results,
 												});
 											}
+										});
+									} else {
+										res.status(200).send({
+											in_results,
 										});
 									}
 								}
