@@ -35,7 +35,7 @@ const AddScore = (props) => {
 }
 
 const Row = (props) => {
-    const { test, withInput } = props;
+    const { test, withInput, onScoreAdded } = props;
     const [open, setOpen] = useState(false);
     const [comps, setComps] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -55,8 +55,8 @@ const Row = (props) => {
             const url = `http://localhost:8000/appointment/test/comps`;
             const body = { t_id: test.t_id, c_id: comp.c_id, appt_id: test.appt_id, score: score };
             const res = await axios.post(url, body);
-            window.location.reload();
-            // setTimeout(() => { toast('Successfuly added score!', { style: { backgroundColor: "green", color: "white" } }) }, 2000)
+            toast('Successfuly added score!', { style: { backgroundColor: "green", color: "white" } });
+            props.onScoreAdded();
         } catch (error) {
             toast(error.message, { style: { backgroundColor: "green", color: "white" } });
         }
@@ -148,7 +148,8 @@ const CollapsibleTable = (props) => {
                 <TableBody>
                     {props.tests.length === 0 && <H2>No Tests Found!</H2>}
                     {props.tests.map((test) => (
-                        <Row key={`${test.appt_id}-${test.t_id}`} test={test} withInput={props.withInput} />
+                        <Row key={`${test.appt_id}-${test.t_id}`} test={test}
+                            withInput={props.withInput} onScoreAdded={props.onScoreAdded} />
                     ))}
                 </TableBody>
             </Table>

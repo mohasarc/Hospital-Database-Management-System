@@ -308,7 +308,7 @@ INSERT INTO doctor VALUES ("13", "Accident&Emergency", "Emergency", "very qualif
 INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "12121212");
 INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "12121212");
 
-INSERT INTO lab_technician VALUES ("14", "experty 1"); -- @mohammed - changed for sake of simplicity
+INSERT INTO lab_technician VALUES ("14", "experty 1");
 INSERT INTO lab_technician VALUES ("15", "experty 2");
 
 INSERT INTO works_at_lab VALUES ("1", "14");
@@ -381,7 +381,7 @@ INSERT INTO test VALUES ("2", "test2", "experty 2");
 INSERT INTO test VALUES ("3", "test3", "experty 1");
 INSERT INTO test VALUES ("4", "test4", "experty 2");
 insert into test(t_id, name, expertise_required) values ("5", "TEST 5", "experty 2");
-insert into test(t_id, name, expertise_required) values ("6", "TEST 6", "experty 2");
+insert into test(t_id, name, expertise_required) values ("6", "TEST 6", "experty 1");
 insert into test(t_id, name, expertise_required) values ("7", "TEST 7", "experty 2");
 
 -- -------------- requested tests ---------------------
@@ -407,5 +407,5 @@ insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 1, 'ASSIGN
 insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 2, 'ASSIGNED');
 insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 2, 2, 'ASSIGNED');
 insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 3, 3, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 1, 2, 'ASSIGNED');
+insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 4, 3, 'ASSIGNED');
 insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 4, 1, 'ASSIGNED');

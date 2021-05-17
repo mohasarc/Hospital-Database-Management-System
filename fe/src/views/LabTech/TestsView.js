@@ -25,12 +25,12 @@ const TestsView = (props) => {
         switch (state.activeTab) {
             case TEST_TABS.Assigned:
                 return (
-                    <CollapsibleTable tests={props.assigned} withInput />
+                    <CollapsibleTable tests={props.assigned} withInput onScoreAdded={props.onScoreAdded} />
                 );
 
             case TEST_TABS.Preparing:
                 return (
-                    <CollapsibleTable tests={props.preparing} withInput />
+                    <CollapsibleTable tests={props.preparing} withInput onScoreAdded={props.onScoreAdded} />
                 );
 
             case TEST_TABS.Finalized:

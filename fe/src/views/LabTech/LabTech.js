@@ -107,7 +107,7 @@ class LabTech extends PureComponent {
 				return (
 					<TestsView assigned={this.state.assigned}
 						preparing={this.state.preparing}
-						finalized={this.state.finalized} />
+						finalized={this.state.finalized} onScoreAdded={this.fetchTests} />
 				);
 		}
 	};
