@@ -153,6 +153,20 @@ class Doctor extends PureComponent {
         return unavailable;
     }
 
+    hasAppt = (date) => {
+        const { appointments } = this.state;
+        let unavailable = false;
+
+        appointments.map ( appt => {
+            if (moment(appt.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")) {
+                unavailable = true;
+            }
+        });
+
+        return unavailable;
+    }
+
+
     addSymptom = async (selectedSymptom, symptomDescription, appt_id) => {
         console.log("sss", selectedSymptom, symptomDescription,appt_id);
         if (selectedSymptom && symptomDescription) {
@@ -276,6 +290,20 @@ class Doctor extends PureComponent {
             console.log("appt_id", appt_id);
             try {
                 await axios.patch(`http://localhost:8000/appointment`, {appt_id});
+                this.fetchAllAppointments();
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    endAppt = async (appt_id) => {
+        let yes = window.confirm("Are you sure you want to end this appointment?");
+
+        if (yes) {
+            console.log("appt_id", appt_id);
+            try {
+                await axios.patch(`http://localhost:8000/appointment/end`, {appt_id});
                 this.fetchAllAppointments();
             } catch (error) {
                 console.log(error)
@@ -532,6 +560,10 @@ class Doctor extends PureComponent {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <br/>
+            <TableContainer>
+                <Button onClick={() => {this.endAppt(todayAppt.appt_id)}}>End appointment</Button>
+            </TableContainer>
             </>
         );
     }
@@ -590,22 +622,26 @@ class Doctor extends PureComponent {
                         todayAppt = appt;
                     });
                     
-                    this.fetchApptSymptoms(todayAppt.appt_id);
-                    this.fetchApptDiagnosis(todayAppt.appt_id);
-                    this.fetchApptTests(todayAppt.appt_id);
-                    this.fetchApptPrescription(todayAppt.appt_id);
-                    this.fetchsymptomsNotSelected(todayAppt.appt_id);
-                    this.fetchTestsNotSelected(todayAppt.appt_id);
-                    this.fetchDiseasesNotDiagnosed(todayAppt.appt_id);
-                    this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
-                    this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
+                    if (todayAppt) {
+                        this.fetchApptSymptoms(todayAppt.appt_id);
+                        this.fetchApptDiagnosis(todayAppt.appt_id);
+                        this.fetchApptTests(todayAppt.appt_id);
+                        this.fetchApptPrescription(todayAppt.appt_id);
+                        this.fetchsymptomsNotSelected(todayAppt.appt_id);
+                        this.fetchTestsNotSelected(todayAppt.appt_id);
+                        this.fetchDiseasesNotDiagnosed(todayAppt.appt_id);
+                        this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
+                        this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
+                    } else {
+                        window.alert("No appointments today!");
+                    }
                     }}  />
                 <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
                         localStorage.removeItem("user");
                         this.props.history.push("/login");
                     }}/>
             </NavbarGroup>
-            <Jumbotron>
+            <Jumbotron style={{"background-color":"#FFFFFF"}}>
 				<H3>Welcome Doctor</H3>
                 <Row>
                     <Col xs={12} md={8}>
@@ -614,9 +650,9 @@ class Doctor extends PureComponent {
                     <Col xs={6} md={4}>
                         <H5>Calendar</H5>
                         <Calendar
-                            key={this.state.datesUnavailable.length}
+                            key={this.state.datesUnavailable.length + this.state.appointments.length}
                             onClickDay={this.makeDayOff}
-                            // tileDisabled={({activeStartDate, date, view }) => this.isUnavailalbe(date)}
+                            tileDisabled={({date }) => this.hasAppt(date)}
                             tileClassName={({ activeStartDate, date, view }) => view === 'month' && this.isUnavailalbe(date) ? 'off-day' : null}
                         />
                     </Col>
