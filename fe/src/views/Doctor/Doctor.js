@@ -153,6 +153,20 @@ class Doctor extends PureComponent {
         return unavailable;
     }
 
+    hasAppt = (date) => {
+        const { appointments } = this.state;
+        let unavailable = false;
+
+        appointments.map ( appt => {
+            if (moment(appt.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")) {
+                unavailable = true;
+            }
+        });
+
+        return unavailable;
+    }
+
+
     addSymptom = async (selectedSymptom, symptomDescription, appt_id) => {
         console.log("sss", selectedSymptom, symptomDescription,appt_id);
         if (selectedSymptom && symptomDescription) {
@@ -632,9 +646,9 @@ class Doctor extends PureComponent {
                     <Col xs={6} md={4}>
                         <H5>Calendar</H5>
                         <Calendar
-                            key={this.state.datesUnavailable.length}
+                            key={this.state.datesUnavailable.length + this.state.appointments.length}
                             onClickDay={this.makeDayOff}
-                            // tileDisabled={({activeStartDate, date, view }) => this.isUnavailalbe(date)}
+                            tileDisabled={({date }) => this.hasAppt(date)}
                             tileClassName={({ activeStartDate, date, view }) => view === 'month' && this.isUnavailalbe(date) ? 'off-day' : null}
                         />
                     </Col>
