@@ -380,9 +380,9 @@ INSERT INTO test VALUES ("1", "test1", "experty 1");
 INSERT INTO test VALUES ("2", "test2", "experty 1");
 INSERT INTO test VALUES ("3", "test3", "experty 1");
 INSERT INTO test VALUES ("4", "test4", "experty 1");
-insert into test(t_id, name, expertise_required) values ("5", "TEST 1", "A");
-insert into test(t_id, name, expertise_required) values ("6", "TEST 2", "A");
-insert into test(t_id, name, expertise_required) values ("7", "TEST 3", "B");
+insert into test values ("5", "TEST 1", "A");
+insert into test values ("6", "TEST 2", "A");
+insert into test values ("7", "TEST 3", "B");
 
 -- -------------- requested tests ---------------------
 INSERT INTO assigned_test VALUES ("14", "2", "1", "ASSIGNED");
@@ -394,18 +394,18 @@ INSERT INTO phmcy_stores_med VALUES("fooolor", "2", "2024-01-01", 900);
 
 
 -- ---------------- INIT TEST  components --------------------------
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(1, "C1", 1, 5, 10);
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(2, "C2", 1, 10, 20);
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(3, "C1", 2, 15, 20);
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(4, "C2", 2, 20, 30);
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(5, "C1", 3, 50, 100);
-insert into components(c_id, c_name, t_id, min_interval, max_interval) values(6, "C2", 3, 50, 100);
+insert into components values(1, "C1", 1, 5, 10);
+insert into components values(2, "C2", 1, 10, 20);
+insert into components values(3, "C1", 2, 15, 20);
+insert into components values(4, "C2", 2, 20, 30);
+insert into components values(5, "C1", 3, 50, 100);
+insert into components values(6, "C2", 3, 50, 100);
 
 
 -- ----------------- INIT assigned_test ---------------------------
-insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 1, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 1, 2, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 2, 2, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(14, 3, 3, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 1, 2, 'ASSIGNED');
-insert into assigned_test(lt_id, appt_id, t_id, status) values(15, 4, 1, 'ASSIGNED');
+insert into assigned_test values(14, 1, 1, 'ASSIGNED');
+insert into assigned_test values(14, 1, 2, 'ASSIGNED');
+insert into assigned_test values(14, 2, 2, 'ASSIGNED');
+insert into assigned_test values(14, 3, 3, 'ASSIGNED');
+insert into assigned_test values(15, 1, 2, 'ASSIGNED');
+insert into assigned_test values(15, 4, 1, 'ASSIGNED');

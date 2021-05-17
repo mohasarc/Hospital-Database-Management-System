@@ -51,7 +51,7 @@ class LabTech extends PureComponent {
 			<div>
 				<NavbarGroup align={Alignment.RIGHT}>
 					<NavbarHeading align={Alignment.LEFT}>
-						<strong>LT Profile</strong>
+						<strong>{this.state.user.first_name}</strong>
 					</NavbarHeading>
 					<NavbarDivider />
 					<Button className={Classes.MINIMAL} icon="person" text={TABS.PersonalInfo.text}
