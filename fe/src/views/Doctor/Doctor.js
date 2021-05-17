@@ -622,15 +622,19 @@ class Doctor extends PureComponent {
                         todayAppt = appt;
                     });
                     
-                    this.fetchApptSymptoms(todayAppt.appt_id);
-                    this.fetchApptDiagnosis(todayAppt.appt_id);
-                    this.fetchApptTests(todayAppt.appt_id);
-                    this.fetchApptPrescription(todayAppt.appt_id);
-                    this.fetchsymptomsNotSelected(todayAppt.appt_id);
-                    this.fetchTestsNotSelected(todayAppt.appt_id);
-                    this.fetchDiseasesNotDiagnosed(todayAppt.appt_id);
-                    this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
-                    this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
+                    if (todayAppt) {
+                        this.fetchApptSymptoms(todayAppt.appt_id);
+                        this.fetchApptDiagnosis(todayAppt.appt_id);
+                        this.fetchApptTests(todayAppt.appt_id);
+                        this.fetchApptPrescription(todayAppt.appt_id);
+                        this.fetchsymptomsNotSelected(todayAppt.appt_id);
+                        this.fetchTestsNotSelected(todayAppt.appt_id);
+                        this.fetchDiseasesNotDiagnosed(todayAppt.appt_id);
+                        this.fetchMedicinesNotPrescribed(todayAppt.appt_id);
+                        this.setState({ activePage: TABS.CURRENT_APPOINTMENT.value});
+                    } else {
+                        window.alert("No appointments today!");
+                    }
                     }}  />
                 <Button className={Classes.MINIMAL} icon="log-out"text={"Logout"} onClick={() => {
                         localStorage.removeItem("user");
