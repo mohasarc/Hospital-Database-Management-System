@@ -18,20 +18,15 @@ router.post("/test", (req, res) => {
 							   FROM components
 							   WHERE t_id = '${t_id}'`;
 
-	console.log('at post /test', t_id, appt_id);
-
 	connection.query(selectTechnicialSql, (err, tech_results) => {
 		if (err) {
 			res.status(500).send(err);
 		} else {
 			if (tech_results.length == 0) {
-				console.log("no lab tech");
 				res.status(500).send("NO LAB TECHNICIANS");
 			} else {
-				console.log("lab techs: ", tech_results);
 				// Get a random one
 				const lt_id = tech_results[(Math.random() * (tech_results.length - 1))].lt_id;
-				console.log("random lab tech: ", lt_id);
 				const assignTestSql = `INSERT INTO assigned_test(lt_id, appt_id, t_id, status) VALUES (?)`;
 				const assignTestTuple = [lt_id, appt_id, t_id, TEST_STATUS.assigned];
 				var initCompResultsSql = `INSERT INTO component_result(c_id, t_id, appt_id, score) VALUES`;
@@ -41,7 +36,7 @@ router.post("/test", (req, res) => {
 					if (err) {
 						res.status(500).send(err);
 					} else {
-						console.log("found some components: ", comp_results);
+						// console.log("found some components: ", comp_results);
 						connection.beginTransaction((err) => {
 							if (err) {
 								console.log("error0:", err);
@@ -56,7 +51,7 @@ router.post("/test", (req, res) => {
 									console.log("error1:", err);
 									res.status(500).send(err);
 								} else {
-									console.log("a test was assigned: ", in_results);
+									// console.log("a test was assigned: ", in_results);
 									// Initialize all components
 									if ( comp_results.length > 0 ){
 										var initCompResultsTuple = [];
