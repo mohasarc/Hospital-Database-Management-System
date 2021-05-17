@@ -38,7 +38,7 @@ class Pharmacist extends PureComponent {
     }
 
     componentDidMount() {
-        if (!this.state.pharmacy || !this.state.pharmacy.phmcy_id) {
+        if (!this.state.pharmacy || !this.state?.user.ph_id) {
             this.props.history.push("/login");
         }
         this.fetchPharmacy();
