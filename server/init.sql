@@ -308,8 +308,8 @@ INSERT INTO doctor VALUES ("13", "Accident&Emergency", "Emergency", "very qualif
 INSERT INTO person VALUES ("14", "Tech 1", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech1@hospital.org", "12121212");
 INSERT INTO person VALUES ("15", "Tech 2", "m.", "Jack", "2021-05-14", 1, "Docs str.", 1, "Hospital", "Hospital", 1, "Turkey", "+90", "000000000", "other", "tech2@hospital.org", "12121212");
 
-INSERT INTO lab_technician VALUES ("14", "A"); -- @mohammed - changed for sake of simplicity
-INSERT INTO lab_technician VALUES ("15", "B");
+INSERT INTO lab_technician VALUES ("14", "experty 1"); -- @mohammed - changed for sake of simplicity
+INSERT INTO lab_technician VALUES ("15", "experty 2");
 
 INSERT INTO works_at_lab VALUES ("1", "14");
 INSERT INTO works_at_lab VALUES ("2", "15");
@@ -377,12 +377,12 @@ INSERT INTO diagnosis VALUES("2", "Iron-deficiency anemia", "nothing");
 
 -- ---------------- INIT TEST -------------------------
 INSERT INTO test VALUES ("1", "test1", "experty 1");
-INSERT INTO test VALUES ("2", "test2", "experty 1");
+INSERT INTO test VALUES ("2", "test2", "experty 2");
 INSERT INTO test VALUES ("3", "test3", "experty 1");
-INSERT INTO test VALUES ("4", "test4", "experty 1");
-insert into test(t_id, name, expertise_required) values ("5", "TEST 1", "A");
-insert into test(t_id, name, expertise_required) values ("6", "TEST 2", "A");
-insert into test(t_id, name, expertise_required) values ("7", "TEST 3", "B");
+INSERT INTO test VALUES ("4", "test4", "experty 2");
+insert into test(t_id, name, expertise_required) values ("5", "TEST 5", "experty 2");
+insert into test(t_id, name, expertise_required) values ("6", "TEST 6", "experty 2");
+insert into test(t_id, name, expertise_required) values ("7", "TEST 7", "experty 2");
 
 -- -------------- requested tests ---------------------
 INSERT INTO assigned_test VALUES ("14", "2", "1", "ASSIGNED");

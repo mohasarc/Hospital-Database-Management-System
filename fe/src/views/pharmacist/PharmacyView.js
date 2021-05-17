@@ -82,29 +82,34 @@ const PharmacyView = (props) => {
     }
 
     const removeNMed = async (med, count) => {
-        try {
-            if (med.inventory_count > 0) {
-                const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
-                const body = { name: med.name, phmcy_id: pharmacy.phmcy_id, count: count };
-                const res = await axios.put(url, body);
-                const meds = [];
-                medicines.forEach(m => {
-                    if (m.name === med.name) m.inventory_count -= count;
-                    meds.push(m);
-                })
-                toast(`Removed ${count} ${med.name}(s)`, { style: { backgroundColor: "green", color: "white" } });
-                setMedicines(meds);
+        if (med.inventory_count - count < 0) {
+            toast(`Cannot remove ${count} ${med.name}(s).`, { style: { backgroundColor: "red", color: "white" } });
+        }
+        else {
+            try {
+                if (med.inventory_count > 0) {
+                    const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
+                    const body = { name: med.name, phmcy_id: pharmacy.phmcy_id, count: count };
+                    const res = await axios.put(url, body);
+                    const meds = [];
+                    medicines.forEach(m => {
+                        if (m.name === med.name) m.inventory_count -= count;
+                        meds.push(m);
+                    })
+                    toast(`Removed ${count} ${med.name}(s)`, { style: { backgroundColor: "green", color: "white" } });
+                    setMedicines(meds);
+                }
+                else {
+                    const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
+                    const body = { name: med.name, phmcy_id: pharmacy.phmcy_id };
+                    const res = await axios.delete(url, { data: body });
+                    const meds = medicines.filter((m) => m.name != med.name);
+                    toast("Removed from inventory", { style: { backgroundColor: "green", color: "white" } });
+                    setMedicines(meds);
+                }
+            } catch (error) {
+                toast(error.message, { style: { backgroundColor: "red", color: "white" } });
             }
-            else {
-                const url = `http://localhost:8000/pharmacy_inventory/inventory/medicine`;
-                const body = { name: med.name, phmcy_id: pharmacy.phmcy_id };
-                const res = await axios.delete(url, { data: body });
-                const meds = medicines.filter((m) => m.name != med.name);
-                toast("Removed from inventory", { style: { backgroundColor: "green", color: "white" } });
-                setMedicines(meds);
-            }
-        } catch (error) {
-            toast(error.message, { style: { backgroundColor: "red", color: "white" } });
         }
     }
 

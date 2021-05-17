@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { toast } from 'react-toastify';
 
 import {
     Box,
@@ -49,11 +50,16 @@ const Row = (props) => {
     }
 
     const addScoreHandler = async (score, comp) => {
-        // Add component result        
-        const url = `http://localhost:8000/appointment/test/comps`;
-        const body = { t_id: test.t_id, c_id: comp.c_id, appt_id: test.appt_id, score: score };
-        const res = await axios.post(url, body);
-        window.location.reload();
+        try {
+            // Add component result        
+            const url = `http://localhost:8000/appointment/test/comps`;
+            const body = { t_id: test.t_id, c_id: comp.c_id, appt_id: test.appt_id, score: score };
+            const res = await axios.post(url, body);
+            window.location.reload();
+            // setTimeout(() => { toast('Successfuly added score!', { style: { backgroundColor: "green", color: "white" } }) }, 2000)
+        } catch (error) {
+            toast(error.message, { style: { backgroundColor: "green", color: "white" } });
+        }
     }
 
     const buildCompItem = (comp) => {
