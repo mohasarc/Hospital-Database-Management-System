@@ -641,7 +641,7 @@ class Doctor extends PureComponent {
                         this.props.history.push("/login");
                     }}/>
             </NavbarGroup>
-            <Jumbotron>
+            <Jumbotron style={{"background-color":"#FFFFFF"}}>
 				<H3>Welcome Doctor</H3>
                 <Row>
                     <Col xs={12} md={8}>
